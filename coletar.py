@@ -6,7 +6,9 @@ DICIONARIO.md; aqui fica so onde buscar cada arquivo e como ele chega.
 
 So biblioteca padrao: roda em qualquer Python 3, sem pip install.
 """
+import csv
 import functools
+import hashlib
 import http.client
 import os
 import time
@@ -80,6 +82,8 @@ ESPERA_BASE = 2  # segundos; cresce a cada nova tentativa
 PAUSA = 1  # segundos entre um download e outro: em rajada, o servidor derruba conexoes
 
 PASTA_DADOS = "dados"
+MANIFESTO = "manifesto.csv"  # em dados/, versionado; os brutos, nao
+COLUNAS_MANIFESTO = ["base", "periodo", "arquivo", "bytes", "sha256", "coletado_em", "url"]
 
 # nomes das pastas mensais do VRA ("03 - Março")
 MESES = [
@@ -372,6 +376,54 @@ def coletar_base(base, desde=None, ate=None, pasta=PASTA_DADOS):
             resultado = "vazio"
         if resultado == "ok":
             gravar_bruto(corpo, caminho)
+            registro.update(bytes=len(corpo), sha256=hashlib.sha256(corpo).hexdigest())
         registros.append({**registro, "situacao": resultado, "url": url, "baixado": resultado == "ok"})
         time.sleep(PAUSA)
     return registros
+
+
+def ler_csv(caminho):
+    """Linhas de um CSV do projeto. Arquivo ausente vira lista vazia."""
+    if not os.path.exists(caminho):
+        return []
+    with open(caminho, newline="", encoding="utf-8") as arquivo:
+        return list(csv.DictReader(arquivo))
+
+
+def gravar_csv(linhas, colunas, caminho):
+    os.makedirs(os.path.dirname(caminho) or ".", exist_ok=True)
+    with open(caminho, "w", newline="", encoding="utf-8") as arquivo:
+        # \n em qualquer sistema: o padrao do csv e \r\n, e no Linux do
+        # GitHub Actions o arquivo inteiro apareceria alterado (licao do MED)
+        escritor = csv.DictWriter(arquivo, fieldnames=colunas, lineterminator="\n")
+        escritor.writeheader()
+        escritor.writerows(linhas)
+
+
+def atualizar_manifesto(registros, pasta=PASTA_DADOS, hoje=None):
+    """Acrescenta ao manifesto cada arquivo baixado com um sha256 que ele
+    ainda nao tem pra mesma base e arquivo. Devolve as linhas novas.
+
+    O manifesto e o arquivo da coleta: guarda tamanho, sha256, data e URL
+    de cada versao baixada, enquanto os brutos ficam fora do git. Sem linha
+    nova, o arquivo nem e regravado, pra rodada sem novidade nao virar
+    mudanca no git.
+    """
+    hoje = hoje or date.today().isoformat()
+    caminho = os.path.join(pasta, MANIFESTO)
+    linhas = ler_csv(caminho)
+    conhecidos = {(l["base"], l["arquivo"], l["sha256"]) for l in linhas}
+    novas = []
+    for r in registros:
+        chave = (r["base"], r["arquivo"], r.get("sha256"))
+        if not r["baixado"] or chave in conhecidos:
+            continue
+        conhecidos.add(chave)
+        novas.append({
+            "base": r["base"], "periodo": r["periodo"], "arquivo": r["arquivo"],
+            "bytes": str(r["bytes"]), "sha256": r["sha256"], "coletado_em": hoje, "url": r["url"],
+        })
+    if novas:
+        ordem = lambda l: (l["base"], l["periodo"], l["arquivo"], l["coletado_em"], l["sha256"])
+        gravar_csv(sorted(linhas + novas, key=ordem), COLUNAS_MANIFESTO, caminho)
+    return novas
