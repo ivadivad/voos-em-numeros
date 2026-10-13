@@ -183,5 +183,43 @@ class TesteReentrega(unittest.TestCase):
         self.assertEqual(baixar.call_count, 1)
 
 
+class TesteMesesEUrls(unittest.TestCase):
+    def test_virada_de_ano(self):
+        self.assertEqual(coletar.gerar_meses(202411, 202502), [202411, 202412, 202501, 202502])
+
+    def test_mesmo_mes(self):
+        self.assertEqual(coletar.gerar_meses(202401, 202401), [202401])
+
+    def test_fim_padrao_e_o_mes_corrente(self):
+        meses = coletar.gerar_meses(201901)
+        hoje = coletar.date.today()
+        self.assertEqual(meses[0], 201901)
+        self.assertEqual(meses[-1], hoje.year * 100 + hoje.month)
+
+    def test_urls_das_tarifas_na_virada_de_ano(self):
+        urls = [coletar.montar_url("tarifas", m) for m in coletar.gerar_meses(202411, 202502)]
+        base = "https://sas.anac.gov.br/sas/tarifadomestica/"
+        self.assertEqual(urls, [
+            base + "2024/202411.csv",
+            base + "2024/202412.csv",
+            base + "2025/202501.csv",
+            base + "2025/202502.csv",
+        ])
+
+    def test_urls_do_vra_na_virada_de_ano(self):
+        # pasta com o mes com zero e por extenso; arquivo com o mes sem zero
+        urls = [coletar.montar_url("vra", m) for m in coletar.gerar_meses(202411, 202502)]
+        sufixos = [u[len(coletar.VRA):] for u in urls]
+        self.assertEqual(sufixos, [
+            "/2024/11 - Novembro/VRA_202411.csv",
+            "/2024/12 - Dezembro/VRA_202412.csv",
+            "/2025/01 - Janeiro/VRA_20251.csv",
+            "/2025/02 - Fevereiro/VRA_20252.csv",
+        ])
+
+    def test_vra_de_marco_leva_o_cedilha(self):
+        self.assertTrue(coletar.montar_url("vra", 202003).endswith("/2020/03 - Março/VRA_20203.csv"))
+
+
 if __name__ == "__main__":
     unittest.main()
