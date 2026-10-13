@@ -116,9 +116,161 @@ Os códigos de aeroporto têm sempre 4 letras e começam com `SB`, `SN`, `SW`,
 
 ---
 
+# Voo Regular Ativo (VRA)
+
+**Fonte:** [página do conjunto](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/voo-regular-ativo-vra)
+e [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/voo-regular-ativo-vra/62-voo-regular-ativo-vra).
+Os arquivos ficam numa listagem de pastas, uma por mês:
+`https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/AAAA/MM - Mês/VRA_AAAAM.csv`.
+A pasta tem o nome do mês por extenso e com acento (`03 - Março`), e o arquivo
+leva o mês sem zero à esquerda (`VRA_20203.csv`, `VRA_202010.csv`). Cada mês
+tem também uma versão em JSON.
+
+**O que foi aberto:** a listagem dos 92 meses de jan/2019 a ago/2026 (1,07 GB
+em CSV), quatro meses inteiros (jan/2019, mar/2020, abr/2020 e ago/2026) e o
+começo de jan e fev/2020.
+
+## O que é uma linha
+
+**Uma etapa de voo**: uma decolagem e o pouso seguinte, com horários previstos
+e realizados. Um voo com escala vira duas linhas.
+
+O mês do arquivo é o da partida prevista. Pelos metadados, os dados "referem-se
+a etapas cujas decolagens estavam previstas para o mês em questão ou, no caso de
+etapas não planejadas, cujas decolagens ocorreram efetivamente nesse período".
+Em ago/2026, 85.742 linhas têm partida prevista em agosto, 2.307 não têm
+partida prevista (etapas não planejadas, todas realizadas) e 15 têm partida
+prevista em setembro.
+
+**Cópias exatas:** 77 linhas de jan/2019 e 44 de ago/2026 repetem outra linha
+coluna por coluna. O mesmo voo de jan/2019 aparece até 4 vezes. O grão
+declarado só vale depois de tratar essas cópias.
+
+## Colunas
+
+| Coluna no arquivo | Conteúdo |
+|---|---|
+| `ICAO Empresa Aérea` | Designador OACI da empresa que operou a etapa |
+| `Número Voo` | Número do voo, como texto (`0084`, `Z6582`) |
+| `Código Autorização (DI)` | Dígito Identificador: o tipo de autorização da etapa (tabela abaixo) |
+| `Código Tipo Linha` | Tipo de linha: doméstica ou internacional, de passageiro ou cargueira (tabela abaixo) |
+| `ICAO Aeródromo Origem` / `Destino` | Códigos OACI. Inclui aeroportos estrangeiros |
+| `Partida Prevista` / `Partida Real` | Data e hora, `AAAA-MM-DD hh:mm:ss`, horário de Brasília. Alguns trazem fração de segundo (`06:20:00.100000000`) |
+| `Chegada Prevista` / `Chegada Real` | Idem |
+| `Situação Voo` | `REALIZADO`, `CANCELADO` ou, a partir de abr/2020, `NÃO INFORMADO` |
+| `Código Justificativa` | Motivo do atraso ou cancelamento (`AT`, `RA`, `MX`...). Desde abr/2020 é sempre `N/A`: o campo deixou de ser exigido com a revogação da IAC 1504 |
+
+Os metadados listam mais campos (nome da empresa, modelo e assentos da
+aeronave, situação na partida e na chegada) que não estão no CSV.
+
+Nas três amostras com horário legível, todo voo cancelado (ou não informado)
+tem os dois horários reais nulos, e todo voo realizado tem os dois preenchidos.
+
+## Formato
+
+| Característica | O que as amostras mostram |
+|---|---|
+| Encoding | UTF-8 com BOM |
+| Primeira linha | **Não é o cabeçalho**: `Atualizado em: 2026-10-07`. O cabeçalho vem na segunda |
+| Separador e aspas | `;`, todo campo entre aspas |
+| Fim de linha | `\r\n` |
+| Valor ausente | O texto `"null"`, não campo vazio |
+
+## Fuso horário: Brasília, conferido nos dados
+
+Os metadados dizem que os quatro horários estão em horário de Brasília. A
+conferência: se partida e chegada estivessem cada uma no fuso local, a ida
+Brasília → Rio Branco (duas horas atrás) pareceria quatro horas mais curta que
+a volta. Em ago/2026, a mediana da duração prevista é quase igual nos dois
+sentidos das rotas que cruzam fuso:
+
+| Rota | Ida (min) | Volta (min) |
+|---|---|---|
+| Guarulhos ↔ Manaus | 235 | 230 |
+| Brasília ↔ Rio Branco | 205 | 200 |
+| Recife ↔ Fernando de Noronha | 80 | 75 |
+
+Consequência pra etapa 9: o mapa de calor por hora mostra a hora de Brasília.
+Em Manaus, o relógio local está uma hora atrás; em Rio Branco, duas.
+
+## Códigos
+
+Duas tabelas oficiais, porque a regra mudou dentro do período do projeto:
+até mar/2020 vale a [IAC 1504](https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf);
+a partir de abr/2020, a [descrição de variáveis](https://www.gov.br/anac/pt-br/assuntos/regulados/empresas-aereas/Instrucoes-para-a-elaboracao-e-apresentacao-das-demonstracoes-contabeis/descricao-de-variaveis)
+dos dados estatísticos.
+
+**Dígito Identificador (DI)**
+
+| Código | Até mar/2020 (IAC 1504) | A partir de abr/2020 |
+|---|---|---|
+| `0` | Voo regular | Etapa regular |
+| `1` | Voo extra com HOTRAN | Não consta (aparece em 610 linhas de ago/2026) |
+| `2` | Voo extra sem HOTRAN | Etapa extra |
+| `3` | Voo de retorno | Etapa de retorno |
+| `4` | Inclusão de etapa em voo previsto em HOTRAN | Inclusão de etapa |
+| `5` | Voo cargueiro não regular | Não consta |
+| `6` | Voo de serviço | Etapa não remunerada sem transporte de objetos |
+| `7` | Voo de fretamento | Etapa de voo de fretamento |
+| `8` | Voo de conexão para atender viagem internacional | Não consta |
+| `9` | Voo charter | Etapa de voo charter |
+| `A` / `B` | Voo de instrução / de experiência | Não constam |
+| `D` | Não consta | Etapa de voo duplicada |
+| `E` | Não consta | Etapa não remunerada com transporte de objetos |
+
+A descrição de variáveis agrupa os DI em regular (`0`, `4` ou `C`), não regular
+(`1`, `2`, `5`, `7`, `8`, `9` ou `D`) e improdutivo (os demais).
+
+**Tipo de linha**
+
+| Código | Até mar/2020 (IAC 1504) | A partir de abr/2020 |
+|---|---|---|
+| `N` | Nacional | Doméstica mista (passageiros ou mista) |
+| `C` | Cargueiro doméstico | Doméstica cargueira |
+| `I` | Internacional | Internacional mista |
+| `G` | Cargueiro internacional | Internacional cargueira |
+| `R` / `H` | Regional / sub-regional | Não constam |
+| `E` / `L` | Especial / rede postal | Não constam |
+| `X` | Não consta | Não consta. Em abr/2020 são 1.063 linhas, e as oito empresas com mais linhas são estrangeiras (Lufthansa Cargo, UPS e United entre elas). Nos dados estatísticos, `X` aparece como "NÃO IDENTIFICADA" |
+
+**O filtro de voo doméstico regular de passageiros (etapa 3):** tipo de linha
+`N` (e também `R` e `H` até mar/2020) e DI do grupo regular (`0` ou `4`).
+
+## Dois meses perdidos: fev e mar/2020
+
+Nos arquivos atuais de mar/2020, as quatro colunas de horário e a de situação
+trazem o texto `Microsoft.SqlServer.Dts.Pipeline.BlobColumn` em vez do valor,
+um defeito da exportação feita pela ANAC. São todas as 258.092 linhas, e
+242.726 delas são cópias exatas de outra. O JSON do mesmo mês tem o mesmo
+defeito. Em fev/2020, as linhas abertas (o começo do arquivo) estão iguais. Os
+dois arquivos têm 88 e 70 MB, contra 11 a 13 MB de um mês normal, e dizem
+`Atualizado em: 2021-09-16` e `2021-09-17`.
+
+A [versão descontinuada](https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/historico-de-voos/historico-de-voos-descontinuada)
+do histórico de voos, publicada até out/2024, tem os dois meses legíveis, em
+outro formato: sem aspas, cabeçalho sem acento (`ICAO Empresa Aerea;Numero
+Voo;Codigo DI;...`), datas `dd/mm/aaaa hh:mm` e linhas terminadas só em `\r`.
+Usar ou não essa cópia é decisão da etapa 3.
+
+## Revisão
+
+A ANAC republica a série. Quase todos os arquivos de abr/2020 a ago/2026 têm
+data de 07/10/2026, e os de 2019, de 12/05/2026. A primeira linha de cada
+arquivo diz quando ele foi gerado.
+
+---
+
 ## Perguntas em aberto
 
 - **Tarifas:** o `N` de `Tarifa-N`, no cabeçalho B, quer dizer "nominal"? Os
   metadados dizem que o valor é nominal, mas o cabeçalho não explica.
 - **Tarifas:** a ANAC vai renomear o arquivo de mai/2026? Se renomear, o
   coletor precisa achar o mês pelo novo nome sem baixar duas vezes.
+- **VRA:** o DI `1` não consta da tabela válida a partir de abr/2020, mas
+  aparece em 610 linhas de ago/2026, quase todas sem partida prevista. Que
+  tipo de etapa é?
+- **VRA:** jan e fev/2019 ainda tinham horário de verão. A "hora de Brasília"
+  desses dias é a de verão ou a padrão? Só afeta o mapa de calor dessas
+  semanas.
+- **VRA:** fev e mar/2020 vêm da cópia descontinuada ou ficam fora? A etapa 3
+  decide.
