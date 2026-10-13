@@ -1,0 +1,188 @@
+base,periodo,arquivo,bytes,sha256,coletado_em,url
+aerodromos,,AerodromosPrivados.csv,920965,c1baa1b26214be1116fdc81c6c29665375cc3c1f28f1cce5f36b40c604db7886,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aeródromos Privados/Lista de aeródromos privados/Aerodromos Privados/AerodromosPrivados.csv
+aerodromos,,AerodromosPublicos.csv,98564,e90459ca3c298b46452a07953a100a48d48b5c4c9230f58c870129ee07906a72,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aeródromos Públicos/Lista de aeródromos públicos/AerodromosPublicos.csv
+estatisticas,,Dados_Estatisticos.csv,359963089,298b74e7365c73330b6459d00dcb00c4a2ed572b49e813b4b203484d403fa105,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Dados Estatísticos do Transporte Aéreo/Dados_Estatisticos.csv
+tarifas,201901,201901.csv,13075184,c01db65f2ec1aa0262af5d178a4cadbc25af69b242e9bbec48d29ffca8855224,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201901.csv
+tarifas,201902,201902.csv,11813492,e12717063df6f0aa717acfa1fbcc1daab55078da35265cb39347e40f0a441b53,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201902.csv
+tarifas,201903,201903.csv,11006701,531c8a1536ee8c9f825142aa2f07be63a8fd1ffbd47706b4a5718a785862f508,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201903.csv
+tarifas,201904,201904.csv,10662575,3822f107232c7a81219cf7dc406028e250bdaecb5b2715eff9f6b2031f749ac8,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201904.csv
+tarifas,201905,201905.csv,9446482,df4345e933473a6ceab6eaebe4ed2a39164775456a46e9773c669a911cb46c0c,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201905.csv
+tarifas,201906,201906.csv,9257524,ea648e2b651cb9dfe8b9032a7dc3a5b66dfc767c99623c386eff660e7bb28d5d,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201906.csv
+tarifas,201907,201907.csv,10832535,66439f966d090f2e3f077d6f4f1ac1e9d9932894fc54602b69388b969410b868,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201907.csv
+tarifas,201908,201908.csv,11631821,6ab5f995a4f49afa1fe4054b57dae437e1bf72ce4a4b883627499a06e990078c,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201908.csv
+tarifas,201909,201909.csv,12511850,e2bd07d3217c30cd3a66306c4d0b668cdcedbd085dfa658e9e1c94b51f533e24,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201909.csv
+tarifas,201910,201910.csv,12095021,b0ac686127b8499977844d6ccdefe8fb939e9b1061c707830dd76b7559d1dab2,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201910.csv
+tarifas,201911,201911.csv,12581290,69ee93ae09f99a99e7c872ba92126d75cc309d1e3da10126cb22afb5dfe757ed,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201911.csv
+tarifas,201912,201912.csv,11178585,af963b491d80eb6dda20cec362c5917854453ed5933ed62c9a292be4dc47181a,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201912.csv
+tarifas,202001,202001.csv,10095993,a4da9b3e822c5e3ee1bc43c2a29e83e4203e2eaddf3fed4a549255b2736701ce,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202001.csv
+tarifas,202002,202002.csv,10869986,d0895364c90a757f81d06b342e9b41258321e6d330b30bb0d9c397cdc1440491,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202002.csv
+tarifas,202003,202003.csv,9679865,9cc3c98551cd97bedf8e7e1a827b47f26fbc8d597e1830ca077f9087104dc8f9,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202003.csv
+tarifas,202004,202004.csv,3534364,488aa7a2ad51f79f6707dd61e81fe6fbe536aa851956c6df372c1882cc2cc121,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202004.csv
+tarifas,202005,202005.csv,3224432,f695971b7197ed48b315cc64aa5d259a50198088d52eaf500ed0445c3dc33ec5,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202005.csv
+tarifas,202006,202006.csv,4739569,a72dd1bc9eb9b27cf2862d10feb41692c860204c34458624b7a55a041c1eb413,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202006.csv
+tarifas,202007,202007.csv,6424006,3181f637227cd1d02bf58b8dadbe4badb5211f3d51d8d0e0b3dba8f7c50ed435,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202007.csv
+tarifas,202008,202008.csv,9705947,63a3dcbd58601dba80ea4b1cd751f8d311558186a3c3f85b823c683a5a1960d0,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202008.csv
+tarifas,202009,202009.csv,9636554,c3468da57b8aab6556cde07ade46ea637f7c54c3b5428a56d6504fb760bfca16,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202009.csv
+tarifas,202010,202010.csv,12487737,d2dafc967a29bd876af15de320f2f76937561e398a5e4bcb1907abb5e8a8f013,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202010.csv
+tarifas,202011,202011.csv,14516345,09c10ce41611a1789927c1d7e43870c0013a0174cfa092617840fe64c8af5e82,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202011.csv
+tarifas,202012,202012.csv,11297512,456048496e33fa99efada0ba8a77e9d3e1ae8523375a06417eff4ad7ba531c66,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2020/202012.csv
+tarifas,202101,202101.csv,11281104,c9f9e7fbfdb8e9a6004bc8318d0b5a2eaf0c2603c50342c5874df13d3ae0ea25,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202101.csv
+tarifas,202102,202102.csv,9773607,39a75cea2091e15ec1e63fb48b7bc23058651eb3a452216c81490a05c69bcd77,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202102.csv
+tarifas,202103,202103.csv,9460638,3014292645acd8cd6b82e2384182656d6c58e42372054185ee11ffbcc119496b,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202103.csv
+tarifas,202104,202104.csv,8707166,49aaa627960a4f4b5b33fdcc9a4f1fa7a2346c02b8a8c03d7a4a5334f3834472,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202104.csv
+tarifas,202105,202105.csv,10564279,c7a45d1e6d98567992c01eed7507c3787a6df03a4cc4399ff496b9bffc5c445d,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202105.csv
+tarifas,202106,202106.csv,9405115,b4e293caf0d7abca4eac4b99c50d09a445b8b505b024ef423b8da4331978d2b8,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202106.csv
+tarifas,202107,202107.csv,11216720,59851c466e5b9300fa0b07098699254a1dbbfbf8c6fdd492b8c2f8c053cc5e7a,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202107.csv
+tarifas,202108,202108.csv,10853284,7e064ec0a8143b804ab74578540826dc64b67c3bb30325ccdcd5e11416c4473e,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202108.csv
+tarifas,202109,202109.csv,14595363,545ae4fcb8bd5880747b40a20030500bd9c94d923c803bc6792666352222e687,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202109.csv
+tarifas,202110,202110.csv,18287750,8c8b07f5228ba8cbfbf995f0a9050acf1bb6512f06ea40864eedd2ef3485ebc2,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202110.csv
+tarifas,202111,202111.csv,18081321,21f0be79e1ac6587c92c63cc7491ef85d585fef0ee7cda8d7d68af1f1ca03a56,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202111.csv
+tarifas,202112,202112.csv,19518036,dbb78cecff6d64af73a31e9dc9dab7a6d604c97d322abe5ba3a1718893077fdf,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2021/202112.csv
+tarifas,202201,202201.csv,9910546,10a7a469144c07ea850078b037210601cff543915460f54544c4a42edcf81bfb,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202201.csv
+tarifas,202202,202202.csv,10770147,da8388ee04c396319578ed2b8f8aba308d1392d75d05ff35f2ebf0bbda5ad7e7,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202202.csv
+tarifas,202203,202203.csv,12804932,ae52041e7178681cc8a8e4662c0457af8f6b900b92714e58f9003df0cf467283,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202203.csv
+tarifas,202204,202204.csv,17323023,bddb35715edd1f5a41814bc87ed5c4b73feccfe755c4e9b66e46772f58f29483,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202204.csv
+tarifas,202205,202205.csv,12740680,d463e62b39af6a2720abecdbc783ef6d3eff80d04a49c1e3a474fa9a98aff073,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202205.csv
+tarifas,202206,202206.csv,12781450,3d8a97ec77569817a089680f9d93baa0c40d257e9b38ec71d85508906bbbf4e0,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202206.csv
+tarifas,202207,202207.csv,11983651,ad0bca04b209d4eee1f913a8be3dfdd1a807738253efb05f5e95b7fd4b328c47,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202207.csv
+tarifas,202208,202208.csv,12661069,dfc4e7a2a482676f2959b85c237c1b671f1f911a6a35b323291afc42a14cc9ae,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202208.csv
+tarifas,202209,202209.csv,13033885,ba6a3c4f1c5909cb3be3ac52edd1439fb9f08271a08e9163f26df22c37e708a1,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202209.csv
+tarifas,202210,202210.csv,14537982,43fdc40f2d93eb462ec3e2194aba67f4133f52cf10a3d8d75bb99463a906e743,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202210.csv
+tarifas,202211,202211.csv,14525176,ca0bdf0c2ff302fb760d74aea1a8a236328b6d7624d06fb158912ec3b991f7c7,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202211.csv
+tarifas,202212,202212.csv,10748812,60564cf17ddfe2d5bbe653744ad691d116beab85dfaf3d93ba8a6a95eccac993,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2022/202212.csv
+tarifas,202301,202301.csv,12259488,5023c7da70d292cd62315574d5164b344732fae114bc3023c7942d239885d446,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202301.csv
+tarifas,202302,202302.csv,10751598,c0c4a9ec3c2923951a84c1a1a9ebb88b7bb4c74ef48fffa1227ebe3a9f55d7a4,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202302.csv
+tarifas,202303,202303.csv,11961800,53963ee401563414b762072686a77091a25dc58e3ebe79d87572ff5f5c1a996c,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202303.csv
+tarifas,202304,202304.csv,11873128,c5cfe4854ea4154d7323e636c5676222f6800024724a49a82105faa160c20d83,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202304.csv
+tarifas,202305,202305.csv,14348729,b6f6bc00ecba1eb948c8b7cb31adc34f4179a77bec559c331611ec2fb09b5ea7,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202305.csv
+tarifas,202306,202306.csv,12808253,03b1fcd5a676a7555c6ee16e77a2b5cfd1da280bdb251b49457707cd65fdc25c,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202306.csv
+tarifas,202307,202307.csv,14161401,4025b1ff29ec31008b1d4484903e1e49c789c57c1414ba4ab0b7eb63257405fe,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202307.csv
+tarifas,202308,202308.csv,16256198,9d96473227bc580871101ec7a4329c82ee5933c2d290ee47fadc68e381010bfc,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202308.csv
+tarifas,202309,202309.csv,13813194,8b017a3695bf81ae8b0a4001d51bc98eb23e490777e26005e849722d96fbdb6d,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202309.csv
+tarifas,202310,202310.csv,14980856,4e64563383863473b93ca6fee64a701a02ced36a77cc570ef5229e9b145a333c,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202310.csv
+tarifas,202311,202311.csv,13675655,3d8cc22b691958edbe6cfa58320252986270df085db6e9ad2b1ce522b77bb59b,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202311.csv
+tarifas,202312,202312.csv,14176840,be1c97b81da2c7fb348a9918b140646936e3a1870f91f000f3c2c94afcb7df5e,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2023/202312.csv
+tarifas,202401,202401.csv,14962715,7d214a250b521c2fb41f8d05360922946c027281895b591e7d9d3f82da552cf7,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202401.csv
+tarifas,202402,202402.csv,14954080,ef8c1301dcf48380a10ea239345df5c1c8ac2f3977803e4e69b5ff8b53c40acb,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202402.csv
+tarifas,202403,202403.csv,17853597,b3f789f448c02891db5feaa5607c10cff7a2863346aaead9bdb974b47dc89e44,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202403.csv
+tarifas,202404,202404.csv,19344531,d30bcb56ab1e3d789290440051d8575e911bbcf1ccec2480e94743ee363421ae,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202404.csv
+tarifas,202405,202405.csv,19998474,35c17be4aa3299ff1f4bdb800866ffedb600a5b21f9f261d48ec5d720ace8cad,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202405.csv
+tarifas,202406,202406.csv,20033673,2a967f9237e3bfdd415e0ce4905f088d65a9498faf529879d1cc510482557c4f,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202406.csv
+tarifas,202407,202407.csv,19086003,beeeaa3d44e285ddabb1ef34fef8fa9ef78e5a92299406931a1a1cc57b90e41b,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202407.csv
+tarifas,202408,202408.csv,24255610,00687ef78e68bc51f20c9d2edc8d5d79bdaee50592fe8771a3f10734c05838b2,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202408.csv
+tarifas,202409,202409.csv,22169620,6a76b9b9e7187f96dc1eceb40d37e87868fca9f6bfb70f99a2a85b422ced6025,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202409.csv
+tarifas,202410,202410.csv,24425657,93b871a86aa14323c1af9dec8f1373752c4f88cfaa70c4401d74dfa8a3e1a52b,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202410.csv
+tarifas,202411,202411.csv,24275374,14db532d43113bed1afd32dfce531ae54a09ab7c5192b8d95885e8986bc8f62f,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202411.csv
+tarifas,202412,202412.csv,17893279,a0b43b20229a3b592ac753c4705e24fb06e9ddc98dcf08fa53cf3281d76bc382,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2024/202412.csv
+tarifas,202501,202501.csv,22035663,b4e9824848ea8fa1a05dea2cc1d57f21006f52f7ad92f368b692e939b591b604,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202501.csv
+tarifas,202502,202502.csv,21665027,c3bc15b1631c96d623efc09ceb48207c083daaa573167107a87e85ea056345d8,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202502.csv
+tarifas,202503,202503.csv,21011712,37ab00aac01456fbe3a6573e8524e467edc1a3a70441568aa22f1a73aaed5a69,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202503.csv
+tarifas,202504,202504.csv,23539737,0af770b7919ab783226af328c520bb0cd9e73f5ee23bb09ae2143e297e5b9874,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202504.csv
+tarifas,202505,202505.csv,23838887,9178c314ad956b9bd2e19c2158bca6a0b9d46d05f917fdb24cd8c54297d32b37,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202505.csv
+tarifas,202506,202506.csv,19876108,21a213891ba07c9abe4859d67437e235736aecd3ee9450d2d326ce0c56c10bfc,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202506.csv
+tarifas,202507,202507.csv,18842133,7212114f241d9e4895b5ff2dcabc06aed75afe86fd33ca1983b1de3c10524be1,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202507.csv
+tarifas,202508,202508.csv,19643371,e72cf2db50ddc1037d19e078d9540c3e42e7f1c4722cfc6262907f55727602d1,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202508.csv
+tarifas,202509,202509.csv,21059301,6bf9bc4da51ae9c412c34d7f434f9d629036f9b0e197bae03daeddbb0507066e,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202509.csv
+tarifas,202510,202510.csv,26037591,9021cef2a15a47a0cf373cc5557d8b281cd09386b477b27ecf54f4771fed84e3,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202510.csv
+tarifas,202511,202511.csv,28785215,c7bda31aca4c1911b50622f06c724d1099062e558d7f3d30ad8af5dbd4d732f8,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202511.csv
+tarifas,202512,202512.csv,21383326,c7519a3a997a7476d78d911df8ff32f27c98ca4b054a4affe066b927bd22da36,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2025/202512.csv
+tarifas,202601,202601.csv,23509954,a576f02ddcb75fc0e77413a5e58fcb156625e4ef1b25e68138e232966c2a650c,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202601.csv
+tarifas,202602,202602.csv,19053549,3835fe2a2ea67c780c32f4999f74ec98c3382905ad174622a2cd7f1b173e3e91,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202602.csv
+tarifas,202603,202603.csv,26199061,d1f96d71d4e9ad50979dd0f8cb56b78b6578029885a7e08431fb6caa85e511dc,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202603.csv
+tarifas,202604,202604.csv,25431739,6cbf66a45c2024ab1a56fe977aac5a8d8750ed269249a999f7d08fd282c27769,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202604.csv
+tarifas,202605,202605.csv,26929792,50dffd292f536059ad9c98f9cf0d5337bff7165b72b053e5be34e345198bfa6e,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV
+tarifas,202606,202606.csv,27380920,e34ec4ab5f80b9820a647d9400b5d81112db9ce44eed65d5807b68accaefdd77,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202606.csv
+tarifas,202607,202607.csv,26781125,56159457d116b0486b4f1fbdb252d450435ed70f57338f326f204c79a2f3fe97,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202607.csv
+tarifas,202608,202608.csv,25419651,0ea3a0fbbfdcf9fdd9c6dee9fa7014bedce045ad55d90f3ffc37c02ff2fa6e6b,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202608.csv
+vra,201901,201901.csv,12965208,fd7a1900fdad833c67f9b73e954e2a340d1ce8e05dfbe293f3db08aca37b6c96,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/01 - Janeiro/VRA_20191.csv
+vra,201902,201902.csv,11217924,8a64c589ea6168e31898c1dca2b7e1852c8a917b5af53bcdaf2bd61b6cd2a7ff,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/02 - Fevereiro/VRA_20192.csv
+vra,201903,201903.csv,11722804,216d924b03b018e23b4a54fa50a2304a2c8841821256a0f5ca19c6894ebb8f0b,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/03 - Março/VRA_20193.csv
+vra,201904,201904.csv,10912568,b82747589f7b74aaaef6c47bb628c60b71a7288c218d73c77e160b629ad62f01,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/04 - Abril/VRA_20194.csv
+vra,201905,201905.csv,10817275,88021c02f07634538eedd514d2a31c8a4798784101af618e25289f2980c4b3aa,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/05 - Maio/VRA_20195.csv
+vra,201906,201906.csv,10475239,a2aaeb25a97ac6a195dc33db27df625f994eafcc0311fa36d40fdd0ed88b2cb9,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/06 - Junho/VRA_20196.csv
+vra,201907,201907.csv,12091844,775db842a384302aa7fc6325e68d020db100825fead430a2ad64d892c19d6531,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/07 - Julho/VRA_20197.csv
+vra,201908,201908.csv,11393953,a3ccea9fa11c47e0efdf8db3ea6dccc02dac1d324781611714eb2c8af83d2f15,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/08 - Agosto/VRA_20198.csv
+vra,201909,201909.csv,11358467,738dc13136a4a0426991c67cb50128ff7f548d8ef683d4b3a2e3c5c7a57faf85,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/09 - Setembro/VRA_20199.csv
+vra,201910,201910.csv,11911453,f6225c70ac6455650e55b7371dd1f08b039e1012a03654cf4200f32326ab2aab,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/10 - Outubro/VRA_201910.csv
+vra,201911,201911.csv,11440496,a24883675c53d10e559d4ce6f487e20fd2339f06e245ca5bab9dae131a022277,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/11 - Novembro/VRA_201911.csv
+vra,201912,201912.csv,12455531,8b1efc04c760897cc1415556cb0b109cd42cdc3f80894cff4689ed4fa08a49ca,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/12 - Dezembro/VRA_201912.csv
+vra,202001,202001.csv,13058503,4b1ede67f93981c8b344d2a7a8847300db86065f240da29d07ae9801d73d3671,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/01 - Janeiro/VRA_20201.csv
+vra,202002,202002.csv,87940601,83d9369cb29bfcc755cbe01542187f36d2c3011d9b4e5911df719cd3114f54b0,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/02 - Fevereiro/VRA_20202.csv
+vra,202003,202003.csv,70125249,520f51f43736cac0dc3935e439b99478651580959d97af232373b4d66f722bc2,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/03 - Março/VRA_20203.csv
+vra,202004,202004.csv,1038289,6181c6dfa2cf71c52411dfb0b84c71aa3104517c5f1a9100b9c9644540bbf4ea,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/04 - Abril/VRA_20204.csv
+vra,202005,202005.csv,1308998,6d53be7223e34161afef42f158ef37a200aeb7cc3f7e58ee0bd585820cdeae90,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/05 - Maio/VRA_20205.csv
+vra,202006,202006.csv,1773895,fb86e92a7d5b6a80292cac1668a25ee74043d165543a1729141aff6f8857c4cd,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/06 - Junho/VRA_20206.csv
+vra,202007,202007.csv,2768184,aeb0b6cb3f63c0f2819c8c1a133883c11c31c2d440731723658142260b058181,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/07 - Julho/VRA_20207.csv
+vra,202008,202008.csv,3472623,41ed2f35bc2dd2951d16bca29ee65b926bbf5f2198260be7369003ac806f849d,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/08 - Agosto/VRA_20208.csv
+vra,202009,202009.csv,4310004,ca0668bec87afc6b74e18848f1274334e00d99d82c33ed1c5ac81645918c6c39,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/09 - Setembro/VRA_20209.csv
+vra,202010,202010.csv,5698260,7b157920c8ee5fafcd0f130f0cd819025472f02b9ad2b6543a7df026b6fac7f4,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/10 - Outubro/VRA_202010.csv
+vra,202011,202011.csv,6403961,8ef5909f8b3a1fa29ca3dde85b8bc71db47d8a9bcd384cc74d8cd5a335e1af23,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/11 - Novembro/VRA_202011.csv
+vra,202012,202012.csv,7640515,1b72de821b672065e6aefb80880a3270f75fa566c085537dea0ca63bd027861a,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2020/12 - Dezembro/VRA_202012.csv
+vra,202101,202101.csv,8448970,ba3f763961704a4778d05fc7742f88d49225539c528db400c404d0421d783918,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/01 - Janeiro/VRA_20211.csv
+vra,202102,202102.csv,6308601,a4661a4300dca8099d92f2c418718f7a4030a04ced37c7971555d7da6a64ac79,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/02 - Fevereiro/VRA_20212.csv
+vra,202103,202103.csv,5725094,26a481700926b90a0ac521851dcfe3de5e4a7ee648cd79b77e77a1f661db0903,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/03 - Março/VRA_20213.csv
+vra,202104,202104.csv,4215432,b1a169372bd288e94b1d90453722548e08ae30e696be2f0acbd6312f3141101c,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/04 - Abril/VRA_20214.csv
+vra,202105,202105.csv,5215340,e71fbb62ca60ebc9bdc4ca30c6caf41cb9060e9e60e2d96060d3a46cd14bc565,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/05 - Maio/VRA_20215.csv
+vra,202106,202106.csv,5953169,2cd7203485d750166c64c0417738cfd803ad2ecb9e53ec83ea376c38f828d960,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/06 - Junho/VRA_20216.csv
+vra,202107,202107.csv,7701361,d67f9ab2da233f7b139f95ce99f7df7cc3e8f90ebf337adbed8e94c25fe59b83,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/07 - Julho/VRA_20217.csv
+vra,202108,202108.csv,7893526,086eac34f8eb8bdd3eb1de84b564c6808d835ff6e669186eea62a2147fda97dd,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/08 - Agosto/VRA_20218.csv
+vra,202109,202109.csv,8122790,6a14b4c0103a41adb4f5f7e3424bc8d0f6bbe936224ffed4f9abae43d59a545a,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/09 - Setembro/VRA_20219.csv
+vra,202110,202110.csv,8594027,0ad0c7b4b441fd37affc53ac66226075978b9b9cba075cb687cf3f567dbf83f7,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/10 - Outubro/VRA_202110.csv
+vra,202111,202111.csv,9302604,3b6db88d39a812b13f98707e7834381a502759ec04139d3eadbb19d7767f40c6,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/11 - Novembro/VRA_202111.csv
+vra,202112,202112.csv,10400062,b70190a7e9980b977089e10939a45851b51383aeb0d467db890824649ee89797,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2021/12 - Dezembro/VRA_202112.csv
+vra,202201,202201.csv,10249133,b0a7bd05b27c770e913850a157e33823f7f4979e648a19d0d819bffddfa6e440,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/01 - Janeiro/VRA_20221.csv
+vra,202202,202202.csv,8152506,dff9096f45a3917b97d7f870b3660643dab1377505204a0c245969269c4926ee,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/02 - Fevereiro/VRA_20222.csv
+vra,202203,202203.csv,9484818,0bc1f465c59be003d929938d7f3e0c5a83644ef9d85adffea2bbeeaa73835591,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/03 - Março/VRA_20223.csv
+vra,202204,202204.csv,9237433,ffcf108993f4ee8e3ffe87cbf001f173d41271e716c1b949a573b6109b14a056,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/04 - Abril/VRA_20224.csv
+vra,202205,202205.csv,10126554,da84fd67c32297d5ac07b4684d79adce1838249d390b0fd9b9d588d94b95a099,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/05 - Maio/VRA_20225.csv
+vra,202206,202206.csv,9594732,33b4033a735f4c021a24e14930d58def155aa05acb33331371f3b3e694381ce5,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/06 - Junho/VRA_20226.csv
+vra,202207,202207.csv,11040080,57a2b289386bbd3ed3baf165ac8930eea1e85f82be8ec41085b8bf36794928a7,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/07 - Julho/VRA_20227.csv
+vra,202208,202208.csv,10610101,b2c24f1c0d267f9472471cd545411eebcfdb7fddfb320e8cbcdfbaae3cec1ac0,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/08 - Agosto/VRA_20228.csv
+vra,202209,202209.csv,10334815,d7dbf6104b572fba6506ecbbdf33aab7a1ae40d6658cb2edd3f28c926ab1b49e,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/09 - Setembro/VRA_20229.csv
+vra,202210,202210.csv,10889884,8dda9127852ff3f959e721d1d38f3f1457f59bf818c4814e0992d23ec3f1fd8a,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/10 - Outubro/VRA_202210.csv
+vra,202211,202211.csv,10906581,39e6449dd5ce174504372b000aa143168f84f638dcffa99e073fd7e29a40c405,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/11 - Novembro/VRA_202211.csv
+vra,202212,202212.csv,11813079,ef97475a14aefbb93701db176a37249ff7b31fdd790c0c895530829eef4cd4fc,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2022/12 - Dezembro/VRA_202212.csv
+vra,202301,202301.csv,12201310,bf05d93b9ea81b8b6d03ccf815eb68853df6de2ba2e09acf3304f13ec6a8ba9e,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/01 - Janeiro/VRA_20231.csv
+vra,202302,202302.csv,10269913,af4b3c8e78b68c4886548f6dd8a4b250338ef186110b6a697875406f1ba77e74,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/02 - Fevereiro/VRA_20232.csv
+vra,202303,202303.csv,11484935,c420ab56cb6a1f7a359530e9f54174ef61a7ec057bbbf3075ab394fa1f0ad56f,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/03 - Março/VRA_20233.csv
+vra,202304,202304.csv,10816595,0211c5e818ec5e773eb1abf43dcff1b6d56bb25ee209d5a983bf039eff05b294,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/04 - Abril/VRA_20234.csv
+vra,202305,202305.csv,11420242,0023d9555c9ea99cccb1439f7446e1cdfba1632c7becbc7a521ffa49a811e65c,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/05 - Maio/VRA_20235.csv
+vra,202306,202306.csv,11104937,f5d9f3074243ebed6477ed43c63aba4c7edb2657d344ec9a0d982a6f46587f64,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/06 - Junho/VRA_20236.csv
+vra,202307,202307.csv,12174089,a12f3d87c69a1cc6c55097cae6d9eff129246e06f4c6f57578802b015c2432e7,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/07 - Julho/VRA_20237.csv
+vra,202308,202308.csv,11910578,bc16447b40315928c513e58fab6367e4698b4637d53ef0e8c3946dc47ba1ee0f,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/08 - Agosto/VRA_20238.csv
+vra,202309,202309.csv,11246708,54cac595ab34126763fa9ac13c30191ccc3e200e4276d9601d7a08456c435803,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/09 - Setembro/VRA_20239.csv
+vra,202310,202310.csv,11469579,70714ca39fac1dbe77b6241b58424f6a9ef0e5ed33812216d4a244efb575e7ff,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/10 - Outubro/VRA_202310.csv
+vra,202311,202311.csv,10975312,1ee24ab54d9a9b2caa21d8e140f9942584cbf04d41ab6e2ff7207a2a85dcfaab,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/11 - Novembro/VRA_202311.csv
+vra,202312,202312.csv,11632853,2c58c86aee36c48429ab75f39b0de192733c32e0b5530d9a3d2da9fba63f2a94,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2023/12 - Dezembro/VRA_202312.csv
+vra,202401,202401.csv,12041231,4e089664ace0ae4cffdc1ca9be9c5ecf4adb4c1fd260a56c2b50fcc6d9a0e54c,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/01 - Janeiro/VRA_20241.csv
+vra,202402,202402.csv,10748552,2d9b5d583a8a741da081e63e7bb97c2d61e5bc2dcf11215bbda8c9ea1fed35f1,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/02 - Fevereiro/VRA_20242.csv
+vra,202403,202403.csv,11379526,30099549faa6128cc4c7f89d57b9b3469ea84ffefd0f43f36c2cf173d7c137ea,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/03 - Março/VRA_20243.csv
+vra,202404,202404.csv,11293333,f8e92346243124927990a1e39a0eb38cfb986d5edbe2c713a3cf519c6c457c28,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/04 - Abril/VRA_20244.csv
+vra,202405,202405.csv,11018060,9845624ee8d8e76980a529b019c3d70b12dff8e493f9e0245be3347dae572fcc,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/05 - Maio/VRA_20245.csv
+vra,202406,202406.csv,10938143,3cf535f401719e4e9c5935bd45ddc8699680fc5aef59989dcdf2341c51be7ff6,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/06 - Junho/VRA_20246.csv
+vra,202407,202407.csv,12287574,43e4d3d0ae9a0767995385f036a3802b004a40633ca698331f9776297ef20017,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/07 - Julho/VRA_20247.csv
+vra,202408,202408.csv,11935426,53ec28227e26264c882e3ce85d50d3258538b1c858f9108ddc7b9aadd256e4e3,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/08 - Agosto/VRA_20248.csv
+vra,202409,202409.csv,11390075,c79c6fa6ef278b08f57d79574e44a830a446ebe784b98d3db801d75779ca61f7,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/09 - Setembro/VRA_20249.csv
+vra,202410,202410.csv,11767726,957c2c826ffd23ebd6c8fd7ed034b99690a62e14e45c96c3d273284652b32f83,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/10 - Outubro/VRA_202410.csv
+vra,202411,202411.csv,11218302,13f6db9741d38f59b6ffdd78121b951b7764a3659af945c4449f94d36ffee6fe,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/11 - Novembro/VRA_202411.csv
+vra,202412,202412.csv,12063873,0f403298dcee08ae6118502b52f4851fa2773d99e92dcf4568de27d0aa283c1c,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2024/12 - Dezembro/VRA_202412.csv
+vra,202501,202501.csv,12616773,c41c80742ad11526d7f6cd709fab83650d1dd7177b80cc548554e4406b6576bb,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/01 - Janeiro/VRA_20251.csv
+vra,202502,202502.csv,11119527,2854495e029460cd6feeb6218fb9ad70571eb8b3f5f52435cefa8f9db4f8f1d7,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/02 - Fevereiro/VRA_20252.csv
+vra,202503,202503.csv,11604864,96b3ae5449e80047f10e415b9faf8aa8dac433af523b00dcce73237247acd224,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/03 - Março/VRA_20253.csv
+vra,202504,202504.csv,11454513,27adfe3dd9af23d78cc18fe937bacc1004f434997b8cfd1ed9f5963f6f2774e1,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/04 - Abril/VRA_20254.csv
+vra,202505,202505.csv,11743682,27b3c84d75e7ce5811da9fd1b8cb3ebce017978ae68592f130c4adc216c5b754,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/05 - Maio/VRA_20255.csv
+vra,202506,202506.csv,11497039,4ad55cb62348463623cc23fa9389c0a2769718e7b6d06801457f711a312a7918,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/06 - Junho/VRA_20256.csv
+vra,202507,202507.csv,12459095,07b13a9e48c1bdb629cbdafc06903119f742959cd747c5da5a64997be3a9315c,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/07 - Julho/VRA_20257.csv
+vra,202508,202508.csv,12040357,482840b4c8b6f5dfb7a52661d97c8b96f48a512f1e99c8b84bff0e31d64f4991,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/08 - Agosto/VRA_20258.csv
+vra,202509,202509.csv,11667147,d17ed08950d64d2339310756d550c33460f16c206422ea32715e3982c2f76e55,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/09 - Setembro/VRA_20259.csv
+vra,202510,202510.csv,12146027,8650922919d41ece140148c3a9125135a6b36290e7be4080721633f31e3ccebd,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/10 - Outubro/VRA_202510.csv
+vra,202511,202511.csv,11636410,fe8f89a29d283b9ea120cc6a611b57d2efbfcd6e481e1c59abab9908392161c9,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/11 - Novembro/VRA_202511.csv
+vra,202512,202512.csv,12528987,ae9db0fd29077c3042ae494989921e6bf2162254ae7a959d158c177edfd92394,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2025/12 - Dezembro/VRA_202512.csv
+vra,202601,202601.csv,13008603,f59abdd64e55b61c3cdbf54b3bfcc49dfc085ec4839856e4934d1a664783ab67,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/01 - Janeiro/VRA_20261.csv
+vra,202602,202602.csv,11280038,d7abeb2e7f54bee79c939b093c1446d04d385cf023a06b36c7b62e455fca8133,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/02 - Fevereiro/VRA_20262.csv
+vra,202603,202603.csv,12370375,f576875d44483635cff2492dd2fc78f94c5bf5bdfeaf2b417d0fdf984bcfa99c,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/03 - Março/VRA_20263.csv
+vra,202604,202604.csv,11402926,367d9b3bd4f94977e1193f4c2886c408dd874588f04345704911ff1574d4f21b,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/04 - Abril/VRA_20264.csv
+vra,202605,202605.csv,11655230,fada6a253c8e7eca7d815a557c999b2134225cb1db0d5cdbfb042c1e34023704,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/05 - Maio/VRA_20265.csv
+vra,202606,202606.csv,11496087,5802d402863a7b6d9cd4c65efbaabaaa44c5a4ad6b864357af7361ffdd07bc90,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/06 - Junho/VRA_20266.csv
+vra,202607,202607.csv,12690683,68c22baeacefa11a79f74b2eed38b43a99c666d1fb6cfdb78b5b5f5c6d8361ad,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/07 - Julho/VRA_20267.csv
+vra,202608,202608.csv,12493490,2414e55a3baf16600462119192af3dcdc2775420942f997bc1b897d75a78392b,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2026/08 - Agosto/VRA_20268.csv
