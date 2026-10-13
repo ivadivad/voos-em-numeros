@@ -4,11 +4,20 @@ Uso: python teste_coletar.py
 """
 import http.client
 import io
+import os
 import unittest
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError, URLError
 
 import coletar
+
+FIXTURES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
+
+
+def fixture(nome):
+    """Bytes de uma pagina da ANAC salva em fixtures/, exatamente como veio."""
+    with open(os.path.join(FIXTURES, nome), "rb") as arquivo:
+        return arquivo.read()
 
 
 def resposta(status, corpo):
@@ -219,6 +228,115 @@ class TesteMesesEUrls(unittest.TestCase):
 
     def test_vra_de_marco_leva_o_cedilha(self):
         self.assertTrue(coletar.montar_url("vra", 202003).endswith("/2020/03 - Março/VRA_20203.csv"))
+
+
+class TesteLeituraDePaginas(unittest.TestCase):
+    """Paginas da ANAC salvas em 13/10/2026: nenhum teste aqui usa rede."""
+
+    def test_grade_do_datasas_traz_o_mes_de_cada_arquivo(self):
+        arquivos = coletar.arquivos_do_datasas(fixture("datasas_tarifas_2026.html").decode("utf-8"))
+        self.assertEqual([m for m, _ in arquivos], list(range(202601, 202609)))
+        # o mes vem da tabela; pelo nome, mai/2026 nao seria achado
+        self.assertIn((202605, "202605 (1).CSV"), arquivos)
+
+    def test_formulario_do_datasas_tem_os_campos_ocultos(self):
+        ocultos = coletar.ler_html(fixture("datasas_formulario.html").decode("utf-8")).ocultos
+        self.assertIn("__VIEWSTATE", ocultos)
+        self.assertTrue(ocultos["__VIEWSTATE"])
+
+    def test_formulario_sem_busca_nao_tem_arquivos(self):
+        self.assertEqual(coletar.arquivos_do_datasas(fixture("datasas_formulario.html").decode("utf-8")), [])
+
+    def test_pasta_do_mes_do_vra(self):
+        nomes = coletar.arquivos_da_pasta(fixture("vra_pasta_2026_08.html").decode("utf-8"))
+        self.assertEqual(nomes, ["VRA_20268.csv", "VRA_20268.json"])
+
+    def test_pasta_do_ano_so_tem_subpastas(self):
+        # subpastas e a pasta de cima ("../") nao sao arquivos
+        self.assertEqual(coletar.arquivos_da_pasta(fixture("vra_pasta_2026.html").decode("utf-8")), [])
+
+
+class TesteAcharNaListagem(unittest.TestCase):
+    def setUp(self):
+        coletar.listar_datasas.cache_clear()
+
+    def tearDown(self):
+        coletar.listar_datasas.cache_clear()
+
+    @patch("coletar.buscar")
+    def test_tarifas_acha_o_mes_com_outro_nome(self, buscar):
+        # GET do formulario e POST com o ano, nessa ordem
+        buscar.side_effect = [("ok", fixture("datasas_formulario.html")),
+                              ("ok", fixture("datasas_tarifas_2026.html"))]
+        url = coletar.achar_na_listagem("tarifas", 202605)
+        self.assertEqual(url, "https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV")
+        post = buscar.call_args_list[1]
+        self.assertIn(b"listAno=2026", post.kwargs["dados"])
+        self.assertIn(b"__VIEWSTATE=", post.kwargs["dados"])
+
+    @patch("coletar.buscar")
+    def test_mes_fora_da_lista_nao_tem_url(self, buscar):
+        buscar.side_effect = [("ok", fixture("datasas_formulario.html")),
+                              ("ok", fixture("datasas_tarifas_2026.html"))]
+        self.assertIsNone(coletar.achar_na_listagem("tarifas", 202609))
+
+    @patch("coletar.buscar")
+    def test_lista_do_ano_e_consultada_uma_vez_so(self, buscar):
+        buscar.side_effect = [("ok", fixture("datasas_formulario.html")),
+                              ("ok", fixture("datasas_tarifas_2026.html"))]
+        coletar.achar_na_listagem("tarifas", 202609)
+        coletar.achar_na_listagem("tarifas", 202610)
+        self.assertEqual(buscar.call_count, 2)
+
+    @patch("coletar.buscar")
+    def test_datasas_fora_do_ar_nao_tem_url(self, buscar):
+        buscar.return_value = ("erro_5xx", b"")
+        self.assertIsNone(coletar.achar_na_listagem("tarifas", 202605))
+
+    @patch("coletar.buscar")
+    def test_vra_acha_o_csv_na_pasta_do_mes(self, buscar):
+        buscar.return_value = ("ok", fixture("vra_pasta_2026_08.html"))
+        url = coletar.achar_na_listagem("vra", 202608)
+        self.assertEqual(url, coletar.VRA + "/2026/08 - Agosto/VRA_20268.csv")
+        self.assertEqual(buscar.call_args[0][0], coletar.VRA + "/2026/08 - Agosto/")
+
+    @patch("coletar.buscar")
+    def test_vra_pasta_vazia_nao_tem_url(self, buscar):
+        buscar.return_value = ("ok", b"<html><body><pre><a href=\"../\">../</a></pre></body></html>")
+        self.assertIsNone(coletar.achar_na_listagem("vra", 202609))
+
+
+class TesteBaixarMes(unittest.TestCase):
+    @patch("coletar.achar_na_listagem")
+    @patch("coletar.buscar")
+    def test_padrao_que_funciona_nao_consulta_a_listagem(self, buscar, achar):
+        buscar.return_value = ("ok", b"dados")
+        self.assertEqual(coletar.baixar_mes("tarifas", 202604)[:2], ("ok", b"dados"))
+        achar.assert_not_called()
+
+    @patch("coletar.achar_na_listagem")
+    @patch("coletar.buscar")
+    def test_404_no_padrao_baixa_o_que_a_listagem_achou(self, buscar, achar):
+        achar.return_value = "https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV"
+        buscar.side_effect = [("erro_404", b""), ("ok", b"dados")]
+        self.assertEqual(coletar.baixar_mes("tarifas", 202605), ("ok", b"dados", achar.return_value))
+
+    @patch("coletar.achar_na_listagem")
+    @patch("coletar.buscar")
+    def test_404_sem_nada_na_listagem_continua_404(self, buscar, achar):
+        achar.return_value = None
+        buscar.return_value = ("erro_404", b"")
+        situacao, _, url = coletar.baixar_mes("tarifas", 202609)
+        self.assertEqual(situacao, "erro_404")
+        self.assertTrue(url.endswith("/2026/202609.csv"))
+
+    @patch("coletar.achar_na_listagem")
+    @patch("coletar.buscar")
+    def test_falha_de_rede_nao_consulta_a_listagem(self, buscar, achar):
+        # so 404 quer dizer "nao esta nesse endereco"; falha de rede, nao
+        buscar.return_value = ("falha_rede", b"")
+        self.assertEqual(coletar.baixar_mes("vra", 202608)[0], "falha_rede")
+        achar.assert_not_called()
 
 
 if __name__ == "__main__":
