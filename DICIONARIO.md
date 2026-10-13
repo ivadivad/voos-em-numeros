@@ -378,6 +378,75 @@ caso que a etapa 5 resolve em `grupos.csv`, com fonte.
 
 ---
 
+# Aeródromos públicos
+
+**Fonte:** [lista de aeródromos públicos](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/aerodromos/aerodromos-publicos/lista-de-aerodromos-publicos)
+e [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/aerodromos/aerodromos-publicos/lista-de-aerodromos-publicos/metadados-do-conjunto-de-dados-lista-de-aerodromos-publicos-v2).
+Um arquivo só, `AerodromosPublicos.csv`, na [listagem](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20P%C3%BAblicos/Lista%20de%20aer%C3%B3dromos%20p%C3%BAblicos/)
+do portal (99 KB, de 01/10/2026). Periodicidade, pelos metadados:
+"Aproximadamente a cada 40 dias".
+
+## O que é uma linha
+
+**Um aeródromo público**: 496 linhas, 496 códigos OACI distintos, nenhum vazio.
+Todos com 4 letras e prefixo brasileiro (`SB` 132, `SN` 125, `SS` 95, `SD` 67,
+`SW` 57, `SJ` 13, `SI` 7).
+
+## Colunas que o projeto usa
+
+O arquivo tem 18 colunas, e não as dos metadados: os metadados descrevem as
+pistas, que não estão no CSV, e não descrevem as coordenadas decimais, que
+estão.
+
+| Coluna | Conteúdo |
+|---|---|
+| `Código OACI` | 4 letras, o mesmo código das outras três bases. Não há código IATA neste arquivo; ele está nos mensais da base estatística (`sg_iata_origem`) |
+| `Nome` | Nome do aeródromo |
+| `Município`, `UF` | Município onde fica o ponto de referência. **Vazios em 170 linhas**, Congonhas, Santos Dumont, Pampulha e Brasília entre elas. UF por extenso (`Acre`), não a sigla |
+| `Município Servido`, `UF Servido` | Cidade principal atendida. Vazios em 2 linhas. É o campo que diz a cidade |
+| `LATGEOPOINT`, `LONGEOPOINT` | Coordenadas em graus decimais, com ponto (`-23.626111`). Todas convertem e caem dentro do Brasil |
+| `Latitude`, `Longitude` | As mesmas coordenadas em graus, minutos e segundos (`23°37'34"S`). WGS-84, pelos metadados |
+| `Altitude` | Metros, com vírgula decimal |
+
+Conferência do plano para a etapa 3: Congonhas (`SBSP`) fica em -23,626111 e
+-46,656389, dentro de São Paulo.
+
+**Município não é cidade atendida.** O município calculado pelas coordenadas
+traz Guarulhos (`SBGR`) em "SÃO PAULO", o Galeão (`SBGL`) em "DUQUE DE CAXIAS"
+e o aeroporto de Salvador (`SBSV`) em "LAURO DE FREITAS". Já o município
+servido de Confins (`SBCF`) é "Confins", e não Belo Horizonte. Nenhum dos dois
+campos agrupa os aeroportos de uma mesma região metropolitana, o que
+justifica a tabela de mercados da etapa 1.
+
+## Formato
+
+| Característica | O que o arquivo mostra |
+|---|---|
+| Encoding | Latin-1 (não decodifica como UTF-8) |
+| Primeira linha | `Atualizado em: 2026-10-01`, e o cabeçalho na segunda |
+| Separador | `;` |
+| Aspas | Nenhum campo vem entre aspas. As 992 aspas do arquivo são o símbolo dos segundos nas coordenadas (`09°52'06"S`), e o leitor de CSV não pode tratá-las como delimitador |
+| Fim de linha | `\r\n` |
+
+## Aeroportos das outras bases que não estão na lista
+
+A lista só tem os aeródromos **públicos** cadastrados. Nas amostras de
+ago/2026, aparecem fora dela:
+
+| Código | Onde aparece | Onde está |
+|---|---|---|
+| `SSOU` | Tarifas e VRA | Lista de [aeródromos privados](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20Privados/Lista%20de%20aer%C3%B3dromos%20privados/Aerodromos%20Privados/): Aripuanã (MT) |
+| `SNCL` | Tarifas e VRA | Lista de privados: Lorenzo, em Cairu (BA) |
+| `SBUY` | VRA | Lista de privados: Urucu, em Coari (AM) |
+| `SBFC`, `SBCM` | Tarifas (`SBFC`) e VRA (`SBCM`) | Nem na lista de públicos, nem na de privados. A de [públicos excluídos](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20P%C3%BAblicos/Aerodromos%20Excluidos/) não tem coluna de código OACI, só CIAD e nome |
+
+A lista de privados tem outro formato: sem coordenadas decimais, e com a
+longitude antes da latitude. É por isso que a `dim_aeroporto` (etapa 5) não pode
+depender só da lista pública, e o teste "aeroporto sem mercado vira lista, não
+some" tem caso real pra pegar.
+
+---
+
 ## Perguntas em aberto
 
 - **Tarifas:** o `N` de `Tarifa-N`, no cabeçalho B, quer dizer "nominal"? Os
@@ -392,3 +461,6 @@ caso que a etapa 5 resolve em `grupos.csv`, com fonte.
   semanas.
 - **VRA:** fev e mar/2020 vêm da cópia descontinuada ou ficam fora? A etapa 3
   decide.
+- **Aeródromos:** onde estão `SBFC` e `SBCM`? Não estão nas listas de
+  públicos nem de privados, e a de excluídos não tem código OACI pra
+  conferir. Sem coordenada, a distância desses pares sai da base estatística.
