@@ -108,12 +108,13 @@ dobraria o número de mercados sem acrescentar informação.
 - `powerbi/`: projeto do painel.
 - `fixtures/`: amostras locais utilizadas nos testes.
 - `visual.py`: padrão visual compartilhado pelos gráficos.
-- `DICIONARIO.md`: documentação das bases e das transformações (a criar).
+- `DICIONARIO.md`: o que é cada base, conferido nos dados, e o que ainda não
+  se sabe sobre elas.
 
 ## Etapas
 
 - [x] Etapa 0 — Fundação
-- [ ] Etapa 1 — Conhecer as bases antes do código
+- [x] Etapa 1 — Conhecer as bases antes do código
 - [ ] Etapa 2 — Coletor
 - [ ] Etapa 3 — Do bruto ao staging, em SQL
 - [ ] Etapa 4 — Validar a base
