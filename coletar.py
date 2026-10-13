@@ -6,8 +6,16 @@ DICIONARIO.md; aqui fica so onde buscar cada arquivo e como ele chega.
 
 So biblioteca padrao: roda em qualquer Python 3, sem pip install.
 """
+import http.client
+import urllib.error
+import urllib.parse
+import urllib.request
 
-VRA = "https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)"
+# o gov.br devolve 403 pro User-Agent padrao do urllib (Python-urllib/3.x);
+# com um que identifica o projeto, devolve a pagina
+USER_AGENT = "voos-em-numeros/0.1 (+https://github.com/ivadivad/voos-em-numeros)"
+
+VRA ="https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)"
 DADOS_ABERTOS = "https://sistemas.anac.gov.br/dadosabertos"
 
 # por base: o tipo ("mensal" = um arquivo por mes; "fixo" = arquivos sem
@@ -66,3 +74,25 @@ MESES = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ]
+
+
+def baixar(url, timeout=120):
+    """Faz um GET e devolve (status, bytes). Nunca levanta excecao por
+    problema de rede ou do servidor.
+
+    status None quer dizer que nem chegou resposta inteira: timeout,
+    conexao recusada ou derrubada no meio do arquivo (o servidor da ANAC
+    faz isso). Acento, espaco e parentese viram %XX aqui, entao FONTES
+    guarda a URL legivel; uma URL ja codificada passa sem mudar.
+    """
+    pedido = urllib.request.Request(
+        urllib.parse.quote(url, safe=":/?=&%"), headers={"User-Agent": USER_AGENT}
+    )
+    try:
+        with urllib.request.urlopen(pedido, timeout=timeout) as resposta:
+            return resposta.status, resposta.read()
+    except urllib.error.HTTPError as erro:
+        return erro.code, b""
+    except (OSError, http.client.HTTPException):
+        # HTTPException: IncompleteRead quando a conexao cai no meio do corpo
+        return None, b""
