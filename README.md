@@ -97,10 +97,12 @@ dobraria o número de mercados sem acrescentar informação.
 
 ## Estrutura
 
-- `coletar.py`: coletor das bases da ANAC (a implementar).
+- `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
 - `construir.py`: executor das transformações SQL em DuckDB (a implementar).
 - `sql/`: transformações e testes de qualidade em SQL.
 - `dados/brutos/`: arquivos originais baixados; não são versionados.
+- `dados/manifesto.csv` e `dados/cobertura.csv`: o que cada coleta baixou e
+  encontrou.
 - `dados/referencia/`: tabelas auxiliares mantidas pelo projeto.
 - `dados/marts/`: conjuntos analíticos derivados, versionados no Git.
 - `notebooks/`: validação e análises.
@@ -129,5 +131,44 @@ dobraria o número de mercados sem acrescentar informação.
 
 ## Como reproduzir
 
-Os comandos de coleta e construção serão documentados quando essas etapas
-forem implementadas.
+### Coletar os dados
+
+Só biblioteca padrão do Python 3, sem instalar nada:
+
+```bash
+git clone https://github.com/ivadivad/voos-em-numeros.git
+cd voos-em-numeros
+python coletar.py todas                   # as quatro bases, de jan/2019 até o último mês publicado
+python coletar.py tarifas --desde 202601  # uma base só, a partir de um mês
+python coletar.py --listar                # as bases e de onde vem cada uma
+python coletar.py todas --revisar         # baixa de novo o que já existe, pra achar arquivo revisado
+```
+
+Os arquivos vão para `dados/brutos/<base>/`, fora do git. São 2,8 GB:
+tarifas 1,42 GB, VRA 1,07 GB, o acumulado da base estatística 0,36 GB e as
+listas de aeródromos 1 MB. A primeira coleta completa, em 13/10/2026, levou
+22 minutos. Rodar de novo só baixa o que falta. Os meses já baixados são pulados, e só os
+arquivos sem mês (o acumulado da base estatística e as listas de
+aeródromos) vêm de novo a cada rodada.
+
+Dois arquivos da coleta ficam no git:
+
+- `dados/manifesto.csv`: tamanho, sha256, data e URL de cada versão de cada
+  arquivo baixado. Um sha256 novo num arquivo que já estava lá é revisão da
+  ANAC, e as duas versões ficam registradas.
+- `dados/cobertura.csv`: a situação de cada mês na última coleta que passou
+  por ele (`ok`, `vazio`, `erro_403`, `erro_404`, `erro_5xx` ou
+  `falha_rede`).
+
+O coletor sai com código 1 se alguma coisa falhou. Um 404 depois do último
+mês publicado não conta, porque é o mês que ainda não saiu; um 404 no meio
+da série conta.
+
+### Rodar os testes
+
+```bash
+python teste_coletar.py   # só biblioteca padrão, sem rede
+python teste_visual.py    # precisa de matplotlib (pip install -r requirements.txt)
+```
+
+A construção das tabelas em SQL entra na etapa 3.
