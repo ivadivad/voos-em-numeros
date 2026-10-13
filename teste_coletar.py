@@ -126,5 +126,62 @@ class TesteBaixar(unittest.TestCase):
             self.assertEqual(urlopen.call_args[0][0].full_url, url)
 
 
+class TesteSituacao(unittest.TestCase):
+    def test_traducao_do_status(self):
+        self.assertEqual(coletar.situacao(200), "ok")
+        self.assertEqual(coletar.situacao(None), "falha_rede")
+        self.assertEqual(coletar.situacao(404), "erro_404")
+        self.assertEqual(coletar.situacao(403), "erro_403")
+        for status in (500, 502, 503, 504):
+            self.assertEqual(coletar.situacao(status), "erro_5xx")
+        self.assertEqual(coletar.situacao(400), "erro_400")
+
+
+@patch("coletar.time.sleep", return_value=None)
+@patch("coletar.baixar")
+class TesteReentrega(unittest.TestCase):
+    def test_5xx_reentrega_e_desiste(self, baixar, sleep):
+        baixar.return_value = (500, b"")
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("erro_5xx", b""))
+        self.assertEqual(baixar.call_count, coletar.TENTATIVAS)
+
+    def test_5xx_depois_sucesso(self, baixar, sleep):
+        baixar.side_effect = [(503, b""), (200, b"dados")]
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("ok", b"dados"))
+
+    def test_falha_de_rede_tambem_reentrega(self, baixar, sleep):
+        # erro do servidor e falha de rede saem separados, mas as duas reentregam
+        baixar.return_value = (None, b"")
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("falha_rede", b""))
+        self.assertEqual(baixar.call_count, coletar.TENTATIVAS)
+
+    def test_falha_de_rede_depois_sucesso(self, baixar, sleep):
+        baixar.side_effect = [(None, b""), (None, b""), (200, b"dados")]
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("ok", b"dados"))
+
+    def test_espera_cresce_a_cada_tentativa(self, baixar, sleep):
+        baixar.return_value = (None, b"")
+        coletar.buscar("https://exemplo/x.csv")
+        esperas = [chamada[0][0] for chamada in sleep.call_args_list]
+        self.assertEqual(esperas, [coletar.ESPERA_BASE, 2 * coletar.ESPERA_BASE])
+
+    def test_404_desiste_na_hora(self, baixar, sleep):
+        # mes que ainda nao saiu: tentar de novo so atrasa a coleta
+        baixar.return_value = (404, b"")
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("erro_404", b""))
+        self.assertEqual(baixar.call_count, 1)
+        sleep.assert_not_called()
+
+    def test_403_desiste_na_hora(self, baixar, sleep):
+        baixar.return_value = (403, b"")
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("erro_403", b""))
+        self.assertEqual(baixar.call_count, 1)
+
+    def test_outro_status_desiste_na_hora(self, baixar, sleep):
+        baixar.return_value = (400, b"")
+        self.assertEqual(coletar.buscar("https://exemplo/x.csv"), ("erro_400", b""))
+        self.assertEqual(baixar.call_count, 1)
+
+
 if __name__ == "__main__":
     unittest.main()
