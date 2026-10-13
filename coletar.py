@@ -7,6 +7,7 @@ DICIONARIO.md; aqui fica so onde buscar cada arquivo e como ele chega.
 So biblioteca padrao: roda em qualquer Python 3, sem pip install.
 """
 import http.client
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -69,6 +70,9 @@ FONTES = {
     },
 }
 
+TENTATIVAS = 3
+ESPERA_BASE = 2  # segundos; cresce a cada nova tentativa
+
 # nomes das pastas mensais do VRA ("03 - Março")
 MESES = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -96,3 +100,35 @@ def baixar(url, timeout=120):
     except (OSError, http.client.HTTPException):
         # HTTPException: IncompleteRead quando a conexao cai no meio do corpo
         return None, b""
+
+
+def situacao(status):
+    """Traduz o status HTTP na situacao registrada na cobertura.
+
+    Separa servidor com erro (erro_5xx) de resposta que nem chegou
+    (falha_rede): no MED, juntar os dois levou a um diagnostico errado.
+    """
+    if status == 200:
+        return "ok"
+    if status is None:
+        return "falha_rede"
+    if 500 <= status < 600:
+        return "erro_5xx"
+    return f"erro_{status}"
+
+
+def buscar(url):
+    """Baixa com reentrega. Devolve (situacao, bytes).
+
+    Reentrega, com espera crescente, quando o servidor erra (5xx) ou a
+    resposta nao chega (falha_rede): as duas costumam passar sozinhas. 404
+    e 403 desistem na hora: 404 e mes que ainda nao saiu, 403 e bloqueio,
+    e nenhum dos dois melhora tentando de novo.
+    """
+    for tentativa in range(TENTATIVAS):
+        status, corpo = baixar(url)
+        resultado = situacao(status)
+        if resultado in ("erro_5xx", "falha_rede") and tentativa < TENTATIVAS - 1:
+            time.sleep(ESPERA_BASE * (tentativa + 1))
+            continue
+        return resultado, corpo
