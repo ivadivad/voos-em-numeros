@@ -84,6 +84,8 @@ PAUSA = 1  # segundos entre um download e outro: em rajada, o servidor derruba c
 PASTA_DADOS = "dados"
 MANIFESTO = "manifesto.csv"  # em dados/, versionado; os brutos, nao
 COLUNAS_MANIFESTO = ["base", "periodo", "arquivo", "bytes", "sha256", "coletado_em", "url"]
+COBERTURA = "cobertura.csv"  # em dados/, versionado
+COLUNAS_COBERTURA = ["base", "periodo", "arquivo", "situacao"]
 
 # nomes das pastas mensais do VRA ("03 - Março")
 MESES = [
@@ -434,3 +436,21 @@ def atualizar_manifesto(registros, pasta=PASTA_DADOS, hoje=None):
         ordem = lambda l: (l["base"], l["periodo"], l["arquivo"], l["coletado_em"], l["sha256"])
         gravar_csv(sorted(linhas + novas, key=ordem), COLUNAS_MANIFESTO, caminho)
     return novas, revisados
+
+
+def gravar_cobertura(registros, pasta=PASTA_DADOS):
+    """Grava dados/cobertura.csv: a situacao de cada arquivo na ultima
+    coleta que passou por ele.
+
+    situacao: ok, vazio, erro_403, erro_404, erro_5xx, falha_rede ou
+    erro_<codigo>. Uma coleta parcial (uma base so, ou --desde) troca so as
+    linhas por onde passou e mantem as outras. Sem data no arquivo, pra
+    rodada sem novidade dar o mesmo arquivo, byte a byte.
+    """
+    caminho = os.path.join(pasta, COBERTURA)
+    chave = lambda l: (l["base"], l["periodo"], l["arquivo"])
+    linhas = {chave(l): l for l in ler_csv(caminho)}
+    for r in registros:
+        linhas[chave(r)] = {coluna: r[coluna] for coluna in COLUNAS_COBERTURA}
+    gravar_csv(sorted(linhas.values(), key=chave), COLUNAS_COBERTURA, caminho)
+
