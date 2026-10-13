@@ -260,6 +260,124 @@ arquivo diz quando ele foi gerado.
 
 ---
 
+# Dados estatísticos do transporte aéreo
+
+**Fonte:** [página do conjunto](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/dados-estatisticos-do-transporte-aereo),
+[metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/dados-estatisticos-do-transporte-aereo/48-dados-estatisticos-do-transporte-aereo)
+e [descrição de variáveis](https://www.gov.br/anac/pt-br/assuntos/regulados/empresas-aereas/Instrucoes-para-a-elaboracao-e-apresentacao-das-demonstracoes-contabeis/descricao-de-variaveis).
+
+## Duas publicações da mesma base
+
+| | Arquivo acumulado | Arquivos mensais |
+|---|---|---|
+| Onde | [Dados abertos](https://sistemas.anac.gov.br/dadosabertos/Voos%20e%20opera%C3%A7%C3%B5es%20a%C3%A9reas/Dados%20Estat%C3%ADsticos%20do%20Transporte%20A%C3%A9reo/): `Dados_Estatisticos.csv` | [Envio de informações](https://www.gov.br/anac/pt-br/assuntos/regulados/empresas-aereas/Instrucoes-para-a-elaboracao-e-apresentacao-das-demonstracoes-contabeis/envio-de-informacoes): `basica/AAAA/basicaAAAA-MM.zip` e `combinada/AAAA/combinadaAAAA-MM.zip` |
+| Período | jan/2000 a ago/2026, num arquivo só | Um zip por mês e por tipo, até ago/2026 |
+| Tamanho | 360 MB | 7 a 9 MB por zip; descompactado, 82 MB (básica) e 167 a 174 MB (combinada) por mês |
+| Grão | Empresa × mês × par de aeródromos × natureza × grupo de voo | Uma etapa (básica) ou um par embarque-desembarque de um voo (combinada) |
+
+Nos 92 meses do projeto, os mensais descompactados passariam de 7 GB (básica) e
+de 15 GB (combinada), pela média dos dois meses abertos. O acumulado traz o
+que o projeto precisa em 360 MB, e a comparação abaixo mostra de onde vem cada
+número dele.
+
+**O que foi aberto:** o acumulado inteiro (1.099.729 linhas, 272.717 desde
+2019) e os mensais de jan/2019 e ago/2026.
+
+## Básica e combinada, segundo a ANAC
+
+- **Etapa básica**: "realizadas pela aeronave desde a sua decolagem até o
+  próximo pouso". É a perna do voo: os passageiros a bordo entre dois
+  aeródromos, venham de onde vierem.
+- **Etapa combinada** (*on flight origin and destination*): o par entre o
+  aeródromo onde o passageiro embarcou e o aeródromo onde desembarcou, dentro
+  do mesmo voo, independentemente de escalas. O campo `cd_cotran` diz se ele
+  desembarcou de vez (`N`) ou se seguiu em outro voo do mesmo contrato (`D`,
+  trânsito doméstico; `I`, internacional).
+
+Nenhuma das duas é a viagem do passageiro de ponta a ponta. Quem vai de
+Cuiabá a Recife trocando de avião em Brasília aparece como dois pares, um em
+cada voo. Já a tarifa registra a viagem inteira, de Cuiabá a Recife.
+
+## De onde vem cada número do acumulado
+
+Ago/2026, mercado doméstico, as três publicações lado a lado:
+
+| | Básica | Combinada | Acumulado |
+|---|---|---|---|
+| Passageiros pagos | 8.970.271 | 8.940.607 | **8.940.607** |
+| Assentos oferecidos | 11.158.665 | não tem | **11.158.665** |
+| Decolagens | 70.110 | não tem | **70.110** |
+| RPK | 9.912.786.642 | não tem | **9.912.786.642** |
+| ASK | 12.017.128.188 | não tem | **12.017.128.188** |
+
+**O acumulado junta as duas:** passageiros vêm da combinada; assentos,
+decolagens, distância, ASK e RPK, da básica. No doméstico de ago/2026, 1.854
+linhas têm passageiros e 1.831 têm ASK: são 23 pares só de embarque e
+desembarque, sem perna direta. Numa rota sem escala as três publicações
+coincidem: Congonhas → Santos Dumont, em ago/2026, tem 27.257 passageiros da
+Azul, 75.665 da Gol e 65.675 da Latam (código `TAM`) nas três.
+
+**Conexões pesam.** Na combinada de ago/2026, 23,5% dos passageiros pagos
+domésticos estão em trânsito (`cd_cotran` `D` ou `I`): 2.105.240 de 8.940.607.
+É a parcela em que o par do voo e a viagem do passageiro não coincidem.
+
+## Colunas do acumulado que o projeto usa
+
+| Coluna | Conteúdo |
+|---|---|
+| `EMPRESA_SIGLA`, `EMPRESA_NOME`, `EMPRESA_NACIONALIDADE` | Empresa que operou. Nome e nacionalidade por extenso |
+| `ANO`, `MES` | Data prevista da primeira etapa do voo. `MES` sem zero à esquerda |
+| `AEROPORTO_DE_ORIGEM_SIGLA` / `_DESTINO_SIGLA` | Código OACI. Mais nome, UF, região, país e continente |
+| `NATUREZA` | `DOMÉSTICA` quando pouso e decolagem são no Brasil e a empresa é brasileira; senão `INTERNACIONAL` |
+| `GRUPO_DE_VOO` | `REGULAR`, `NÃO REGULAR` ou `IMPRODUTIVO` |
+| `PASSAGEIROS_PAGOS`, `PASSAGEIROS_GRATIS` | Da combinada. Pagos incluem quem viaja com milhas e com promoção |
+| `ASSENTOS`, `DECOLAGENS`, `ASK`, `RPK` | Da básica |
+| `DISTANCIA_VOADA_KM` | Soma da distância de todas as decolagens. Dividida por `DECOLAGENS`, dá a distância da etapa: 366 km de Congonhas a Santos Dumont, igual ao `km_distancia` da básica |
+
+Grão conferido: nenhuma combinação de empresa, ano, mês, origem, destino,
+natureza e grupo de voo se repete nas 1.099.729 linhas. Desde 2019, natureza
+doméstica só aparece com empresa brasileira, como diz a definição.
+
+**A distância vem pronta.** A ANAC a calcula "considerando a curvatura do
+planeta terra". A haversine da etapa 5 vai ser conferida com ela.
+
+## Formato
+
+| | Acumulado | Mensais (`.txt` dentro do zip) |
+|---|---|---|
+| Encoding | UTF-8 com BOM | Latin-1 |
+| Primeira linha | `Atualizado em: 2026-10-13`, e o cabeçalho na segunda | O cabeçalho |
+| Separador, aspas | `;`, todo campo entre aspas | `;`, só texto entre aspas |
+| Decimal | Números inteiros, exceto `HORAS_VOADAS`, com vírgula (`5,133`) | Vírgula |
+| Fim de linha | `\r\n` | `\r\n` |
+| Colunas | 38 | 111 (básica) e 90 (combinada) |
+
+O acumulado é regerado com frequência: a data na primeira linha e a do
+arquivo na listagem eram as do próprio dia da conferência (13/10/2026). Um
+sha256 novo a cada coleta não quer dizer revisão de dado.
+
+## Empresas
+
+As empresas com passageiro doméstico regular de jan/2019 a ago/2026, por
+passageiros pagos no período:
+
+| Código | Nome no arquivo | Passageiros pagos |
+|---|---|---|
+| `TAM` | TAM LINHAS AÉREAS S.A. | 225,7 milhões |
+| `GLO` | GOL LINHAS AÉREAS S.A. (EX- VRG LINHAS AÉREAS S.A.) | 198,7 milhões |
+| `AZU` | AZUL LINHAS AÉREAS BRASILEIRAS S/A | 189,2 milhões |
+| `PTB` | PASSAREDO TRANSPORTES AÉREOS S.A. | 3,2 milhões |
+| `ONE` | OCEANAIR LINHAS AÉREAS S.A. (AVIANCA) | 3,1 milhões |
+| `PAM` | MAP TRANSPORTES AÉREOS LTDA. | 460 mil |
+| `ACN` | AZUL CONECTA LTDA. (EX TWO TAXI AEREO LTDA) | 365 mil |
+| `IPM` | ITAPEMIRIM TRANSPORTES AEREOS LTDA | 300 mil |
+| `ABJ`, `SUL`, `CQB`, `ASO` | Abaeté, ASTA, Apuí e Aerosul | menos de 30 mil cada |
+
+Código e grupo econômico são coisas diferentes: `ACN`, a Azul Conecta, é o
+caso que a etapa 5 resolve em `grupos.csv`, com fonte.
+
+---
+
 ## Perguntas em aberto
 
 - **Tarifas:** o `N` de `Tarifa-N`, no cabeçalho B, quer dizer "nominal"? Os
