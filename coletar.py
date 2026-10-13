@@ -102,6 +102,7 @@ def baixar(url, timeout=120, dados=None, abridor=None):
         with abrir(pedido, timeout=timeout) as resposta:
             return resposta.status, resposta.read()
     except urllib.error.HTTPError as erro:
+        erro.close()  # o erro carrega a resposta aberta; sem fechar, a conexao fica pendurada
         return erro.code, b""
     except (OSError, http.client.HTTPException):
         # HTTPException: IncompleteRead quando a conexao cai no meio do corpo
