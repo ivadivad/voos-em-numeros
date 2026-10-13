@@ -8,6 +8,7 @@ So biblioteca padrao: roda em qualquer Python 3, sem pip install.
 """
 import functools
 import http.client
+import os
 import time
 import urllib.error
 import urllib.parse
@@ -76,6 +77,9 @@ FONTES = {
 
 TENTATIVAS = 3
 ESPERA_BASE = 2  # segundos; cresce a cada nova tentativa
+PAUSA = 1  # segundos entre um download e outro: em rajada, o servidor derruba conexoes
+
+PASTA_DADOS = "dados"
 
 # nomes das pastas mensais do VRA ("03 - Março")
 MESES = [
@@ -305,3 +309,69 @@ def baixar_mes(base, mes):
             url = alternativa
             resultado, corpo = buscar(url)
     return resultado, corpo, url
+
+
+def caminho_bruto(base, nome, pasta=PASTA_DADOS):
+    """dados/brutos/<base>/<nome>, fora do git (.gitignore)."""
+    return os.path.join(pasta, "brutos", base, nome)
+
+
+def gravar_bruto(corpo, caminho):
+    """Grava os bytes exatamente como vieram da ANAC.
+
+    Escreve num .parcial e so entao renomeia: uma coleta interrompida nao
+    deixa um arquivo pela metade com o nome definitivo, que a rodada
+    seguinte pularia como se estivesse completo.
+    """
+    os.makedirs(os.path.dirname(caminho), exist_ok=True)
+    parcial = caminho + ".parcial"
+    with open(parcial, "wb") as arquivo:
+        arquivo.write(corpo)
+    os.replace(parcial, caminho)
+
+
+def vazio(corpo, linhas_cabecalho):
+    """Arquivo sem nenhuma linha de dado: so o cabecalho, ou nem isso."""
+    return len([linha for linha in corpo.splitlines() if linha.strip()]) <= linhas_cabecalho
+
+
+def alvos(base, desde=None, ate=None):
+    """O que coletar de uma base: (periodo, nome local) de cada arquivo.
+
+    Na base mensal, um por mes, com nome local AAAAMM.csv qualquer que seja
+    o nome na ANAC. Na fixa, os arquivos do FONTES, sem periodo.
+    """
+    fonte = FONTES[base]
+    if fonte["tipo"] == "mensal":
+        return [(str(mes), f"{mes}.csv") for mes in gerar_meses(desde or fonte["desde"], ate)]
+    return [("", nome) for nome in fonte["arquivos"]]
+
+
+def coletar_base(base, desde=None, ate=None, pasta=PASTA_DADOS):
+    """Baixa o que falta de uma base. Devolve um registro por arquivo.
+
+    Mes ja baixado e pulado. Arquivo fixo e sempre baixado de novo: e o
+    retrato mais recente (o acumulado ganha um mes a cada publicacao).
+    Arquivo vazio nao e gravado.
+    """
+    fonte = FONTES[base]
+    registros = []
+    for periodo, nome in alvos(base, desde, ate):
+        caminho = caminho_bruto(base, nome, pasta)
+        registro = {"base": base, "periodo": periodo, "arquivo": nome, "url": "", "baixado": False}
+        if fonte["tipo"] == "mensal" and os.path.exists(caminho):
+            registros.append({**registro, "situacao": "ok"})
+            continue
+
+        if fonte["tipo"] == "mensal":
+            resultado, corpo, url = baixar_mes(base, int(periodo))
+        else:
+            url = fonte["arquivos"][nome]
+            resultado, corpo = buscar(url)
+        if resultado == "ok" and vazio(corpo, fonte["linhas_cabecalho"]):
+            resultado = "vazio"
+        if resultado == "ok":
+            gravar_bruto(corpo, caminho)
+        registros.append({**registro, "situacao": resultado, "url": url, "baixado": resultado == "ok"})
+        time.sleep(PAUSA)
+    return registros
