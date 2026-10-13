@@ -351,11 +351,12 @@ def alvos(base, desde=None, ate=None):
     return [("", nome) for nome in fonte["arquivos"]]
 
 
-def coletar_base(base, desde=None, ate=None, pasta=PASTA_DADOS):
+def coletar_base(base, desde=None, ate=None, pasta=PASTA_DADOS, revisar=False):
     """Baixa o que falta de uma base. Devolve um registro por arquivo.
 
-    Mes ja baixado e pulado. Arquivo fixo e sempre baixado de novo: e o
-    retrato mais recente (o acumulado ganha um mes a cada publicacao).
+    Mes ja baixado e pulado, a nao ser com `revisar`, que baixa de novo pra
+    ver se a ANAC trocou o arquivo. Arquivo fixo e sempre baixado de novo:
+    e o retrato mais recente (o acumulado ganha um mes a cada publicacao).
     Arquivo vazio nao e gravado.
     """
     fonte = FONTES[base]
@@ -363,7 +364,7 @@ def coletar_base(base, desde=None, ate=None, pasta=PASTA_DADOS):
     for periodo, nome in alvos(base, desde, ate):
         caminho = caminho_bruto(base, nome, pasta)
         registro = {"base": base, "periodo": periodo, "arquivo": nome, "url": "", "baixado": False}
-        if fonte["tipo"] == "mensal" and os.path.exists(caminho):
+        if fonte["tipo"] == "mensal" and os.path.exists(caminho) and not revisar:
             registros.append({**registro, "situacao": "ok"})
             continue
 
@@ -402,10 +403,13 @@ def gravar_csv(linhas, colunas, caminho):
 
 def atualizar_manifesto(registros, pasta=PASTA_DADOS, hoje=None):
     """Acrescenta ao manifesto cada arquivo baixado com um sha256 que ele
-    ainda nao tem pra mesma base e arquivo. Devolve as linhas novas.
+    ainda nao tem pra mesma base e arquivo. Devolve (linhas novas,
+    revisados).
 
     O manifesto e o arquivo da coleta: guarda tamanho, sha256, data e URL
-    de cada versao baixada, enquanto os brutos ficam fora do git. Sem linha
+    de cada versao baixada, enquanto os brutos ficam fora do git. Sha256
+    novo num arquivo que ja estava no manifesto e revisao da ANAC: as duas
+    versoes ficam registradas, e o bruto fica com a mais nova. Sem linha
     nova, o arquivo nem e regravado, pra rodada sem novidade nao virar
     mudanca no git.
     """
@@ -413,12 +417,15 @@ def atualizar_manifesto(registros, pasta=PASTA_DADOS, hoje=None):
     caminho = os.path.join(pasta, MANIFESTO)
     linhas = ler_csv(caminho)
     conhecidos = {(l["base"], l["arquivo"], l["sha256"]) for l in linhas}
-    novas = []
+    ja_registrados = {(l["base"], l["arquivo"]) for l in linhas}
+    novas, revisados = [], []
     for r in registros:
         chave = (r["base"], r["arquivo"], r.get("sha256"))
         if not r["baixado"] or chave in conhecidos:
             continue
         conhecidos.add(chave)
+        if (r["base"], r["arquivo"]) in ja_registrados:
+            revisados.append((r["base"], r["arquivo"]))
         novas.append({
             "base": r["base"], "periodo": r["periodo"], "arquivo": r["arquivo"],
             "bytes": str(r["bytes"]), "sha256": r["sha256"], "coletado_em": hoje, "url": r["url"],
@@ -426,4 +433,4 @@ def atualizar_manifesto(registros, pasta=PASTA_DADOS, hoje=None):
     if novas:
         ordem = lambda l: (l["base"], l["periodo"], l["arquivo"], l["coletado_em"], l["sha256"])
         gravar_csv(sorted(linhas + novas, key=ordem), COLUNAS_MANIFESTO, caminho)
-    return novas
+    return novas, revisados
