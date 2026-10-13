@@ -4,6 +4,8 @@ __pycache__/
 
 dados/brutos/
 *.duckdb
+*.duckdb.wal
+*.duckdb.tmp/
 PLANO.md
 CLAUDE.md
 **/.pbi/localSettings.json
