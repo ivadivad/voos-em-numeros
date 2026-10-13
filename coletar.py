@@ -11,6 +11,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import date
 
 # o gov.br devolve 403 pro User-Agent padrao do urllib (Python-urllib/3.x);
 # com um que identifica o projeto, devolve a pagina
@@ -132,3 +133,31 @@ def buscar(url):
             time.sleep(ESPERA_BASE * (tentativa + 1))
             continue
         return resultado, corpo
+
+
+def gerar_meses(desde, ate=None):
+    """Lista de AAAAMM de `desde` ate `ate`, inclusive, mes a mes.
+
+    `ate` default: mes corrente.
+    """
+    if ate is None:
+        hoje = date.today()
+        ate = hoje.year * 100 + hoje.month
+
+    ano, mes = divmod(desde, 100)
+    fim_ano, fim_mes = divmod(ate, 100)
+
+    meses = []
+    while (ano, mes) <= (fim_ano, fim_mes):
+        meses.append(ano * 100 + mes)
+        mes += 1
+        if mes > 12:
+            mes = 1
+            ano += 1
+    return meses
+
+
+def montar_url(base, mes):
+    """URL do arquivo de um mes (AAAAMM) pelo padrao da base mensal."""
+    ano, numero = divmod(mes, 100)
+    return FONTES[base]["url"].format(ano=ano, mes=numero, nome_mes=MESES[numero - 1])
