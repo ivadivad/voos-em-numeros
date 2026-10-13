@@ -117,7 +117,7 @@ dobraria o número de mercados sem acrescentar informação.
 
 - [x] Etapa 0 — Fundação
 - [x] Etapa 1 — Conhecer as bases antes do código
-- [ ] Etapa 2 — Coletor
+- [x] Etapa 2 — Coletor
 - [ ] Etapa 3 — Do bruto ao staging, em SQL
 - [ ] Etapa 4 — Validar a base
 - [ ] Etapa 5 — Modelo estrela
