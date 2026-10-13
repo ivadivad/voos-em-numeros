@@ -59,6 +59,42 @@ usar as mesmas bases:
 | O gov.br recusa o User-Agent padrão do Python | A página do VRA devolve 403 para `Python-urllib`. Com um User-Agent que identifica o projeto, devolve 200 |
 | VRA e lista de aeródromos não começam pelo cabeçalho | A primeira linha é `Atualizado em: AAAA-MM-DD` |
 
+## O que é um mercado
+
+A concentração (HHI) e o número de concorrentes são medidos por mercado, e o
+resultado depende de como o mercado é definido. Aqui, **mercado é um par de
+cidades, sem direção**.
+
+**Par de cidades, não de aeroportos.** Quem vai de São Paulo ao Rio escolhe
+entre Congonhas, Guarulhos e Viracopos de um lado, e entre Santos Dumont e
+Galeão do outro. Em ago/2026, essa viagem somou 619.821 passageiros pagos,
+espalhados por seis pares de aeroportos; o maior deles, Congonhas–Santos
+Dumont, ficou com 54%. Tratar cada par como um mercado partiria um mercado
+só em seis e faria uma empresa parecer sozinha numa rota em que disputa o
+mesmo passageiro com quem voa do aeroporto ao lado.
+
+Os aeroportos de uma mesma cidade seguem os códigos de cidade da IATA: SAO,
+RIO e BHZ, na tabela [`dados/referencia/mercados.csv`](dados/referencia/mercados.csv).
+Qualquer outro aeroporto é o próprio mercado.
+
+**Sem direção.** São Paulo → Rio e Rio → São Paulo são o mesmo mercado. Em
+ago/2026, os dois sentidos tiveram quase o mesmo número de passageiros
+(311.583 e 308.238). Nos 262 mercados com mais de mil passageiros naquele mês,
+a diferença mediana entre ida e volta foi de 2,8%. Separar os sentidos
+dobraria o número de mercados sem acrescentar informação.
+
+**Escolhas que podem ser discutidas:**
+
+- Viracopos fica em Campinas e é o aeroporto de quem mora lá. Entra em SAO
+  porque a IATA o põe lá; tirá-lo é um teste de sensibilidade possível.
+- Voo entre dois aeroportos do mesmo mercado (Guarulhos–Viracopos, por
+  exemplo) não forma mercado e fica de fora.
+- Jacarepaguá e Campo de Marte não estão nos grupos da IATA e continuam como
+  mercados próprios.
+- A tarifa é registrada pela viagem do passageiro, e o passageiro da base
+  estatística, por voo. Um mesmo mercado mede as duas coisas de jeitos
+  diferentes, como explica o [`DICIONARIO.md`](DICIONARIO.md).
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC (a implementar).
