@@ -7,6 +7,7 @@ import http.client
 import io
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
@@ -481,6 +482,124 @@ class TesteManifesto(ComPastaTemporaria):
 
     def test_ler_csv_ausente(self):
         self.assertEqual(coletar.ler_csv(os.path.join(self.pasta, "nao-existe.csv")), [])
+
+
+def reg(base, periodo, situacao, arquivo=None):
+    return {"base": base, "periodo": periodo, "arquivo": arquivo or f"{periodo}.csv", "situacao": situacao,
+            "url": "", "baixado": False}
+
+
+class TesteCobertura(ComPastaTemporaria):
+    def cobertura(self):
+        return [(l["base"], l["periodo"], l["situacao"])
+                for l in coletar.ler_csv(os.path.join(self.pasta, coletar.COBERTURA))]
+
+    def test_uma_linha_por_arquivo_ordenada(self):
+        coletar.gravar_cobertura([reg("vra", "202609", "erro_404"), reg("tarifas", "202608", "ok"),
+                                  reg("aerodromos", "", "falha_rede", "AerodromosPublicos.csv")], self.pasta)
+        self.assertEqual(self.cobertura(), [("aerodromos", "", "falha_rede"), ("tarifas", "202608", "ok"),
+                                            ("vra", "202609", "erro_404")])
+
+    def test_coleta_parcial_mantem_o_resto(self):
+        coletar.gravar_cobertura([reg("tarifas", "202607", "ok"), reg("tarifas", "202608", "falha_rede"),
+                                  reg("vra", "202608", "ok")], self.pasta)
+        coletar.gravar_cobertura([reg("tarifas", "202608", "ok")], self.pasta)
+        self.assertEqual(self.cobertura(), [("tarifas", "202607", "ok"), ("tarifas", "202608", "ok"),
+                                            ("vra", "202608", "ok")])
+
+    def test_mesma_coleta_da_o_mesmo_arquivo(self):
+        registros = [reg("tarifas", "202608", "ok"), reg("tarifas", "202609", "erro_404")]
+        caminho = os.path.join(self.pasta, coletar.COBERTURA)
+        coletar.gravar_cobertura(registros, self.pasta)
+        with open(caminho, "rb") as arquivo:
+            primeira = arquivo.read()
+        coletar.gravar_cobertura(registros, self.pasta)
+        with open(caminho, "rb") as arquivo:
+            self.assertEqual(arquivo.read(), primeira)
+        self.assertNotIn(b"\r\n", primeira)
+
+
+class TesteErros(unittest.TestCase):
+    def test_404_depois_do_ultimo_mes_e_mes_que_nao_saiu(self):
+        self.assertEqual(coletar.erros([reg("tarifas", "202608", "ok"), reg("tarifas", "202609", "erro_404")]), [])
+
+    def test_404_no_meio_da_serie_e_erro(self):
+        buraco = reg("tarifas", "202605", "erro_404")
+        self.assertEqual(coletar.erros([reg("tarifas", "202604", "ok"), buraco, reg("tarifas", "202606", "ok")]),
+                         [buraco])
+
+    def test_nenhum_mes_veio_entao_404_e_erro(self):
+        # no MED, uma rodada sem nada ok terminava verde
+        tudo_404 = [reg("vra", "202608", "erro_404"), reg("vra", "202609", "erro_404")]
+        self.assertEqual(coletar.erros(tudo_404), tudo_404)
+
+    def test_404_de_arquivo_fixo_e_erro(self):
+        sumiu = reg("estatisticas", "", "erro_404", "Dados_Estatisticos.csv")
+        self.assertEqual(coletar.erros([sumiu]), [sumiu])
+
+    def test_403_5xx_e_falha_de_rede_sao_erro(self):
+        ruins = [reg("tarifas", "202606", "erro_403"), reg("tarifas", "202607", "erro_5xx"),
+                 reg("tarifas", "202608", "falha_rede")]
+        self.assertEqual(coletar.erros([reg("tarifas", "202605", "ok")] + ruins), ruins)
+
+    def test_ultimo_mes_e_por_base(self):
+        # o vra ter ago/2026 nao faz o 404 de ago/2026 das tarifas virar buraco
+        registros = [reg("vra", "202608", "ok"), reg("tarifas", "202607", "ok"), reg("tarifas", "202608", "erro_404")]
+        self.assertEqual(coletar.erros(registros), [])
+
+
+class TesteMain(ComPastaTemporaria):
+    """main() grava em dados/ relativo a pasta atual: roda dentro da temporaria."""
+
+    def setUp(self):
+        super().setUp()
+        self.original = os.getcwd()
+        os.chdir(self.pasta)
+        self.saida = patch("sys.stdout", new_callable=io.StringIO)
+        self.saida.start()
+
+    def tearDown(self):
+        self.saida.stop()
+        os.chdir(self.original)
+        super().tearDown()
+
+    @patch("coletar.coletar_base")
+    def test_rodada_ok_grava_e_sai_sem_erro(self, coletar_base):
+        coletar_base.return_value = [reg("tarifas", "202608", "ok"), reg("tarifas", "202609", "erro_404")]
+        self.assertEqual(coletar.main(["tarifas", "--desde", "202608"]), 0)
+        self.assertTrue(os.path.exists(os.path.join("dados", "cobertura.csv")))
+        self.assertEqual(coletar_base.call_args[0], ("tarifas", 202608, None))
+
+    @patch("coletar.coletar_base")
+    def test_buraco_na_serie_sai_com_erro(self, coletar_base):
+        coletar_base.return_value = [reg("tarifas", "202604", "ok"), reg("tarifas", "202605", "erro_404"),
+                                     reg("tarifas", "202606", "ok")]
+        self.assertEqual(coletar.main(["tarifas"]), 1)
+
+    @patch("coletar.coletar_base")
+    def test_rodada_sem_nada_ok_nao_grava_e_sai_com_erro(self, coletar_base):
+        coletar_base.return_value = [reg("vra", "202608", "falha_rede")]
+        self.assertEqual(coletar.main(["vra"]), 1)
+        self.assertFalse(os.path.exists("dados"))
+
+    @patch("coletar.coletar_base")
+    def test_todas_passa_pelas_quatro_bases(self, coletar_base):
+        coletar_base.side_effect = lambda base, *a, **k: [reg(base, "202608", "ok")]
+        self.assertEqual(coletar.main(["todas"]), 0)
+        self.assertEqual([c[0][0] for c in coletar_base.call_args_list],
+                         ["aerodromos", "estatisticas", "tarifas", "vra"])
+
+    @patch("coletar.coletar_base")
+    def test_revisar_chega_na_coleta(self, coletar_base):
+        coletar_base.return_value = [reg("tarifas", "202608", "ok")]
+        coletar.main(["tarifas", "--revisar"])
+        self.assertTrue(coletar_base.call_args.kwargs["revisar"])
+
+    @patch("coletar.coletar_base")
+    def test_listar_nao_coleta(self, coletar_base):
+        self.assertEqual(coletar.main(["--listar"]), 0)
+        coletar_base.assert_not_called()
+        self.assertIn("tarifas", sys.stdout.getvalue())
 
 
 if __name__ == "__main__":

@@ -5,16 +5,26 @@ dados/brutos/<base>/. O que cada base e, linha a linha, esta no
 DICIONARIO.md; aqui fica so onde buscar cada arquivo e como ele chega.
 
 So biblioteca padrao: roda em qualquer Python 3, sem pip install.
+
+Uso: python coletar.py <base|todas> [--desde AAAAMM] [--ate AAAAMM] [--revisar]
+     python coletar.py --listar
+
+Sai com codigo 1 quando alguma coisa falhou (403, 5xx, falha de rede, ou
+404 no meio da serie), pra coleta com erro ficar visivel. 404 depois do
+ultimo mes publicado e mes que ainda nao saiu, e nao conta.
 """
+import argparse
 import csv
 import functools
 import hashlib
 import http.client
 import os
+import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import Counter
 from datetime import date
 from html.parser import HTMLParser
 
@@ -453,4 +463,76 @@ def gravar_cobertura(registros, pasta=PASTA_DADOS):
     for r in registros:
         linhas[chave(r)] = {coluna: r[coluna] for coluna in COLUNAS_COBERTURA}
     gravar_csv(sorted(linhas.values(), key=chave), COLUNAS_COBERTURA, caminho)
+
+
+def erros(registros):
+    """Os registros que fazem a coleta sair com erro.
+
+    Conta qualquer situacao diferente de ok e vazio, menos o 404 de uma
+    base mensal depois do ultimo mes que veio: e mes que ainda nao saiu. Um
+    404 antes desse mes e buraco na serie, e conta. Se nenhum mes da base
+    veio, todo 404 conta: no MED, uma rodada sem nada ok terminava verde.
+    """
+    ultimo = {}
+    for r in registros:
+        if r["situacao"] in ("ok", "vazio"):
+            ultimo[r["base"]] = max(ultimo.get(r["base"], ""), r["periodo"])
+    problemas = []
+    for r in registros:
+        if r["situacao"] in ("ok", "vazio"):
+            continue
+        ainda_nao_saiu = (
+            r["situacao"] == "erro_404"
+            and FONTES[r["base"]]["tipo"] == "mensal"
+            and r["base"] in ultimo
+            and r["periodo"] > ultimo[r["base"]]
+        )
+        if not ainda_nao_saiu:
+            problemas.append(r)
+    return problemas
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(description="Coletor das bases da ANAC do voos-em-numeros")
+    parser.add_argument("base", nargs="?", choices=sorted(FONTES) + ["todas"], help="base a coletar, ou todas")
+    parser.add_argument("--desde", type=int, help="primeiro mes das bases mensais, AAAAMM (padrao: 201901)")
+    parser.add_argument("--ate", type=int, help="ultimo mes das bases mensais, AAAAMM (padrao: o corrente)")
+    parser.add_argument("--revisar", action="store_true", help="baixa de novo os meses ja baixados, pra achar revisao")
+    parser.add_argument("--listar", action="store_true", help="lista as bases e sai")
+    args = parser.parse_args(argv)
+
+    if args.listar or not args.base:
+        for nome, fonte in FONTES.items():
+            if fonte["tipo"] == "mensal":
+                print(f"{nome:13} mensal, desde {fonte['desde']}")
+            else:
+                print(f"{nome:13} {', '.join(fonte['arquivos'])}")
+        return 0
+
+    registros = []
+    for base in (sorted(FONTES) if args.base == "todas" else [args.base]):
+        da_base = coletar_base(base, args.desde, args.ate, revisar=args.revisar)
+        registros += da_base
+        situacoes = Counter(r["situacao"] for r in da_base)
+        resumo = ", ".join(f"{qtde} {situacao}" for situacao, qtde in sorted(situacoes.items()))
+        print(f"{base}: {resumo}; {sum(r['baixado'] for r in da_base)} baixados agora")
+
+    problemas = erros(registros)
+    if not any(r["situacao"] in ("ok", "vazio") for r in registros):
+        # nada veio: nao regrava nada, pra uma rodada que falhou inteira nao
+        # aparecer como mudanca no git
+        print("nada coletado; nenhum arquivo gravado")
+        return 1
+
+    _, revisados = atualizar_manifesto(registros)
+    gravar_cobertura(registros)
+    for base, arquivo in revisados:
+        print(f"revisado pela ANAC: {base}/{arquivo}")
+    for r in problemas:
+        print(f"ERRO {r['base']} {r['periodo'] or r['arquivo']}: {r['situacao']}")
+    return 1 if problemas else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
 
