@@ -2,9 +2,12 @@
 
 Uso: python teste_coletar.py
 """
+import hashlib
 import http.client
 import io
 import os
+import shutil
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError, URLError
@@ -337,6 +340,147 @@ class TesteBaixarMes(unittest.TestCase):
         buscar.return_value = ("falha_rede", b"")
         self.assertEqual(coletar.baixar_mes("vra", 202608)[0], "falha_rede")
         achar.assert_not_called()
+
+
+TARIFA = b"nr_ano_referencia;nr_mes_referencia\r\n2026;5\r\n"
+
+
+class ComPastaTemporaria(unittest.TestCase):
+    """Cada teste grava numa pasta temporaria, apagada no fim."""
+
+    def setUp(self):
+        self.pasta = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.pasta)
+
+    def bruto(self, base, nome):
+        return coletar.caminho_bruto(base, nome, self.pasta)
+
+
+class TesteGravacaoDoBruto(ComPastaTemporaria):
+    def test_grava_os_bytes_como_vieram(self):
+        caminho = self.bruto("tarifas", "202605.csv")
+        coletar.gravar_bruto(TARIFA, caminho)
+        with open(caminho, "rb") as arquivo:
+            self.assertEqual(arquivo.read(), TARIFA)  # o \r\n da ANAC fica
+        self.assertFalse(os.path.exists(caminho + ".parcial"))
+
+    def test_regravar_troca_o_arquivo_inteiro(self):
+        caminho = self.bruto("tarifas", "202605.csv")
+        coletar.gravar_bruto(b"versao antiga e mais longa\n", caminho)
+        coletar.gravar_bruto(b"nova\n", caminho)
+        with open(caminho, "rb") as arquivo:
+            self.assertEqual(arquivo.read(), b"nova\n")
+
+    def test_vazio_conta_as_linhas_de_cabecalho_da_base(self):
+        self.assertTrue(coletar.vazio(b"", 1))
+        self.assertTrue(coletar.vazio(b"ANO;MES\r\n", 1))
+        self.assertFalse(coletar.vazio(b"ANO;MES\r\n2026;5\r\n", 1))
+        # VRA: "Atualizado em" e o cabecalho nao sao dado
+        self.assertTrue(coletar.vazio(b"Atualizado em: 2026-10-07\r\n\"ICAO\";\"Voo\"\r\n", 2))
+
+    def test_alvos_da_base_mensal_tem_nome_local_aaaamm(self):
+        self.assertEqual(coletar.alvos("vra", 202512, 202601),
+                         [("202512", "202512.csv"), ("202601", "202601.csv")])
+
+    def test_alvos_da_base_fixa_sao_os_arquivos_do_fontes(self):
+        self.assertEqual(coletar.alvos("aerodromos"),
+                         [("", "AerodromosPublicos.csv"), ("", "AerodromosPrivados.csv")])
+
+
+@patch("coletar.time.sleep", return_value=None)
+class TesteColetarBase(ComPastaTemporaria):
+    @patch("coletar.baixar_mes")
+    def test_mes_que_falta_e_baixado_com_nome_local(self, baixar_mes, sleep):
+        baixar_mes.return_value = ("ok", TARIFA, "https://x/2026/202605 (1).CSV")
+        [registro] = coletar.coletar_base("tarifas", 202605, 202605, pasta=self.pasta)
+        self.assertTrue(os.path.exists(self.bruto("tarifas", "202605.csv")))
+        self.assertEqual(registro["situacao"], "ok")
+        self.assertTrue(registro["baixado"])
+        self.assertEqual(registro["bytes"], len(TARIFA))
+        self.assertEqual(registro["sha256"], hashlib.sha256(TARIFA).hexdigest())
+        self.assertEqual(registro["url"], "https://x/2026/202605 (1).CSV")
+
+    @patch("coletar.baixar_mes")
+    def test_mes_ja_baixado_e_pulado_sem_rede(self, baixar_mes, sleep):
+        coletar.gravar_bruto(TARIFA, self.bruto("tarifas", "202605.csv"))
+        [registro] = coletar.coletar_base("tarifas", 202605, 202605, pasta=self.pasta)
+        baixar_mes.assert_not_called()
+        self.assertEqual((registro["situacao"], registro["baixado"]), ("ok", False))
+
+    @patch("coletar.baixar_mes")
+    def test_revisar_baixa_de_novo_o_que_ja_existe(self, baixar_mes, sleep):
+        coletar.gravar_bruto(b"versao antiga\n", self.bruto("tarifas", "202605.csv"))
+        baixar_mes.return_value = ("ok", TARIFA, "https://x")
+        coletar.coletar_base("tarifas", 202605, 202605, pasta=self.pasta, revisar=True)
+        with open(self.bruto("tarifas", "202605.csv"), "rb") as arquivo:
+            self.assertEqual(arquivo.read(), TARIFA)
+
+    @patch("coletar.baixar_mes")
+    def test_404_e_arquivo_vazio_nao_sao_gravados(self, baixar_mes, sleep):
+        baixar_mes.side_effect = [("erro_404", b"", "https://x/a"), ("ok", b"ANO;MES\r\n", "https://x/b")]
+        registros = coletar.coletar_base("tarifas", 202609, 202610, pasta=self.pasta)
+        self.assertEqual([r["situacao"] for r in registros], ["erro_404", "vazio"])
+        self.assertFalse(os.path.exists(os.path.join(self.pasta, "brutos")))
+
+    @patch("coletar.buscar")
+    def test_arquivo_fixo_e_sempre_baixado_de_novo(self, buscar, sleep):
+        buscar.return_value = ("ok", b"Atualizado em: hoje\r\nCodigo\r\nSBSP\r\n")
+        coletar.gravar_bruto(b"retrato antigo\n", self.bruto("aerodromos", "AerodromosPublicos.csv"))
+        registros = coletar.coletar_base("aerodromos", pasta=self.pasta)
+        self.assertEqual(buscar.call_count, 2)
+        self.assertTrue(all(r["baixado"] for r in registros))
+
+
+class TesteManifesto(ComPastaTemporaria):
+    def registro(self, sha, arquivo="202605.csv", baixado=True):
+        return {"base": "tarifas", "periodo": "202605", "arquivo": arquivo, "url": "https://x",
+                "baixado": baixado, "bytes": 10, "sha256": sha}
+
+    def manifesto(self):
+        return coletar.ler_csv(os.path.join(self.pasta, coletar.MANIFESTO))
+
+    def test_arquivo_baixado_entra_no_manifesto(self):
+        novas, revisados = coletar.atualizar_manifesto([self.registro("a" * 64)], self.pasta, hoje="2026-10-13")
+        self.assertEqual(len(novas), 1)
+        self.assertEqual(revisados, [])
+        [linha] = self.manifesto()
+        self.assertEqual((linha["sha256"], linha["coletado_em"], linha["bytes"]), ("a" * 64, "2026-10-13", "10"))
+
+    def test_mesmo_sha_nao_duplica_nem_regrava(self):
+        coletar.atualizar_manifesto([self.registro("a" * 64)], self.pasta, hoje="2026-10-13")
+        caminho = os.path.join(self.pasta, coletar.MANIFESTO)
+        antes = os.path.getmtime(caminho)
+        os.utime(caminho, (antes - 100, antes - 100))
+        novas, _ = coletar.atualizar_manifesto([self.registro("a" * 64)], self.pasta, hoje="2026-11-13")
+        self.assertEqual(novas, [])
+        self.assertEqual(len(self.manifesto()), 1)
+        self.assertEqual(os.path.getmtime(caminho), antes - 100)  # nem foi aberto pra escrita
+
+    def test_sha_novo_e_revisao_e_as_duas_versoes_ficam(self):
+        coletar.atualizar_manifesto([self.registro("a" * 64)], self.pasta, hoje="2026-07-01")
+        novas, revisados = coletar.atualizar_manifesto([self.registro("b" * 64)], self.pasta, hoje="2026-10-13")
+        self.assertEqual(revisados, [("tarifas", "202605.csv")])
+        self.assertEqual([(l["sha256"][0], l["coletado_em"]) for l in self.manifesto()],
+                         [("a", "2026-07-01"), ("b", "2026-10-13")])
+
+    def test_arquivo_pulado_nao_entra(self):
+        novas, _ = coletar.atualizar_manifesto([self.registro(None, baixado=False)], self.pasta)
+        self.assertEqual(novas, [])
+        self.assertFalse(os.path.exists(os.path.join(self.pasta, coletar.MANIFESTO)))
+
+    def test_manifesto_sai_ordenado_e_com_lf(self):
+        # gravar duas vezes o mesmo conteudo tem que dar o mesmo arquivo
+        registros = [self.registro("b" * 64, "202606.csv"), self.registro("a" * 64, "202605.csv")]
+        coletar.atualizar_manifesto(registros, self.pasta, hoje="2026-10-13")
+        with open(os.path.join(self.pasta, coletar.MANIFESTO), "rb") as arquivo:
+            conteudo = arquivo.read()
+        self.assertNotIn(b"\r\n", conteudo)
+        self.assertEqual([l["arquivo"] for l in self.manifesto()], ["202605.csv", "202606.csv"])
+
+    def test_ler_csv_ausente(self):
+        self.assertEqual(coletar.ler_csv(os.path.join(self.pasta, "nao-existe.csv")), [])
 
 
 if __name__ == "__main__":
