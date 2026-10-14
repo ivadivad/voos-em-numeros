@@ -63,7 +63,7 @@ Sete colunas, sempre na mesma ordem. O nome muda de arquivo para arquivo (ver
 | Aspas | Só nos 2 arquivos da versão D |
 | Separador decimal | Vírgula em 80 arquivos e **ponto em 12** (out e nov/2024, mar a dez/2025). Nos trechos abertos, nenhum valor usa separador de milhar |
 | Casas decimais | De 0 a 2, variando dentro do mesmo arquivo |
-| Mês das linhas | Bate com o nome do arquivo nos 92 (primeiros 8 KB de cada) e nas duas amostras inteiras |
+| Mês das linhas | Bate com o nome do arquivo nas 45.296.499 linhas dos 92 arquivos (conferido na etapa 3) |
 
 | Versão | Cabeçalho | Arquivos |
 |---|---|---|
@@ -114,6 +114,19 @@ Nenhuma tarifa ou quantidade de assentos zerada, negativa ou que não converta.
 Os códigos de aeroporto têm sempre 4 letras e começam com `SB`, `SN`, `SW`,
 `SS`, `SD` ou `SJ`; os de empresa, sempre 3 letras.
 
+## No período inteiro (etapa 3)
+
+A staging leu as 45.296.499 linhas dos 92 arquivos, de 11 empresas. O que as
+duas amostras mostravam continua valendo: nenhuma combinação de empresa,
+origem, destino, mês e tarifa se repete, e nenhum valor deixa de converter.
+Duas novidades:
+
+- **Nem todo código de aeroporto é só de letras.** `SN6L` aparece em 95
+  linhas, de nov/2023 a jan/2025.
+- **Tarifas nas pontas.** Vão de R$ 1,00 a R$ 13.149,90. São 377 abaixo de
+  R$ 10 e 4 acima de R$ 10 mil. Se são erro de registro ou tarifa de verdade,
+  a validação da etapa 4 responde.
+
 ---
 
 # Voo Regular Ativo (VRA)
@@ -145,6 +158,14 @@ prevista em setembro.
 **Cópias exatas:** 77 linhas de jan/2019 e 44 de ago/2026 repetem outra linha
 coluna por coluna. O mesmo voo de jan/2019 aparece até 4 vezes. O grão
 declarado só vale depois de tratar essas cópias.
+
+**No período inteiro, voos que se repetem sem ser cópia (etapa 3).** Depois
+do filtro de voo doméstico regular, são 275 cópias exatas, algumas do mesmo
+voo em dois arquivos. E 168 voos (mesma empresa, número, origem, destino e
+partida prevista) têm registros que se contradizem, quase todos de 2019: o
+mesmo voo como `CANCELADO` e como `REALIZADO`, ou realizado duas vezes com
+horários diferentes. A staging fica com o realizado, que tem horário real
+como evidência, e, entre dois realizados, com o que partiu primeiro.
 
 ## Colunas
 
@@ -232,9 +253,21 @@ A descrição de variáveis agrupa os DI em regular (`0`, `4` ou `C`), não regu
 | `R` / `H` | Regional / sub-regional | Não constam |
 | `E` / `L` | Especial / rede postal | Não constam |
 | `X` | Não consta | Não consta. Em abr/2020 são 1.063 linhas, e as oito empresas com mais linhas são estrangeiras (Lufthansa Cargo, UPS e United entre elas). Nos dados estatísticos, `X` aparece como "NÃO IDENTIFICADA" |
+| `NA` | Não consta | Não consta. 477 linhas, de dez/2020 a jul/2025, todas de voo cancelado; 325 entre aeroportos brasileiros |
 
 **O filtro de voo doméstico regular de passageiros (etapa 3):** tipo de linha
-`N` (e também `R` e `H` até mar/2020) e DI do grupo regular (`0` ou `4`).
+`N` (e também `R` e `H` até mar/2020), DI do grupo regular (`0` ou `4`) e os
+dois aeroportos no Brasil. O que o período inteiro mostrou sobre ele:
+
+- O DI `C`, regular pela descrição de variáveis, não aparece. O DI vem vazio
+  em 708 linhas, todas internacionais ou cargueiras, de jan/2019 a mar/2020.
+- `R` só aparece de mar/2019 a mar/2020, e `H` só em fev e mar/2020, os
+  meses corrompidos.
+- **Tipo `N` não garante voo doméstico.** 9 voos marcados assim ligam o
+  Brasil a Lisboa, Montevidéu, Bogotá, Córdoba, Paramaribo e Punta Cana, e um
+  da Aerolíneas Argentinas vai de Cancún a Buenos Aires. Daí a exigência dos
+  dois aeroportos no Brasil, com código começando por `SB`, `SD`, `SI`, `SJ`,
+  `SN`, `SS` ou `SW`: os da América do Sul também começam por `S`.
 
 ## Dois meses perdidos: fev e mar/2020
 
@@ -242,15 +275,34 @@ Nos arquivos atuais de mar/2020, as quatro colunas de horário e a de situação
 trazem o texto `Microsoft.SqlServer.Dts.Pipeline.BlobColumn` em vez do valor,
 um defeito da exportação feita pela ANAC. São todas as 258.092 linhas, e
 242.726 delas são cópias exatas de outra. O JSON do mesmo mês tem o mesmo
-defeito. Em fev/2020, as linhas abertas (o começo do arquivo) estão iguais. Os
-dois arquivos têm 88 e 70 MB, contra 11 a 13 MB de um mês normal, e dizem
-`Atualizado em: 2021-09-16` e `2021-09-17`.
+defeito. Em fev/2020 também são todas as linhas, 323.676 (conferido na etapa
+3). Os dois arquivos têm 88 e 70 MB, contra 11 a 13 MB de um mês normal, e
+dizem `Atualizado em: 2021-09-16` e `2021-09-17`.
 
 A [versão descontinuada](https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas/historico-de-voos/historico-de-voos-descontinuada)
 do histórico de voos, publicada até out/2024, tem os dois meses legíveis, em
 outro formato: sem aspas, cabeçalho sem acento (`ICAO Empresa Aerea;Numero
 Voo;Codigo DI;...`), datas `dd/mm/aaaa hh:mm` e linhas terminadas só em `\r`.
-Usar ou não essa cópia é decisão da etapa 3.
+
+**Decisão da etapa 3: os dois meses ficam fora.** São 2 de 92 meses, nenhuma
+das três perguntas depende deles, e a cópia descontinuada pediria outra fonte
+no coletor, em outro formato, numa página que a ANAC já descontinuou. A
+staging descarta as linhas pelo conteúdo corrompido, não pelo mês: se a ANAC
+consertar os arquivos, os dois meses voltam sozinhos. Um teste avisa se o
+defeito aparecer em outro arquivo.
+
+## Atraso: datas erradas e voos que mudaram de dia
+
+A staging calcula o atraso na chegada, em minutos, pela diferença entre a
+chegada real e a prevista. Nos 5,2 milhões de voos do período, a mediana do
+atraso de cada mês fica entre -13 min (abr/2020) e 0, mas as pontas
+misturam três coisas:
+
+| O que se vê | Quantos | O que é |
+|---|---|---|
+| Mais de dois dias de diferença | 8 voos | Data digitada errada: ano trocado (2022 por 2023), dia e mês invertidos (01/04 por 04/01), mês trocado. A staging deixa o atraso nulo e mantém o voo |
+| Chegada de 2 a 23 h antes do previsto | 964 voos | Voo antecipado de verdade: partiu mais de uma hora antes, e a duração real é a prevista (mediana de 3 min de diferença) |
+| Cerca de 24 h antes ou depois | Picos de uns mil voos em -24 h e de uns 260 em +24 h | Voo que mudou de dia, ou data com um dia de erro. Não dá pra separar, e fica como está |
 
 ## Revisão
 
@@ -336,7 +388,9 @@ domésticos estão em trânsito (`cd_cotran` `D` ou `I`): 2.105.240 de 8.940.607
 
 Grão conferido: nenhuma combinação de empresa, ano, mês, origem, destino,
 natureza e grupo de voo se repete nas 1.099.729 linhas. Desde 2019, natureza
-doméstica só aparece com empresa brasileira, como diz a definição.
+doméstica só aparece com empresa brasileira, como diz a definição. Só 7
+linhas, todas de 2019, internacionais e de empresas estrangeiras, vêm sem
+aeroporto de origem.
 
 **A distância vem pronta.** A ANAC a calcula "considerando a curvatura do
 planeta terra". A haversine da etapa 5 vai ser conferida com ela.
@@ -440,9 +494,21 @@ ago/2026, aparecem fora dela:
 | `SBUY` | VRA | Lista de privados: Urucu, em Coari (AM) |
 | `SBFC`, `SBCM` | Tarifas (`SBFC`) e VRA (`SBCM`) | Nem na lista de públicos, nem na de privados. A de [públicos excluídos](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20P%C3%BAblicos/Aerodromos%20Excluidos/) não tem coluna de código OACI, só CIAD e nome |
 
-É por isso que a `dim_aeroporto` (etapa 5) não pode depender só da lista
-pública, e o teste "aeroporto sem mercado vira lista, não some" tem caso real
-pra pegar.
+**No período inteiro (etapa 3).** As três bases, depois da staging, usam 306
+aeroportos brasileiros: 248 estão na lista pública, 40 na de privados e 18 em
+nenhuma das duas. Somados, os 58 de fora da lista pública respondem por 0,26%
+dos assentos vendidos nas tarifas e 0,02% dos passageiros pagos regulares da
+base estatística. São poucos, mas existem, e é por isso que a `dim_aeroporto`
+(etapa 5) não pode depender só da lista pública, e o teste "aeroporto sem
+mercado vira lista, não some" tem caso real pra pegar.
+
+Os 18 sem lista, com o nome que a base estatística dá quando o código
+aparece nela: `SBBT` (Barretos), `SBBZ` (Armação dos Búzios), `SBCM`
+(Forquilhinha), `SBCO` (Canoas), `SBGS` (Ponta Grossa), `SBJC` (Belém),
+`SBMN` (Manaus), `SBNT` (Parnamirim), `SBQV` (Vitória da Conquista), `SBRG`
+(Rio Grande), `SBTS` (Óbidos), `SBYS` (Pirassununga), `SNAT` (Aracati) e
+`SNJN` (Januária). `SBFC`, `SBFE`, `SBGU` e `SNOB` ficam sem nome: aparecem
+nas tarifas ou no VRA, mas não na base estatística.
 
 ## A lista de privados
 
@@ -489,8 +555,11 @@ Três defeitos que o leitor precisa tratar:
 - **VRA:** jan e fev/2019 ainda tinham horário de verão. A "hora de Brasília"
   desses dias é a de verão ou a padrão? Só afeta o mapa de calor dessas
   semanas.
-- **VRA:** fev e mar/2020 vêm da cópia descontinuada ou ficam fora? A etapa 3
-  decide.
-- **Aeródromos:** onde estão `SBFC` e `SBCM`? Não estão nas listas de
-  públicos nem de privados, e a de excluídos não tem código OACI pra
-  conferir. Sem coordenada, a distância desses pares sai da base estatística.
+- **VRA:** os voos a cerca de 24 h do horário previsto mudaram de dia ou têm a
+  data com um dia de erro? Os dados não separam os dois casos.
+- **Tarifas:** as 377 tarifas abaixo de R$ 10 e as 4 acima de R$ 10 mil são
+  erro de registro ou tarifa de verdade? A etapa 4 olha.
+- **Aeródromos:** onde estão os 18 aeroportos que não estão em nenhuma das
+  duas listas (`SBFC` e `SBCM` entre eles)? A lista de excluídos não tem
+  código OACI pra conferir. Sem coordenada, a distância desses pares sai da
+  base estatística.
