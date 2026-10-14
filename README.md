@@ -54,7 +54,7 @@ usar as mesmas bases:
 | A ANAC substitui arquivos antigos | Meses de tarifas de 2023 e de 2024 têm data de mar/2026; quase todo o VRA, de 07/10/2026. É por isso que o coletor da etapa 2 registra o sha256 de cada arquivo baixado |
 | O formato das tarifas muda de um mês para outro | Cinco versões de cabeçalho, vírgula ou ponto decimal, fim de linha do Windows ou do Linux. Só a ordem das sete colunas é constante |
 | Mai/2026 das tarifas tem outro nome | `202605.csv` dá 404; o arquivo publicado é `202605 (1).CSV` |
-| Fev e mar/2020 do VRA estão corrompidos | Os horários trazem o texto `Microsoft.SqlServer.Dts.Pipeline.BlobColumn`. A versão descontinuada do histórico de voos tem os dois meses legíveis, em outro formato |
+| Fev e mar/2020 do VRA estão corrompidos | Todas as linhas trazem o texto `Microsoft.SqlServer.Dts.Pipeline.BlobColumn` no lugar dos horários. A versão descontinuada do histórico de voos tem os dois meses legíveis, em outro formato. O projeto deixa os dois meses de fora |
 | A base estatística tem duas publicações | Zips mensais (passariam de 22 GB descompactados nos 92 meses) e um CSV acumulado de 360 MB com os mesmos números agregados por mês |
 | O gov.br recusa o User-Agent padrão do Python | A página do VRA devolve 403 para `Python-urllib`. Com um User-Agent que identifica o projeto, devolve 200 |
 | VRA e lista de aeródromos não começam pelo cabeçalho | A primeira linha é `Atualizado em: AAAA-MM-DD` |
@@ -98,8 +98,12 @@ dobraria o número de mercados sem acrescentar informação.
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
-- `construir.py`: executor das transformações SQL em DuckDB (a implementar).
-- `sql/`: transformações e testes de qualidade em SQL.
+- `construir.py`: constrói o banco DuckDB rodando os `.sql` em ordem e depois
+  os testes, com os testes do executor em `teste_construir.py`.
+- `sql/`: as transformações, em SQL. `00_brutos.sql` lê os arquivos como
+  texto, os `1x_stg_*.sql` padronizam cada base, e `sql/testes/` tem os
+  testes de qualidade: cada um é uma consulta que devolve zero linhas quando
+  está tudo certo.
 - `dados/brutos/`: arquivos originais baixados; não são versionados.
 - `dados/manifesto.csv` e `dados/cobertura.csv`: o que cada coleta baixou e
   encontrou.
@@ -164,11 +168,27 @@ O coletor sai com código 1 se alguma coisa falhou. Um 404 depois do último
 mês publicado não conta, porque é o mês que ainda não saiu; um 404 no meio
 da série conta.
 
+### Construir as tabelas
+
+Precisa das dependências do `requirements.txt`, com as versões fixadas:
+
+```bash
+pip install -r requirements.txt
+python construir.py
+```
+
+O `construir.py` apaga o `voos.duckdb` e o constrói do zero a partir de
+`dados/brutos/`: roda os `.sql` de `sql/` em ordem alfabética, mostrando o
+tempo de cada um, e depois cada teste de `sql/testes/`. Em 14/10/2026,
+levou uns 30 segundos e gerou um banco de 467 MB, fora do git. Sai com código 1
+se um `.sql` falhou ou se um teste devolveu linhas, e nesse caso mostra as
+primeiras linhas problemáticas; o banco fica como estava, pra ser aberto e
+investigado.
+
 ### Rodar os testes
 
 ```bash
-python teste_coletar.py   # só biblioteca padrão, sem rede
-python teste_visual.py    # precisa de matplotlib (pip install -r requirements.txt)
+python teste_coletar.py    # só biblioteca padrão, sem rede
+python teste_construir.py  # precisa de duckdb; não precisa dos brutos
+python teste_visual.py     # precisa de matplotlib
 ```
-
-A construção das tabelas em SQL entra na etapa 3.
