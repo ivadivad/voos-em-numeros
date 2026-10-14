@@ -440,10 +440,40 @@ ago/2026, aparecem fora dela:
 | `SBUY` | VRA | Lista de privados: Urucu, em Coari (AM) |
 | `SBFC`, `SBCM` | Tarifas (`SBFC`) e VRA (`SBCM`) | Nem na lista de públicos, nem na de privados. A de [públicos excluídos](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20P%C3%BAblicos/Aerodromos%20Excluidos/) não tem coluna de código OACI, só CIAD e nome |
 
-A lista de privados tem outro formato: sem coordenadas decimais, e com a
-longitude antes da latitude. É por isso que a `dim_aeroporto` (etapa 5) não pode
-depender só da lista pública, e o teste "aeroporto sem mercado vira lista, não
-some" tem caso real pra pegar.
+É por isso que a `dim_aeroporto` (etapa 5) não pode depender só da lista
+pública, e o teste "aeroporto sem mercado vira lista, não some" tem caso real
+pra pegar.
+
+## A lista de privados
+
+`AerodromosPrivados.csv`, na [listagem](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20Privados/Lista%20de%20aer%C3%B3dromos%20privados/Aerodromos%20Privados/)
+do portal: 3.924 linhas, de 13/10/2026. Mesmo encoding (Latin-1), mesma
+primeira linha (`Atualizado em`), mesmo separador e nenhuma aspa delimitando
+campo, como a lista pública. O resto muda:
+
+| | Lista pública | Lista de privados |
+|---|---|---|
+| Colunas | 18 | 24, em outra ordem; as das pistas estão no arquivo |
+| Coordenadas em graus, minutos e segundos | `Latitude` e depois `Longitude` | `Longitude` antes de `Latitude`. Os segundos têm casas decimais em 1.139 linhas (`19°33'33,46"S`) |
+| Coordenadas decimais | `LATGEOPOINT`, `LONGEOPOINT`, com ponto | As mesmas colunas, no fim do arquivo, **com vírgula** (`-4,8830556`). Preenchidas nas 3.924 linhas |
+| Cidade | `Município Servido` | Só `Município`, em maiúsculas (`COARI`) |
+| UF | Por extenso (`Acre`) | Sigla (`AM`) |
+
+Na lista de privados, o decimal descarta a fração de segundo: `19°33'33,46"S`
+vira `-19,559167`, que é 33,00". A diferença chega a 1" (uns 30 m), e o grau,
+minuto e segundo é o mais preciso dos dois. Na pública, os segundos são
+inteiros e as duas colunas coincidem.
+
+Três defeitos que o leitor precisa tratar:
+
+- **23 linhas sem código OACI.**
+- **Três códigos repetidos em aeródromos diferentes:** `SD09` (uma fazenda no
+  MT e Cidade de Goiás, GO), `SS3G` e `SS7V`. Nenhum dos três aparece nas
+  outras bases.
+- **Uma coordenada impossível:** `SJ1Z` (Fazenda Jeovazão, sem município nem
+  UF) está a leste de Greenwich, `047°04'39,42"E`, e o decimal diz outra
+  coisa ainda (`47,2108333`, ou seja, 47°12'39"). O Brasil inteiro fica a
+  oeste.
 
 ---
 
