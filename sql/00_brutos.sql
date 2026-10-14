@@ -12,9 +12,10 @@
 
 -- Tarifas: 92 arquivos com cinco versoes de cabecalho, que se alternam sem
 -- ordem. So a ordem das sete colunas e constante, entao a leitura e por
--- posicao: a primeira linha e pulada, seja qual for o nome das colunas. O
--- detector automatico do DuckDB fica desligado porque descobre o formato pelo
--- primeiro arquivo e nao aceita as 8 colunas da versao D.
+-- posicao: a primeira linha e pulada, seja qual for o nome das colunas, e
+-- testes/tarifas_cabecalho.sql confere que cada arquivo tem uma das cinco
+-- versoes. O detector automatico do DuckDB fica desligado porque descobre o
+-- formato pelo primeiro arquivo e nao aceita as 8 colunas da versao D.
 CREATE OR REPLACE VIEW bruto_tarifas AS
 WITH arquivo AS (
     SELECT *
@@ -45,8 +46,8 @@ FROM arquivo;
 -- VRA: 92 arquivos com o mesmo cabecalho, tambem lidos por posicao. Com o
 -- detector ligado, so contar as linhas levou 163 s e passou de 7 GB de
 -- memoria; desligado, 3 s. O preco e que o nome das colunas deixa de ser
--- conferido na leitura. Ausente vem como o texto "null", tratado na
--- staging.
+-- conferido na leitura, e quem confere e testes/vra_cabecalho.sql. Ausente
+-- vem como o texto "null", tratado na staging.
 CREATE OR REPLACE VIEW bruto_vra AS
 SELECT parse_filename(filename) AS arquivo, * EXCLUDE (filename)
 FROM read_csv('dados/brutos/vra/*.csv',
