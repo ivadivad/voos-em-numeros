@@ -13,6 +13,10 @@
 -- 2. So voo domestico regular de passageiros: tipo de linha N (e R e H, que
 --    existiam ate mar/2020) e Digito Identificador do grupo regular, 0 ou 4.
 --    O C, tambem regular pela descricao de variaveis, nao aparece nos dados.
+--    E os dois aeroportos no Brasil (codigo OACI comecando com SB, SD, SI,
+--    SJ, SN, SS ou SW): 9 voos marcados como domesticos ligam o Brasil a
+--    Lisboa, Montevideu, Bogota, Cordoba, Paramaribo e Punta Cana, e um vai
+--    de Cancun a Buenos Aires.
 --
 -- 3. Uma linha por voo. O voo e a empresa, o numero, a origem, o destino e a
 --    partida prevista (ou a real, nas etapas nao planejadas, que nao tem
@@ -52,6 +56,8 @@ WITH convertido AS (
                             'Microsoft.SqlServer.Dts.Pipeline.BlobColumn')
       AND di IN ('0', '4')
       AND (tipo_linha = 'N' OR (tipo_linha IN ('R', 'H') AND arquivo <= '202003.csv'))
+      AND left(upper(trim(origem)), 2) IN ('SB', 'SD', 'SI', 'SJ', 'SN', 'SS', 'SW')
+      AND left(upper(trim(destino)), 2) IN ('SB', 'SD', 'SI', 'SJ', 'SN', 'SS', 'SW')
 )
 SELECT
     empresa,
