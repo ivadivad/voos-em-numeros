@@ -1,4 +1,4 @@
-duckdb
-pandas
-pyarrow
-matplotlib
+duckdb==1.5.6
+pandas==3.0.6
+pyarrow==25.0.1
+matplotlib==3.11.2
