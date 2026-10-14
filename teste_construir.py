@@ -64,8 +64,10 @@ class TesteOrdem(ComPastaTemporaria):
         # os testes, em sql/testes/, nao sao modelos; e nem todo arquivo e .sql
         self.escrever("00_a.sql", "CREATE TABLE t (x INTEGER);")
         self.escrever("leia-me.txt", "isto nao e sql")
-        self.escrever(os.path.join("testes", "t.sql"), "SELECT * FROM nao_existe;")
+        self.escrever(os.path.join("testes", "t.sql"), "SELECT * FROM t;")
         self.assertEqual(self.construir(), 0)
+        # o teste roda depois, como teste, e nao como modelo antes da tabela existir
+        self.assertNotRegex(self.stdout.getvalue(), r"(?m)^t\.sql")
 
     def test_mostra_o_tempo_de_cada_arquivo(self):
         self.escrever("00_a.sql", "SELECT 1;")
@@ -117,6 +119,58 @@ class TesteDoZero(ComPastaTemporaria):
         self.escrever("00_a.sql", "SELECT 1;")
         self.assertEqual(self.construir(), 1)
         self.assertIn("aberto em outro programa", self.stdout.getvalue())
+
+
+class TesteTestes(ComPastaTemporaria):
+    """Os testes de sql/testes/: consultas que devolvem zero linhas quando
+    esta tudo certo."""
+
+    def setUp(self):
+        super().setUp()
+        self.escrever("00_a.sql", "CREATE TABLE t AS SELECT range AS x FROM range(10);")
+
+    def test_teste_sem_linhas_passa(self):
+        self.escrever(os.path.join("testes", "sem_negativo.sql"), "SELECT * FROM t WHERE x < 0;")
+        self.assertEqual(self.construir(), 0)
+        saida = self.stdout.getvalue()
+        self.assertRegex(saida, r"testes/sem_negativo\.sql +\d+\.\ds")
+        self.assertIn("1 testes passaram", saida)
+
+    def test_teste_com_linhas_falha_e_mostra_as_primeiras(self):
+        # 7 linhas problematicas: mostra quantas sao e so as 5 primeiras
+        self.escrever(os.path.join("testes", "menor_que_sete.sql"), "SELECT x AS valor FROM t WHERE x < 7 ORDER BY x;")
+        self.assertEqual(self.construir(), 1)
+        saida = self.stdout.getvalue()
+        self.assertIn("testes/menor_que_sete.sql", saida)
+        self.assertIn("FALHOU: 7 linha(s)", saida)
+        self.assertIn("  valor\n", saida)  # o nome da coluna
+        self.assertIn("  4\n", saida)
+        self.assertNotIn("  5\n", saida)
+
+    def test_roda_todos_os_testes_mesmo_depois_de_uma_falha(self):
+        self.escrever(os.path.join("testes", "a.sql"), "SELECT * FROM t WHERE x = 1;")
+        self.escrever(os.path.join("testes", "b.sql"), "SELECT * FROM t WHERE x < 0;")
+        self.escrever(os.path.join("testes", "c.sql"), "SELECT * FROM t WHERE x = 2;")
+        self.assertEqual(self.construir(), 1)
+        saida = self.stdout.getvalue()
+        self.assertEqual(saida.count("FALHOU"), 2)
+        self.assertIn("2 de 3 testes falharam", saida)
+
+    def test_teste_com_erro_de_sql_falha(self):
+        self.escrever(os.path.join("testes", "quebrado.sql"), "SELECT * FROM nao_existe;")
+        self.assertEqual(self.construir(), 1)
+        self.assertIn("nao_existe", self.stdout.getvalue())
+
+    def test_modelo_com_erro_nao_chega_nos_testes(self):
+        self.escrever("10_b.sql", "SELECT * FROM nao_existe;")
+        self.escrever(os.path.join("testes", "a.sql"), "SELECT * FROM t WHERE x < 0;")
+        self.assertEqual(self.construir(), 1)
+        self.assertNotIn("testes/a.sql", self.stdout.getvalue())
+
+    def test_banco_fica_pra_investigar_quando_um_teste_falha(self):
+        self.escrever(os.path.join("testes", "a.sql"), "SELECT * FROM t WHERE x = 1;")
+        self.construir()
+        self.assertEqual(self.consultar("SELECT count(*) FROM t"), [(10,)])
 
 
 class TesteMain(unittest.TestCase):
