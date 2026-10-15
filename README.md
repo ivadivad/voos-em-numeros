@@ -80,8 +80,9 @@ Qualquer outro aeroporto é o próprio mercado.
 **Sem direção.** São Paulo → Rio e Rio → São Paulo são o mesmo mercado. Em
 ago/2026, os dois sentidos tiveram quase o mesmo número de passageiros
 (311.583 e 308.238). Nos 262 mercados com mais de mil passageiros naquele mês,
-a diferença mediana entre ida e volta foi de 2,8%. Separar os sentidos
-dobraria o número de mercados sem acrescentar informação.
+a ida e a volta diferiram, na mediana, 5,6% em relação à média dos dois
+sentidos. Separar os sentidos dobraria o número de mercados sem acrescentar
+informação.
 
 **Escolhas que podem ser discutidas:**
 
