@@ -262,18 +262,18 @@ class TesteLeituraDePaginas(unittest.TestCase):
 
 class TesteAcharNaListagem(unittest.TestCase):
     def setUp(self):
-        coletar.listar_datasas.cache_clear()
+        coletar._listas_datasas.clear()
 
     def tearDown(self):
-        coletar.listar_datasas.cache_clear()
+        coletar._listas_datasas.clear()
 
     @patch("coletar.buscar")
     def test_tarifas_acha_o_mes_com_outro_nome(self, buscar):
         # GET do formulario e POST com o ano, nessa ordem
         buscar.side_effect = [("ok", fixture("datasas_formulario.html")),
                               ("ok", fixture("datasas_tarifas_2026.html"))]
-        url = coletar.achar_na_listagem("tarifas", 202605)
-        self.assertEqual(url, "https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV")
+        situacao, url = coletar.achar_na_listagem("tarifas", 202605)
+        self.assertEqual((situacao, url), ("ok", "https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV"))
         post = buscar.call_args_list[1]
         self.assertIn(b"listAno=2026", post.kwargs["dados"])
         self.assertIn(b"__VIEWSTATE=", post.kwargs["dados"])
@@ -282,7 +282,7 @@ class TesteAcharNaListagem(unittest.TestCase):
     def test_mes_fora_da_lista_nao_tem_url(self, buscar):
         buscar.side_effect = [("ok", fixture("datasas_formulario.html")),
                               ("ok", fixture("datasas_tarifas_2026.html"))]
-        self.assertIsNone(coletar.achar_na_listagem("tarifas", 202609))
+        self.assertEqual(coletar.achar_na_listagem("tarifas", 202609), ("ok", None))
 
     @patch("coletar.buscar")
     def test_lista_do_ano_e_consultada_uma_vez_so(self, buscar):
@@ -293,21 +293,37 @@ class TesteAcharNaListagem(unittest.TestCase):
         self.assertEqual(buscar.call_count, 2)
 
     @patch("coletar.buscar")
-    def test_datasas_fora_do_ar_nao_tem_url(self, buscar):
+    def test_datasas_fora_do_ar_devolve_a_falha(self, buscar):
         buscar.return_value = ("erro_5xx", b"")
-        self.assertIsNone(coletar.achar_na_listagem("tarifas", 202605))
+        self.assertEqual(coletar.achar_na_listagem("tarifas", 202605), ("erro_5xx", None))
+
+    @patch("coletar.buscar")
+    def test_falha_da_listagem_nao_fica_guardada(self, buscar):
+        # o proximo mes que precisa da lista tenta de novo, e acha
+        buscar.side_effect = [("erro_5xx", b""),
+                              ("ok", fixture("datasas_formulario.html")),
+                              ("ok", fixture("datasas_tarifas_2026.html"))]
+        self.assertEqual(coletar.achar_na_listagem("tarifas", 202605), ("erro_5xx", None))
+        self.assertEqual(coletar.achar_na_listagem("tarifas", 202605)[0], "ok")
+        self.assertEqual(buscar.call_count, 3)
 
     @patch("coletar.buscar")
     def test_vra_acha_o_csv_na_pasta_do_mes(self, buscar):
         buscar.return_value = ("ok", fixture("vra_pasta_2026_08.html"))
-        url = coletar.achar_na_listagem("vra", 202608)
-        self.assertEqual(url, coletar.VRA + "/2026/08 - Agosto/VRA_20268.csv")
+        situacao, url = coletar.achar_na_listagem("vra", 202608)
+        self.assertEqual((situacao, url), ("ok", coletar.VRA + "/2026/08 - Agosto/VRA_20268.csv"))
         self.assertEqual(buscar.call_args[0][0], coletar.VRA + "/2026/08 - Agosto/")
 
     @patch("coletar.buscar")
     def test_vra_pasta_vazia_nao_tem_url(self, buscar):
         buscar.return_value = ("ok", b"<html><body><pre><a href=\"../\">../</a></pre></body></html>")
-        self.assertIsNone(coletar.achar_na_listagem("vra", 202609))
+        self.assertEqual(coletar.achar_na_listagem("vra", 202609), ("ok", None))
+
+    @patch("coletar.buscar")
+    def test_vra_pasta_que_nao_existe_e_404(self, buscar):
+        # a pasta do mes so aparece quando o mes sai
+        buscar.return_value = ("erro_404", b"")
+        self.assertEqual(coletar.achar_na_listagem("vra", 202610), ("erro_404", None))
 
 
 class TesteBaixarMes(unittest.TestCase):
@@ -321,18 +337,37 @@ class TesteBaixarMes(unittest.TestCase):
     @patch("coletar.achar_na_listagem")
     @patch("coletar.buscar")
     def test_404_no_padrao_baixa_o_que_a_listagem_achou(self, buscar, achar):
-        achar.return_value = "https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV"
+        url = "https://sas.anac.gov.br/sas/tarifadomestica/2026/202605 (1).CSV"
+        achar.return_value = ("ok", url)
         buscar.side_effect = [("erro_404", b""), ("ok", b"dados")]
-        self.assertEqual(coletar.baixar_mes("tarifas", 202605), ("ok", b"dados", achar.return_value))
+        self.assertEqual(coletar.baixar_mes("tarifas", 202605), ("ok", b"dados", url))
 
     @patch("coletar.achar_na_listagem")
     @patch("coletar.buscar")
     def test_404_sem_nada_na_listagem_continua_404(self, buscar, achar):
-        achar.return_value = None
+        achar.return_value = ("ok", None)
         buscar.return_value = ("erro_404", b"")
         situacao, _, url = coletar.baixar_mes("tarifas", 202609)
         self.assertEqual(situacao, "erro_404")
         self.assertTrue(url.endswith("/2026/202609.csv"))
+
+    @patch("coletar.achar_na_listagem")
+    @patch("coletar.buscar")
+    def test_listagem_com_404_continua_404(self, buscar, achar):
+        achar.return_value = ("erro_404", None)
+        buscar.return_value = ("erro_404", b"")
+        self.assertEqual(coletar.baixar_mes("vra", 202610)[0], "erro_404")
+
+    @patch("coletar.achar_na_listagem")
+    @patch("coletar.buscar")
+    def test_listagem_fora_do_ar_nao_vira_404(self, buscar, achar):
+        # sem a listagem, nao da pra dizer que o mes nao saiu: a situacao e a
+        # da falha, e a coleta sai com erro em vez de dar o mes por nao publicado
+        buscar.return_value = ("erro_404", b"")
+        for falha in ("erro_5xx", "falha_rede", "erro_403"):
+            with self.subTest(falha=falha):
+                achar.return_value = (falha, None)
+                self.assertEqual(coletar.baixar_mes("tarifas", 202609)[0], falha)
 
     @patch("coletar.achar_na_listagem")
     @patch("coletar.buscar")

@@ -15,7 +15,6 @@ ultimo mes publicado e mes que ainda nao saiu, e nao conta.
 """
 import argparse
 import csv
-import functools
 import hashlib
 import http.client
 import os
@@ -265,16 +264,21 @@ def arquivos_do_datasas(html):
     return arquivos
 
 
-@functools.lru_cache(maxsize=None)
+_listas_datasas = {}  # (url, ano) -> arquivos; so as consultas que deram certo
+
+
 def listar_datasas(url, ano):
     """Lista os arquivos de um ano no DataSAS. Devolve (situacao, arquivos),
     com cada arquivo como (AAAAMM, nome).
 
     O DataSAS e um formulario ASP.NET: a lista so aparece depois de enviar
     o ano junto com os campos ocultos da pagina (__VIEWSTATE e afins), na
-    mesma sessao. Guardado em cache: um ano so e consultado uma vez por
-    rodada.
+    mesma sessao. A lista que veio fica guardada, e um ano so e consultado
+    uma vez por rodada. A falha nao fica: o proximo mes que precisar da
+    lista tenta de novo.
     """
+    if (url, ano) in _listas_datasas:
+        return "ok", _listas_datasas[(url, ano)]
     abridor = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
     resultado, pagina = buscar(url, abridor=abridor)
     if resultado != "ok":
@@ -288,19 +292,21 @@ def listar_datasas(url, ano):
     resultado, resposta = buscar(url, dados=dados, abridor=abridor)
     if resultado != "ok":
         return resultado, ()
-    return "ok", tuple(arquivos_do_datasas(resposta.decode("utf-8", "replace")))
+    _listas_datasas[(url, ano)] = tuple(arquivos_do_datasas(resposta.decode("utf-8", "replace")))
+    return "ok", _listas_datasas[(url, ano)]
 
 
 def achar_na_listagem(base, mes):
-    """URL do arquivo de um mes segundo a listagem oficial, ou None.
+    """Procura o mes na listagem oficial. Devolve (situacao da listagem,
+    URL do arquivo ou None).
 
     Serve pro que o padrao de URL nao acha: mai/2026 das tarifas so existe
     como "202605 (1).CSV". Nas tarifas, a lista do ano vem do DataSAS; no
-    VRA, da listagem da pasta do mes.
+    VRA, da listagem da pasta do mes, que da 404 enquanto o mes nao saiu.
     """
     ano = mes // 100
     if base == "tarifas":
-        _, arquivos = listar_datasas(FONTES["tarifas"]["listagem"], ano)
+        resultado, arquivos = listar_datasas(FONTES["tarifas"]["listagem"], ano)
         candidatos = [nome for referencia, nome in arquivos if referencia == mes]
         pasta = FONTES["tarifas"]["pasta"].format(ano=ano)
     else:
@@ -308,22 +314,27 @@ def achar_na_listagem(base, mes):
         resultado, pagina = buscar(pasta)
         nomes = arquivos_da_pasta(pagina.decode("utf-8", "replace")) if resultado == "ok" else []
         candidatos = [n for n in nomes if n.lower().endswith(".csv")]
-    return pasta + sorted(candidatos)[0] if candidatos else None
+    return resultado, (pasta + sorted(candidatos)[0] if candidatos else None)
 
 
 def baixar_mes(base, mes):
     """Baixa o arquivo de um mes. Devolve (situacao, bytes, url usada).
 
     Tenta o padrao de URL; se der 404, procura o mes na listagem oficial
-    antes de concluir que ele nao foi publicado.
+    antes de concluir que ele nao foi publicado. Se a listagem nao
+    responder (5xx, falha de rede, 403), a situacao e a dela, e nao 404: sem
+    a listagem, nao da pra dizer que o mes nao saiu, e no MED juntar falhas
+    diferentes levou a um diagnostico errado.
     """
     url = montar_url(base, mes)
     resultado, corpo = buscar(url)
     if resultado == "erro_404":
-        alternativa = achar_na_listagem(base, mes)
+        situacao_listagem, alternativa = achar_na_listagem(base, mes)
         if alternativa:
             url = alternativa
             resultado, corpo = buscar(url)
+        elif situacao_listagem not in ("ok", "erro_404"):
+            resultado = situacao_listagem
     return resultado, corpo, url
 
 
