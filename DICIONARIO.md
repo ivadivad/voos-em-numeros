@@ -124,8 +124,38 @@ Duas novidades:
 - **Nem todo código de aeroporto é só de letras.** `SN6L` aparece em 95
   linhas, de nov/2023 a jan/2025.
 - **Tarifas nas pontas.** Vão de R$ 1,00 a R$ 13.149,90. São 377 abaixo de
-  R$ 10 e 4 acima de R$ 10 mil. Se são erro de registro ou tarifa de verdade,
-  a validação da etapa 4 responde.
+  R$ 10 e 4 acima de R$ 10 mil. A validação da etapa 4 não decidiu se são
+  erro de registro (nenhuma cai nos meses com comunicado da ANAC pra
+  conferir), mas o peso é desprezível: 9.500 assentos, 0,004% do total.
+
+## Como a tarifa média é calculada (etapa 4)
+
+Conferido no notebook `01-validacao`, contra os comunicados mensais da ANAC,
+o Anuário do Transporte Aéreo e a imprensa:
+
+- **Tarifa média:** a receita (cada tarifa vezes os assentos vendidos a ela)
+  dividida pelos assentos, no mês da venda, juntando todas as empresas e
+  rotas. É média ponderada pelos assentos, e não média simples das tarifas.
+  Bate no centavo com os comunicados de jun, jul e ago/2026 (R$ 660,54,
+  R$ 703,52 e R$ 776,87) e com a tarifa de cada empresa em ago/2026.
+
+  $$\text{tarifa média} = \frac{\sum \text{tarifa} \times \text{assentos}}{\sum \text{assentos}}$$
+
+- **Valor real:** cada mês é levado ao preço do mês de referência pelo IPCA
+  (série 433 do Banco Central), multiplicando pelo índice da referência e
+  dividindo pelo índice do mês. Nos comunicados mensais, a referência é o
+  próprio mês publicado, e o valor do mês sai nominal. No Anuário, é
+  dezembro do ano: com essa base, 2022 dá R$ 727,01 e 2024, R$ 670,11,
+  contra os R$ 727 e R$ 670 publicados.
+- **Faixas de preço:** "abaixo de R$ 500", nos comunicados, inclui os
+  R$ 500. Sem eles, jun e ago/2026 ficariam um décimo abaixo do publicado
+  (47,1% e 34,7%, contra 47,2% e 34,8%).
+- **Yield:** a receita dividida pelos assentos-km, com a distância em linha
+  reta entre a origem e o destino do passageiro (haversine, raio de
+  6.371 km, em `sql/14_distancia.sql`), só nos pares com coordenada nas duas
+  pontas. É a razão entre as somas: a média dos yields de cada tarifa,
+  ponderada pelos assentos, cai 6,9% em 2025, longe dos 4,9% do Anuário; a
+  razão cai 4,65%. Em valores de dez/2025, 2025 dá R$ 0,50/km.
 
 ---
 
@@ -558,7 +588,9 @@ Três defeitos que o leitor precisa tratar:
 - **VRA:** os voos a cerca de 24 h do horário previsto mudaram de dia ou têm a
   data com um dia de erro? Os dados não separam os dois casos.
 - **Tarifas:** as 377 tarifas abaixo de R$ 10 e as 4 acima de R$ 10 mil são
-  erro de registro ou tarifa de verdade? A etapa 4 olha.
+  erro de registro ou tarifa de verdade? Nenhuma cai num mês com comunicado
+  da ANAC pra conferir, e juntas somam 0,004% dos assentos: a resposta não
+  muda nenhuma média.
 - **Aeródromos:** onde estão os 18 aeroportos que não estão em nenhuma das
   duas listas (`SBFC` e `SBCM` entre eles)? A lista de excluídos não tem
   código OACI pra conferir. Sem coordenada, a distância desses pares sai da
