@@ -53,6 +53,7 @@ publicos AS (
         'publica' AS lista
     FROM bruto_aerodromos_publicos AS a
     LEFT JOIN uf ON uf.nome = trim(coalesce(a.uf_servido, a.uf))
+    WHERE trim(coalesce(a.icao, '')) <> ''
 ),
 privados AS (
     SELECT
@@ -70,8 +71,11 @@ privados AS (
 juntos AS (
     SELECT * FROM publicos
     UNION ALL
-    -- codigo nas duas listas fica com a publica (hoje nao ha nenhum)
-    SELECT * FROM privados WHERE icao NOT IN (SELECT icao FROM publicos)
+    -- codigo nas duas listas fica com a publica (hoje nao ha nenhum). NOT
+    -- EXISTS, e nao NOT IN: um unico codigo nulo na subconsulta faria o NOT
+    -- IN dar nulo pra toda linha, e a lista de privados sumiria inteira
+    SELECT * FROM privados AS p
+    WHERE NOT EXISTS (SELECT 1 FROM publicos AS u WHERE u.icao = p.icao)
 )
 SELECT
     icao,
