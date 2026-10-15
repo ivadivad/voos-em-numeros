@@ -185,6 +185,11 @@ se um `.sql` falhou ou se um teste devolveu linhas, e nesse caso mostra as
 primeiras linhas problemáticas; o banco fica como estava, pra ser aberto e
 investigado.
 
+Os marts, os conjuntos prontos pra análise, saem da mesma construção, em
+`dados/marts/`, e esses ficam no git: são pequenos, e os notebooks os leem
+pela URL do GitHub, sem precisar rodar a coleta. Rodar de novo sem dado novo
+grava o mesmo arquivo, byte a byte, pra não aparecer mudança falsa no git.
+
 ### Rodar os testes
 
 ```bash
