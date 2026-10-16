@@ -278,7 +278,7 @@ ele, somado ao que ficou de fora, fecha exatamente com a staging.
 - [x] Etapa 2 — Coletor
 - [x] Etapa 3 — Do bruto ao staging, em SQL
 - [x] Etapa 4 — Validar a base
-- [ ] Etapa 5 — Modelo estrela
+- [x] Etapa 5 — Modelo estrela
 - [ ] Etapa 6 — Concorrência e preço
 - [ ] Etapa 7 — Comparar o comparável
 - [ ] Etapa 8 — A fusão que não aconteceu
