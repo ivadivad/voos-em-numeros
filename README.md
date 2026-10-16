@@ -334,11 +334,12 @@ python construir.py
 O `construir.py` apaga o `voos.duckdb` e o constrói do zero a partir de
 `dados/brutos/`: roda os `.sql` de `sql/` em ordem alfabética, mostrando o
 tempo de cada um, e depois cada teste de `sql/testes/`. Em 16/10/2026, com
-o modelo estrela da etapa 5, levou de 96 a 115 segundos e gerou um banco de
+o modelo estrela da etapa 5, levou de 96 a 126 segundos e gerou um banco de
 919 MB, fora do git. O DuckDB fica limitado a 2 GB de memória, e o que não
 cabe vai pro disco, em `voos.duckdb.tmp/`: sem o limite, a agregação das
 tarifas falhava numa máquina com outros programas abertos. A construção
-inteira chegou a 2,4 GB de memória comprometida. Sai com código 1 se um
+inteira chegou a 2,4 GB de memória comprometida, e precisa desse tanto
+livre: com menos, para com "Out of Memory Error". Sai com código 1 se um
 `.sql` falhou ou se um teste devolveu linhas, e nesse caso mostra as
 primeiras linhas problemáticas; o banco fica como estava, pra ser aberto e
 investigado.
