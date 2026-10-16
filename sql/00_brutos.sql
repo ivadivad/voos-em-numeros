@@ -64,7 +64,9 @@ FROM read_csv('dados/brutos/vra/*.csv',
 
 
 -- Dados estatisticos: o acumulado, de 2000 ate o ultimo mes, num arquivo so.
--- So as colunas que o projeto usa (ver DICIONARIO.md).
+-- So as colunas que o projeto usa (ver DICIONARIO.md). O "nome" do
+-- aeroporto e o da cidade (SBGL vem como RIO DE JANEIRO): serve de cidade
+-- pros aeroportos que nao estao nas listas de aerodromos.
 CREATE OR REPLACE VIEW bruto_estatisticas AS
 SELECT
     EMPRESA_SIGLA AS empresa,
@@ -72,7 +74,11 @@ SELECT
     ANO AS ano,
     MES AS mes,
     AEROPORTO_DE_ORIGEM_SIGLA AS origem,
+    AEROPORTO_DE_ORIGEM_NOME AS origem_nome,
+    AEROPORTO_DE_ORIGEM_UF AS origem_uf,
     AEROPORTO_DE_DESTINO_SIGLA AS destino,
+    AEROPORTO_DE_DESTINO_NOME AS destino_nome,
+    AEROPORTO_DE_DESTINO_UF AS destino_uf,
     NATUREZA AS natureza,
     GRUPO_DE_VOO AS grupo_de_voo,
     PASSAGEIROS_PAGOS AS passageiros_pagos,
