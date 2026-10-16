@@ -96,19 +96,172 @@ informação.
   estatística, por voo. Um mesmo mercado mede as duas coisas de jeitos
   diferentes, como explica o [`DICIONARIO.md`](DICIONARIO.md).
 
+## O modelo
+
+As três bases viram um modelo estrela no DuckDB: um fato por base e as
+dimensões que os três compartilham. As dimensões também vão pra
+`dados/marts/dim_*.parquet`, pro painel usar as mesmas tabelas que o SQL.
+Os fatos ficam só no banco, grandes demais pro Git (o das tarifas tem 34
+milhões de linhas), e os marts das próximas etapas saem deles.
+
+```mermaid
+erDiagram
+    dim_calendario ||--o{ fato_tarifa : mes
+    dim_calendario ||--o{ fato_voo : mes
+    dim_calendario ||--o{ fato_oferta : mes
+    dim_grupo ||--o{ fato_tarifa : grupo
+    dim_grupo ||--o{ fato_voo : grupo
+    dim_grupo ||--o{ fato_oferta : grupo
+    dim_mercado ||--o{ fato_tarifa : mercado
+    dim_mercado ||--o{ fato_voo : mercado
+    dim_mercado ||--o{ fato_oferta : mercado
+    dim_empresa ||--o{ fato_voo : empresa
+    dim_aeroporto ||--o{ fato_voo : origem
+    dim_aeroporto ||--o{ fato_voo : destino
+    dim_empresa ||--o{ empresa_grupo : empresa
+    dim_grupo ||--o{ empresa_grupo : grupo
+
+    fato_tarifa {
+        date mes FK
+        varchar grupo FK
+        varchar mercado FK
+        decimal tarifa
+        bigint assentos
+    }
+    fato_voo {
+        date mes FK
+        varchar empresa FK
+        varchar grupo FK
+        varchar mercado FK
+        varchar origem FK
+        varchar destino FK
+        varchar voo
+        timestamp partida_prevista
+        timestamp partida_real
+        timestamp chegada_prevista
+        timestamp chegada_real
+        varchar situacao
+        boolean cancelado
+        integer atraso_chegada_min
+    }
+    fato_oferta {
+        date mes FK
+        varchar grupo FK
+        varchar mercado FK
+        varchar grupo_de_voo
+        bigint passageiros_pagos
+        bigint passageiros_gratis
+        bigint assentos
+        bigint decolagens
+        bigint distancia_voada_km
+        bigint ask
+        bigint rpk
+    }
+    dim_calendario {
+        date mes PK
+        bigint ano
+        bigint trimestre
+        bigint numero_mes
+        varchar nome_mes
+        varchar mes_abreviado
+        varchar rotulo
+    }
+    dim_grupo {
+        varchar grupo PK
+        varchar nome_grupo
+    }
+    dim_empresa {
+        varchar empresa PK
+        varchar nome_empresa
+        varchar nome_anac
+    }
+    empresa_grupo {
+        varchar empresa FK
+        varchar grupo FK
+        date desde
+        date ate
+        varchar fonte
+    }
+    dim_mercado {
+        varchar mercado PK
+        varchar cidade_a
+        varchar nome_cidade_a
+        varchar cidade_b
+        varchar nome_cidade_b
+        varchar nome
+        decimal distancia_km
+        varchar distancia_fonte
+    }
+    dim_aeroporto {
+        varchar icao PK
+        varchar nome
+        varchar municipio
+        varchar uf
+        double latitude
+        double longitude
+        varchar cidade
+        varchar nome_cidade
+        varchar cadastro
+    }
+```
+
+| Tabela | Uma linha é |
+|---|---|
+| `fato_tarifa` | um grupo, um mercado, um mês da venda e um valor de tarifa, com os assentos vendidos por esse valor |
+| `fato_voo` | um voo do VRA, com os horários, a situação e o atraso na chegada |
+| `fato_oferta` | um grupo, um mercado, um mês e um grupo de voo (regular, não regular ou improdutivo), com passageiros, assentos, decolagens, ASK e RPK |
+| `dim_calendario` | um mês, de jan/2019 a ago/2026 |
+| `dim_grupo` | um grupo econômico (21) |
+| `dim_empresa` | uma empresa das três bases (24) |
+| `empresa_grupo` | uma empresa num período, com o grupo a que ela pertencia nele |
+| `dim_mercado` | um par de cidades sem direção, com a distância (8.983) |
+| `dim_aeroporto` | um aeroporto das três bases, com a cidade do mercado (306) |
+
+Os números são da coleta de 13/10/2026. Três decisões pesam no resto da
+análise:
+
+**O grupo econômico muda no tempo.** A concentração é medida entre donos,
+não entre marcas, e duas empresas trocaram de dono dentro do período: a
+TwoFlex, hoje Azul Conecta, é da Azul a partir de jun/2020, e a MAP, da
+VoePass a partir de set/2019. Antes disso, cada uma é um grupo próprio. Por
+isso o grupo não é uma coluna da `dim_empresa`: a `empresa_grupo` guarda os
+períodos, e cada fato traz o grupo da empresa no mês da linha. A ligação de
+cada empresa, com a fonte, está em
+[`dados/referencia/grupos.csv`](dados/referencia/grupos.csv).
+
+**A distância de um mercado** é a média das distâncias em linha reta entre
+os aeroportos das duas cidades, ponderada pelos assentos vendidos no
+período. Rio–São Paulo fica com 365,9 km, entre os 336,8 km de
+Guarulhos–Galeão e os 406,8 km de Viracopos–Santos Dumont. Com esse peso,
+a tarifa por quilômetro calculada pelo mercado dá, no período, o mesmo
+R$ 0,4357/km da conta feita par de aeroportos a par. Os 18 aeroportos que
+não estão nas listas de aeródromos da ANAC não têm coordenada: neles vale a
+distância que a ANAC publica para voo direto, e 428 mercados, com 0,06% dos
+assentos vendidos, ficam sem distância.
+
+**O que fica de fora** é o par de aeroportos da mesma cidade, que não forma
+mercado: 14 assentos das tarifas, 823 voos do VRA e 428.410 passageiros
+pagos da base estatística, 94,5% deles em voos do grupo improdutivo que
+voltaram ao aeroporto de onde saíram. Os testes de cada fato conferem que
+ele, somado ao que ficou de fora, fecha exatamente com a staging.
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
 - `construir.py`: constrói o banco DuckDB rodando os `.sql` em ordem e depois
   os testes, com os testes do executor em `teste_construir.py`.
 - `sql/`: as transformações, em SQL. `00_brutos.sql` lê os arquivos como
-  texto, os `1x_stg_*.sql` padronizam cada base, e `sql/testes/` tem os
+  texto, os `1x_*.sql` padronizam cada base e definem a distância entre
+  aeródromos, os `2x_dim_*.sql` e `3x_fato_*.sql` montam o modelo estrela,
+  os `40_mart_*.sql` em diante gravam os marts, e `sql/testes/` tem os
   testes de qualidade: cada um é uma consulta que devolve zero linhas quando
   está tudo certo.
 - `dados/brutos/`: arquivos originais baixados; não são versionados.
 - `dados/manifesto.csv` e `dados/cobertura.csv`: o que cada coleta baixou e
   encontrou.
-- `dados/referencia/`: tabelas auxiliares mantidas pelo projeto.
+- `dados/referencia/`: tabelas auxiliares mantidas pelo projeto:
+  `mercados.csv` (os aeroportos de uma mesma cidade) e `grupos.csv` (o
+  grupo econômico de cada empresa, com a fonte).
 - `dados/marts/`: conjuntos analíticos derivados, versionados no Git.
 - `notebooks/`: validação e análises.
 - `graficos/`: gráficos e materiais visuais.
