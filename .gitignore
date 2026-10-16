@@ -8,5 +8,6 @@ dados/brutos/
 *.duckdb.tmp/
 PLANO.md
 CLAUDE.md
+agentes.md
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
