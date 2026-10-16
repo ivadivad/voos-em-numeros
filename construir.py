@@ -25,6 +25,13 @@ PASTA_SQL = "sql"
 BANCO = "voos.duckdb"  # fora do git (.gitignore)
 PASTA_BRUTOS = os.path.join("dados", "brutos")  # de onde os .sql leem os arquivos da ANAC
 LINHAS_MOSTRADAS = 5  # de cada teste que falha
+# O padrao do DuckDB e 80% da RAM, e supoe que ela esta livre. Com outros
+# programas abertos, o Windows recusa a alocacao antes de o DuckDB recorrer
+# ao disco, e a construcao para com "Out of Memory Error: Allocation
+# failure". Com um limite que cabe, o que passa dele vai pra
+# voos.duckdb.tmp/, fora do git, e a agregacao das tarifas (34 milhoes de
+# grupos) termina.
+MEMORIA = "2GB"
 
 
 def arquivos_sql(pasta=PASTA_SQL):
@@ -113,7 +120,7 @@ def construir(pasta_sql=PASTA_SQL, banco=BANCO):
         return 1
     inicio = time.perf_counter()
     testes = arquivos_sql(os.path.join(pasta_sql, "testes"))
-    with duckdb.connect(banco) as con:
+    with duckdb.connect(banco, config={"memory_limit": MEMORIA}) as con:
         if rodar(con, arquivos):
             return 1
         falharam = testar(con, testes)

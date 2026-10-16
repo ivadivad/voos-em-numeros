@@ -121,6 +121,20 @@ class TesteDoZero(ComPastaTemporaria):
         self.assertIn("aberto em outro programa", self.stdout.getvalue())
 
 
+class TesteMemoria(ComPastaTemporaria):
+    def test_os_sql_rodam_com_o_limite_de_memoria(self):
+        # o padrao do DuckDB (80% da RAM) supoe a RAM livre; com o limite, o
+        # que nao cabe vai pro disco em vez de a alocacao falhar
+        self.escrever("00_a.sql", "CREATE TABLE m AS SELECT current_setting('memory_limit') AS limite;")
+        self.assertEqual(self.construir(), 0)
+        with duckdb.connect(config={"memory_limit": construir.MEMORIA}) as con:
+            esperado = con.execute("SELECT current_setting('memory_limit')").fetchall()
+        with duckdb.connect() as con:
+            padrao = con.execute("SELECT current_setting('memory_limit')").fetchall()
+        self.assertNotEqual(esperado, padrao)  # senao o teste nao prova nada
+        self.assertEqual(self.consultar("SELECT limite FROM m"), esperado)
+
+
 class TesteTestes(ComPastaTemporaria):
     """Os testes de sql/testes/: consultas que devolvem zero linhas quando
     esta tudo certo."""
