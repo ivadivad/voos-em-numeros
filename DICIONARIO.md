@@ -409,7 +409,7 @@ domésticos estão em trânsito (`cd_cotran` `D` ou `I`): 2.105.240 de 8.940.607
 |---|---|
 | `EMPRESA_SIGLA`, `EMPRESA_NOME`, `EMPRESA_NACIONALIDADE` | Empresa que operou. Nome e nacionalidade por extenso |
 | `ANO`, `MES` | Data prevista da primeira etapa do voo. `MES` sem zero à esquerda |
-| `AEROPORTO_DE_ORIGEM_SIGLA` / `_DESTINO_SIGLA` | Código OACI. Mais nome, UF, região, país e continente |
+| `AEROPORTO_DE_ORIGEM_SIGLA` / `_DESTINO_SIGLA` | Código OACI. Mais nome, UF, região, país e continente. O "nome" é o da cidade, não o do aeroporto: nos dez conferidos na etapa 5, `SBGL` vem como RIO DE JANEIRO e `SBGR` como GUARULHOS |
 | `NATUREZA` | `DOMÉSTICA` quando pouso e decolagem são no Brasil e a empresa é brasileira; senão `INTERNACIONAL` |
 | `GRUPO_DE_VOO` | `REGULAR`, `NÃO REGULAR` ou `IMPRODUTIVO` |
 | `PASSAGEIROS_PAGOS`, `PASSAGEIROS_GRATIS` | Da combinada. Pagos incluem quem viaja com milhas e com promoção |
@@ -424,6 +424,16 @@ aeroporto de origem.
 
 **A distância vem pronta.** A ANAC a calcula "considerando a curvatura do
 planeta terra". A haversine da etapa 5 vai ser conferida com ela.
+
+**Origem igual ao destino (etapa 5).** Das 179.817 linhas domésticas desde
+2019, 6.098 têm o mesmo aeroporto na origem e no destino, em 130
+aeroportos, com 415.437 passageiros pagos. Quase tudo é do grupo
+improdutivo: 5.481 linhas e 404.697 passageiros, 97,9% dos passageiros pagos
+do grupo. É compatível com a etapa de retorno (DI `3`), que a descrição de
+variáveis põe no grupo improdutivo: o avião volta pro aeroporto de onde
+saiu. No regular são 325 linhas e 8.849 passageiros. O modelo da etapa 5
+deixa essas linhas de fora, porque um aeroporto com ele mesmo não forma
+mercado.
 
 ## Formato
 
@@ -459,6 +469,20 @@ passageiros pagos no período:
 
 Código e grupo econômico são coisas diferentes: `ACN`, a Azul Conecta, é o
 caso que a etapa 5 resolve em `grupos.csv`, com fonte.
+
+**As empresas das três bases (etapa 5).** São 24 códigos: 11 nas tarifas,
+22 na base estatística doméstica, contando as de carga e de fretamento, e
+19 no VRA. Dois casos que só aparecem juntando as bases:
+
+- **A TwoFlex tem dois códigos.** É `OWT` nas tarifas (de jan a ago/2019) e
+  no VRA (de jan/2019 a nov/2021), e `ACN` na base estatística, que a chama
+  "AZUL CONECTA LTDA. (EX TWO TAXI AEREO LTDA)" desde jan/2019. No VRA, os
+  mesmos números de voo passam de `OWT` pra `ACN` ao longo de 2021.
+- **`DSM`, a LATAM Argentina, tem um voo só**, no VRA: de Viracopos a
+  Guarulhos, em jan/2020.
+
+O grupo de cada empresa, com o período e a fonte, está em
+[`dados/referencia/grupos.csv`](dados/referencia/grupos.csv).
 
 ---
 
@@ -540,6 +564,12 @@ aparece nela: `SBBT` (Barretos), `SBBZ` (Armação dos Búzios), `SBCM`
 `SNJN` (Januária). `SBFC`, `SBFE`, `SBGU` e `SNOB` ficam sem nome: aparecem
 nas tarifas ou no VRA, mas não na base estatística.
 
+Na `dim_aeroporto` (etapa 5), os 14 ficam com essa cidade e a UF da base
+estatística, e os 4 só com o código. Nenhum dos 18 tem coordenada: a
+distância dos mercados deles vem da base estatística quando há voo direto
+(43 mercados), e 428 mercados, com 0,06% dos assentos vendidos, ficam sem
+distância.
+
 ## A lista de privados
 
 `AerodromosPrivados.csv`, na [listagem](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20Privados/Lista%20de%20aer%C3%B3dromos%20privados/Aerodromos%20Privados/)
@@ -593,5 +623,5 @@ Três defeitos que o leitor precisa tratar:
   muda nenhuma média.
 - **Aeródromos:** onde estão os 18 aeroportos que não estão em nenhuma das
   duas listas (`SBFC` e `SBCM` entre eles)? A lista de excluídos não tem
-  código OACI pra conferir. Sem coordenada, a distância desses pares sai da
-  base estatística.
+  código OACI pra conferir. Sem coordenada, a distância sai da base
+  estatística nos pares com voo direto, e 428 mercados ficam sem ela.
