@@ -333,16 +333,21 @@ python construir.py
 
 O `construir.py` apaga o `voos.duckdb` e o constrói do zero a partir de
 `dados/brutos/`: roda os `.sql` de `sql/` em ordem alfabética, mostrando o
-tempo de cada um, e depois cada teste de `sql/testes/`. Em 14/10/2026,
-levou uns 30 segundos e gerou um banco de 467 MB, fora do git. Sai com código 1
-se um `.sql` falhou ou se um teste devolveu linhas, e nesse caso mostra as
+tempo de cada um, e depois cada teste de `sql/testes/`. Em 16/10/2026, com
+o modelo estrela da etapa 5, levou de 96 a 115 segundos e gerou um banco de
+919 MB, fora do git. O DuckDB fica limitado a 2 GB de memória, e o que não
+cabe vai pro disco, em `voos.duckdb.tmp/`: sem o limite, a agregação das
+tarifas falhava numa máquina com outros programas abertos. A construção
+inteira chegou a 2,4 GB de memória comprometida. Sai com código 1 se um
+`.sql` falhou ou se um teste devolveu linhas, e nesse caso mostra as
 primeiras linhas problemáticas; o banco fica como estava, pra ser aberto e
 investigado.
 
-Os marts, os conjuntos prontos pra análise, saem da mesma construção, em
-`dados/marts/`, e esses ficam no git: são pequenos, e os notebooks os leem
-pela URL do GitHub, sem precisar rodar a coleta. Rodar de novo sem dado novo
-grava o mesmo arquivo, byte a byte, pra não aparecer mudança falsa no git.
+Os marts, os conjuntos prontos pra análise, e as dimensões do modelo saem
+da mesma construção, em `dados/marts/`, e esses ficam no git: são pequenos
+(263 KB juntos), e os notebooks os leem pela URL do GitHub, sem precisar
+rodar a coleta. Rodar de novo sem dado novo grava o mesmo arquivo, byte a
+byte, pra não aparecer mudança falsa no git.
 
 ### Rodar os testes
 
