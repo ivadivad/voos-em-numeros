@@ -35,6 +35,17 @@
 --    (23_dim_mercado.sql). Mercado sem distancia fica com assentos-km nulo,
 --    nao zero, pra sair da tarifa por km sem puxa-la pra cima: no escopo,
 --    sao 3 mercado-meses, com 580 assentos vendidos.
+--
+-- A concentracao do mercado no mes vem repetida em cada registro dele: o
+-- numero de concorrentes e o HHI. Como a participacao, sao medidas do
+-- mercado no mes, e nao se somam entre registros.
+
+-- Concorrente e o grupo com pelo menos 5% dos passageiros regulares do
+-- mercado no mes: um grupo com dois voos no ano nao disputa o mercado.
+-- Decisao do Davi (17/10/2026), com 10% como sensibilidade no notebook 02.
+-- O limite mora so aqui; o mart e o teste usam esta macro.
+CREATE OR REPLACE MACRO limite_concorrente() AS 0.05;
+
 CREATE OR REPLACE TABLE mart_mercado_mes AS
 WITH oferta AS (
     SELECT
@@ -65,23 +76,36 @@ linha AS (
     FROM oferta AS o
     FULL JOIN tarifa AS t USING (mes, mercado, grupo)
     JOIN com_voo_regular USING (mes, mercado)
+    -- grupo so com voo improdutivo no mercado nao tem passageiro nem tarifa
+    WHERE coalesce(o.passageiros_pagos, 0) > 0 OR coalesce(o.passageiros_nao_regular, 0) > 0
+       OR coalesce(t.assentos_vendidos, 0) > 0
+),
+participacao AS (
+    -- divisao de somas inteiras: o resultado nao depende da ordem
+    SELECT *, passageiros_pagos / sum(passageiros_pagos) OVER (PARTITION BY mes, mercado) AS participacao
+    FROM linha
 )
 SELECT
-    l.mes,
-    l.mercado,
-    l.grupo,
-    l.passageiros_pagos::BIGINT AS passageiros_pagos,
-    l.passageiros_nao_regular::BIGINT AS passageiros_nao_regular,
-    -- divisao de somas inteiras: o resultado nao depende da ordem
-    l.passageiros_pagos / sum(l.passageiros_pagos) OVER (PARTITION BY l.mes, l.mercado) AS participacao,
-    l.assentos_vendidos::BIGINT AS assentos_vendidos,
+    p.mes,
+    p.mercado,
+    p.grupo,
+    p.passageiros_pagos::BIGINT AS passageiros_pagos,
+    p.passageiros_nao_regular::BIGINT AS passageiros_nao_regular,
+    p.participacao,
+    count(*) FILTER (WHERE p.participacao >= limite_concorrente()) OVER mercado_no_mes AS concorrentes,
+    -- HHI: 10.000 vezes a soma dos quadrados das participacoes, de 10.000/n
+    -- (n grupos iguais) a 10.000 (um grupo so). Sai das somas inteiras dos
+    -- passageiros, numa divisao so, e nao da soma dos quadrados em DOUBLE:
+    -- somada em paralelo, a ordem das parcelas mudaria o ultimo digito
+    10000 * sum(p.passageiros_pagos::HUGEINT * p.passageiros_pagos) OVER mercado_no_mes
+        / (sum(p.passageiros_pagos) OVER mercado_no_mes * sum(p.passageiros_pagos) OVER mercado_no_mes) AS hhi,
+    p.assentos_vendidos::BIGINT AS assentos_vendidos,
     -- as somas sao exatas, em DECIMAL; o DOUBLE e so pro pandas ler
-    l.receita::DOUBLE AS receita,
-    (l.assentos_vendidos * m.distancia_km)::DOUBLE AS assentos_km
-FROM linha AS l
+    p.receita::DOUBLE AS receita,
+    (p.assentos_vendidos * m.distancia_km)::DOUBLE AS assentos_km
+FROM participacao AS p
 JOIN dim_mercado AS m USING (mercado)
--- grupo so com voo improdutivo no mercado nao tem passageiro nem tarifa
-WHERE l.passageiros_pagos > 0 OR l.passageiros_nao_regular > 0 OR l.assentos_vendidos > 0;
+WINDOW mercado_no_mes AS (PARTITION BY p.mes, p.mercado);
 
 COPY (SELECT * FROM mart_mercado_mes ORDER BY mes, mercado, grupo)
 TO 'dados/marts/mercado_mes.parquet' (FORMAT parquet);
