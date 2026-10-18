@@ -157,6 +157,17 @@ o Anuário do Transporte Aéreo e a imprensa:
   ponderada pelos assentos, cai 6,9% em 2025, longe dos 4,9% do Anuário; a
   razão cai 4,65%. Em valores de dez/2025, 2025 dá R$ 0,50/km.
 
+## Mercados só de conexão (etapa 6)
+
+Como origem e destino são os do passageiro, as tarifas têm pares de cidades
+que nenhum voo direto liga: a viagem troca de voo no caminho. Na coleta de
+13/10/2026, 256.224 dos 285.781 mercado-meses com tarifa (par de cidades sem
+direção, no mês) não têm nenhum passageiro de voo regular na base
+estatística, e somam 41.011.634 dos 225.811.030 assentos vendidos fora dos
+pares da mesma cidade: 18,16%. Ali, a participação de cada grupo, que o
+projeto mede pelo passageiro de voo direto, não existe, e a análise de
+concorrência não chega nesses assentos.
+
 ---
 
 # Voo Regular Ativo (VRA)
