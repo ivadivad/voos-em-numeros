@@ -280,7 +280,7 @@ ele, somado ao que ficou de fora, fecha exatamente com a staging.
 - [x] Etapa 4 — Validar a base
 - [x] Etapa 5 — Modelo estrela
 - [x] Etapa 6 — Concorrência e preço
-- [ ] Etapa 7 — Comparar o comparável
+- [x] Etapa 7 — Comparar o comparável
 - [ ] Etapa 8 — A fusão que não aconteceu
 - [ ] Etapa 9 — Pontualidade
 - [ ] Etapa 10 — Power BI
