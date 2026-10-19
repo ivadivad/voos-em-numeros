@@ -305,7 +305,7 @@ saia. O resultado está no notebook `04-fusao`.
 - [x] Etapa 5 — Modelo estrela
 - [x] Etapa 6 — Concorrência e preço
 - [x] Etapa 7 — Comparar o comparável
-- [ ] Etapa 8 — A fusão que não aconteceu
+- [x] Etapa 8 — A fusão que não aconteceu
 - [ ] Etapa 9 — Pontualidade
 - [ ] Etapa 10 — Power BI
 - [ ] Etapa 11 — Escrita final
