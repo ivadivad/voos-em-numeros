@@ -257,6 +257,18 @@ aconteceu. As datas, cada uma com a fonte:
 | 15/01/2025 | A Abra, controladora da GOL, e a Azul assinam um memorando de entendimentos não vinculante | [Fato relevante da GOL de 15/01/2025](https://static.poder360.com.br/2025/01/fato-relevante-azul-gol.pdf), cópia no Poder360: "a Abra e a Azul S.A. ("Azul") assinaram, na presente data, Memorandum of Understanding (Memorando de Entendimentos) (“MoU”) não vinculante com o objetivo de explorar uma combinação de negócios no Brasil" |
 | 25/09/2025 | A Abra encerra as negociações, e as duas rescindem o codeshare | [Poder360, 26/09/2025](https://www.poder360.com.br/poder-economia/gol-e-azul-encerram-negociacoes-de-fusao/): "O grupo Abra, controlador da GOL, anunciou na 5ª feira (25.set.2025) que encerrou as negociações para uma fusão com a Azul." |
 
+**Como a fusão é simulada.** A `dim_grupo` tem um grupo simulado em que
+Azul e GOL são um só, e o `sql/60_mart_fusao.sql` recalcula a
+concentração de cada mercado com ele, em duas janelas de 12 meses: 2024, o
+mercado que a fusão encontraria, e os 12 meses mais recentes. A leitura é a
+da seção 2.4.2 do [guia de concentração horizontal do
+CADE](https://cdn.cade.gov.br/Portal/centrais-de-conteudo/publicacoes/guias-do-CADE/guia-para-analise-de-atos-de-concentracao-horizontal.pdf),
+e o projeto a usa como triagem, não como veredito: o próprio guia diz que
+"A 'regra do HHI', como indicativa de nexo causal é uma suposição inicial,
+sensível a outros argumentos". E a simulação é estática: soma as duas
+companhias no mercado de cada janela, sem supor que alguém reaja, entre ou
+saia. O resultado está no notebook `04-fusao`.
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
