@@ -378,7 +378,8 @@ investigado.
 
 Os marts, os conjuntos prontos pra análise, e as dimensões do modelo saem
 da mesma construção, em `dados/marts/`, e esses ficam no git: são pequenos
-(263 KB juntos), e os notebooks os leem pela URL do GitHub, sem precisar
+(2,25 MB juntos em 19/10/2026; o maior, o mart de mercado por mês, tem
+1,97 MB), e os notebooks os leem pela URL do GitHub, sem precisar
 rodar a coleta. Rodar de novo sem dado novo grava o mesmo arquivo, byte a
 byte, pra não aparecer mudança falsa no git.
 
