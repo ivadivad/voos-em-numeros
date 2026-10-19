@@ -53,8 +53,15 @@ SELECT
     fonte
 FROM ref_grupos;
 
+-- grupo_simulado: a fusao Azul + GOL que nao aconteceu (README, "A fusao
+-- Azul + GOL"). Os dois viram um grupo so; os demais repetem o proprio
+-- grupo. A simulacao junta grupos, nao empresas: a Azul Conecta entra junto
+-- com a Azul nos meses em que ja e da Azul. A dupla mora so aqui
 CREATE OR REPLACE TABLE dim_grupo AS
-SELECT grupo, min(nome_grupo) AS nome_grupo
+SELECT
+    grupo,
+    min(nome_grupo) AS nome_grupo,
+    CASE WHEN grupo IN ('AZUL', 'GOL') THEN 'AZUL+GOL' ELSE grupo END AS grupo_simulado
 FROM ref_grupos
 GROUP BY grupo;
 

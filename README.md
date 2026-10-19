@@ -169,6 +169,7 @@ erDiagram
     dim_grupo {
         varchar grupo PK
         varchar nome_grupo
+        varchar grupo_simulado
     }
     dim_empresa {
         varchar empresa PK
@@ -211,7 +212,7 @@ erDiagram
 | `fato_voo` | um voo do VRA, com os horários, a situação e o atraso na chegada |
 | `fato_oferta` | um grupo, um mercado, um mês e um grupo de voo (regular, não regular ou improdutivo), com passageiros, assentos, decolagens, ASK e RPK |
 | `dim_calendario` | um mês, de jan/2019 a ago/2026 |
-| `dim_grupo` | um grupo econômico (21) |
+| `dim_grupo` | um grupo econômico (21), com o grupo da fusão simulada: Azul e GOL viram um só |
 | `dim_empresa` | uma empresa das três bases (24) |
 | `empresa_grupo` | uma empresa num período, com o grupo a que ela pertencia nele |
 | `dim_mercado` | um par de cidades sem direção, com a distância (8.983) |
