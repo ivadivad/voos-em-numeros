@@ -8,7 +8,8 @@
 --
 -- 1. A participacao de cada grupo e pelos passageiros pagos de voo regular
 --    (fato_oferta), e nao pelos assentos vendidos das tarifas, que deixam de
---    fora milhas e tarifa corporativa. O fretamento (NAO REGULAR, 2,8% dos
+--    fora programas de milhagem e descontos restritos a grupos (ver
+--    DICIONARIO.md). O fretamento (NAO REGULAR, 2,8% dos
 --    passageiros) fica numa coluna a parte, fora da participacao, pra
 --    servir de sensibilidade.
 --

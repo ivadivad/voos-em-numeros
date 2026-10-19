@@ -2,8 +2,8 @@
 -- de voo, com passageiros, assentos, decolagens, distancia voada, ASK e RPK
 -- da base estatistica. E dele que sai a participacao de cada grupo num
 -- mercado, e dela o HHI: por passageiros pagos, que contam todo mundo que
--- voou, e nao pelos assentos das tarifas, que deixam de fora milhas e
--- tarifa corporativa.
+-- voou, e nao pelos assentos das tarifas, que deixam de fora programas de
+-- milhagem e descontos restritos a grupos (ver DICIONARIO.md).
 --
 -- O passageiro aqui e o do voo, nao o da viagem: quem troca de aviao conta
 -- uma vez em cada voo (ver DICIONARIO.md). O mes e o do voo.

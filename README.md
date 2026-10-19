@@ -26,9 +26,11 @@ transformações em SQL e um painel em Power BI.
 3. Pagar mais caro compra pontualidade?
 
 O período de análise começa em janeiro de 2019 e vai até o último mês publicado
-pelas fontes. O projeto usa tarifas domésticas registradas pela ANAC, vendidas
-ao público adulto em geral. Milhas, pacotes e tarifas corporativas ficam de
-fora.
+pelas fontes. O projeto usa as tarifas domésticas registradas pela ANAC, que,
+pelos [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/tarifas-aereas-domesticas/46-tarifas-aereas-domesticas),
+"abrangem todas as passagens vendidas ao “público adulto em geral”,
+excluindo aquelas adquiridas com descontos restritos a grupos específicos,
+programas de milhagem, entre outras condições".
 
 ## Fontes
 
