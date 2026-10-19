@@ -245,6 +245,17 @@ pagos da base estatística, 94,5% deles em voos do grupo improdutivo que
 voltaram ao aeroporto de onde saíram. Os testes de cada fato conferem que
 ele, somado ao que ficou de fora, fecha exatamente com a staging.
 
+## A fusão Azul + GOL
+
+A segunda pergunta é sobre uma fusão que chegou a ser negociada e não
+aconteceu. As datas, cada uma com a fonte:
+
+| Data | O que aconteceu | Fonte |
+|---|---|---|
+| mai/2024 | Azul e GOL assinam um acordo de codeshare, a venda de assentos uma no voo da outra | [InfoMoney, 26/09/2025](https://www.infomoney.com.br/mercados/gol-desiste-de-processo-de-fusao-com-a-azul/): "as empresas também confirmaram a rescisão do acordo de codeshare, assinado em maio de 2024 para integrar suas malhas aéreas no Brasil" |
+| 15/01/2025 | A Abra, controladora da GOL, e a Azul assinam um memorando de entendimentos não vinculante | [Fato relevante da GOL de 15/01/2025](https://static.poder360.com.br/2025/01/fato-relevante-azul-gol.pdf), cópia no Poder360: "a Abra e a Azul S.A. ("Azul") assinaram, na presente data, Memorandum of Understanding (Memorando de Entendimentos) (“MoU”) não vinculante com o objetivo de explorar uma combinação de negócios no Brasil" |
+| 25/09/2025 | A Abra encerra as negociações, e as duas rescindem o codeshare | [Poder360, 26/09/2025](https://www.poder360.com.br/poder-economia/gol-e-azul-encerram-negociacoes-de-fusao/): "O grupo Abra, controlador da GOL, anunciou na 5ª feira (25.set.2025) que encerrou as negociações para uma fusão com a Azul." |
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
