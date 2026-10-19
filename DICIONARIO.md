@@ -3,7 +3,9 @@
 O que é cada base da ANAC usada no projeto, aberta e conferida antes de
 qualquer linha de código (etapa 1). Onde uma característica foi conferida nos
 dados, está dito em quantos arquivos ou linhas. Onde a fonte é a documentação
-oficial, o link vai junto. Conferências feitas em 13/10/2026.
+oficial, o link vai junto. Conferências feitas em 13/10/2026. No fim, os
+arquivos que o projeto publica em `dados/marts/`: o que é uma linha, as
+colunas e o que não se soma.
 
 ---
 
@@ -611,6 +613,183 @@ Três defeitos que o leitor precisa tratar:
   UF) está a leste de Greenwich, `047°04'39,42"E`, e o decimal diz outra
   coisa ainda (`47,2108333`, ou seja, 47°12'39"). O Brasil inteiro fica a
   oeste.
+
+---
+
+# Marts e dimensões (`dados/marts/`)
+
+Os arquivos que a construção grava pra análise e pro painel, versionados no
+git e lidos pelos notebooks pela URL do GitHub. Cada um sai de um `.sql` em
+`sql/`, que explica as decisões; aqui fica o que é preciso pra usar o arquivo
+sem abrir o SQL: o que é uma linha, as colunas, a unidade e o que não se
+soma. Contagens da coleta de 13/10/2026, conferidas nos arquivos em
+19/10/2026.
+
+Três regras valem pra todos:
+
+- **Reais são nominais.** Nenhum mart corrige pela inflação; o notebook
+  `01-validacao` mostra como levar ao preço de um mês pelo IPCA.
+- **Média sai da razão entre somas**, nunca da média das linhas: tarifa média
+  é a receita dividida pelos assentos vendidos; tarifa por km, a receita
+  dividida pelos assentos-km (ver "Como a tarifa média é calculada"). Assim a
+  conta continua certa em qualquer recorte: ano, grupo, mercado.
+- **O mês é o dia 1** (`2026-08-01` é ago/2026) e liga com `dim_calendario`.
+  Mas o mês quer dizer coisas diferentes em cada base: o da venda nas
+  tarifas, o do voo na base estatística, o do arquivo no VRA.
+
+## `validacao.parquet`
+
+**Uma linha por mês e empresa**: 1.188 linhas, nos 92 meses de jan/2019 a
+ago/2026, das 24 empresas que aparecem em alguma das três bases. São os
+totais que a ANAC publica, pra conferir a base contra os números oficiais
+(`sql/40_mart_validacao.sql`, notebook `01-validacao`). Empresa ausente numa
+base, no mês, fica com zero nas colunas dela.
+
+A empresa também muda de sentido: nas tarifas, é a que vendeu; na base
+estatística e no VRA, a que operou. Colunas de bases diferentes não descrevem
+as mesmas viagens, e a razão entre elas (receita das tarifas por passageiro
+da base estatística, por exemplo) não é tarifa de ninguém.
+
+| Coluna | Base | Unidade | O que é |
+|---|---|---|---|
+| `mes` | todas | data, dia 1 | Chave de `dim_calendario` |
+| `empresa` | todas | código OACI | Chave de `dim_empresa` |
+| `assentos_vendidos` | tarifas | assentos | Soma dos assentos vendidos |
+| `receita_tarifas` | tarifas | R$ nominais | Soma de tarifa vezes assentos |
+| `assentos_ate_300` | tarifas | assentos | Vendidos a até R$ 300, inclusive |
+| `assentos_ate_500` | tarifas | assentos | Vendidos a até R$ 500, inclusive: contém os de `assentos_ate_300` |
+| `assentos_acima_1500` | tarifas | assentos | Vendidos acima de R$ 1.500 |
+| `receita_com_distancia` | tarifas | R$ nominais | A receita só dos pares de aeroportos com coordenada nas duas pontas |
+| `assentos_km` | tarifas | assentos-km | Assentos vezes a distância em linha reta do par, nos mesmos pares |
+| `passageiros_pagos` | base estatística | passageiros | Pagos, de todos os grupos de voo; incluem quem viaja com milhas |
+| `passageiros_pagos_regular` | base estatística | passageiros | Só os de voo regular: contidos em `passageiros_pagos` |
+| `decolagens` | base estatística | decolagens | |
+| `rpk` | base estatística | passageiros-km | Passageiros pagos vezes a distância voada |
+| `ask` | base estatística | assentos-km | Assentos oferecidos vezes a distância voada |
+| `voos` | VRA | etapas de voo | Todas as do arquivo do mês, em qualquer situação |
+| `voos_realizados` | VRA | etapas de voo | Situação `REALIZADO` |
+| `voos_cancelados` | VRA | etapas de voo | Situação `CANCELADO` |
+| `voos_atraso_15`, `voos_atraso_30`, `voos_atraso_60` | VRA | etapas de voo | Chegaram mais de 15, 30 e 60 minutos depois do previsto: cada uma contém a seguinte |
+
+Todas as colunas, menos `mes` e `empresa`, se somam entre meses e empresas.
+O que não se faz é somar as que se contêm: as faixas de preço, os dois
+passageiros e os três atrasos. O yield é `receita_com_distancia` dividida por
+`assentos_km`, e não `receita_tarifas`: a receita sem distância não tem
+assento-km no denominador.
+
+## `mercado_mes.parquet`
+
+**Uma linha por mês, mercado e grupo**: 75.147 linhas, nos 30.886
+mercado-meses com passageiro de voo regular, de 1.089 mercados. É a base da
+comparação entre concorrência e preço (`sql/50_mart_mercado.sql`, notebooks
+`02-concorrencia-e-preco` e `03-comparar-o-comparavel`). Os mercados só de
+conexão, sem voo direto, ficam de fora, com 18,16% dos assentos vendidos
+(ver "Mercados só de conexão").
+
+Entra o grupo que, no mercado e no mês, teve passageiro ou vendeu tarifa. Por
+isso 29.140 linhas não têm passageiro regular, e a participação delas é zero:
+28.288 venderam tarifa sem voo regular no mercado (964 delas com
+fretamento), e 852 só fizeram fretamento. E 3.812 linhas não têm tarifa
+vendida.
+
+Tarifa e passageiro não são as mesmas viagens: a tarifa é do grupo que
+vendeu, no mês da venda; o passageiro, do grupo que operou, no mês do voo. A
+linha junta os dois como retrato da estrutura do mercado, e não como o preço
+pago por aqueles passageiros.
+
+| Coluna | Unidade | O que é |
+|---|---|---|
+| `mes` | data, dia 1 | Chave de `dim_calendario`: mês do voo pros passageiros, da venda pras tarifas |
+| `mercado` | chave | Par de cidades sem direção, chave de `dim_mercado` |
+| `grupo` | chave | Grupo econômico, chave de `dim_grupo` |
+| `passageiros_pagos` | passageiros | Pagos de voo regular, do grupo que operou. É o passageiro do voo: quem troca de avião conta uma vez em cada voo |
+| `passageiros_nao_regular` | passageiros | Os do fretamento (`NÃO REGULAR`), fora da participação, pra servir de sensibilidade |
+| `participacao` | fração, de 0 a 1 | `passageiros_pagos` do grupo dividido pelos do mercado no mês |
+| `concorrentes` | grupos | Grupos com pelo menos 5% dos passageiros do mercado no mês |
+| `hhi` | pontos, até 10.000 | Soma dos quadrados das participações, vezes 10.000. Vai de 10.000/n, com n grupos iguais, a 10.000, com um grupo só |
+| `assentos_vendidos` | assentos | Vendidos pelo grupo no mercado |
+| `receita` | R$ nominais | Soma de tarifa vezes assentos |
+| `assentos_km` | assentos-km | Assentos vendidos vezes a `distancia_km` do mercado; nulo se o mercado não tem distância |
+
+**O que não se soma:** `participacao`, `concorrentes` e `hhi` são medidas do
+mercado no mês, repetidas em cada linha dele. A participação soma 1 dentro de
+um mercado-mês e nada fora dele; o HHI e os concorrentes aparecem uma vez por
+grupo, então contar mercado-meses ou tirar média de HHI pede uma linha por
+`mes` e `mercado` antes.
+
+**Tarifa por km:** a receita e os assentos-km das mesmas linhas, sem as que
+têm `assentos_km` nulo, ou a receita delas entra sem distância e puxa a
+tarifa por km pra cima. São 11 linhas, em 3 mercado-meses, com 580 assentos
+vendidos.
+
+## `fusao.parquet`
+
+**Uma linha por janela e mercado**: 970 linhas. É a fusão Azul + GOL
+simulada (`sql/60_mart_fusao.sql`, notebook `04-fusao`, README, "A fusão
+Azul + GOL"). Duas janelas de 12 meses: `2024`, de jan a dez/2024, com 503
+mercados, e `12 meses mais recentes`, contados do último mês da base, hoje de
+set/2025 a ago/2026, com 467. Entra o mercado com passageiro de voo regular
+na janela.
+
+| Coluna | Unidade | O que é |
+|---|---|---|
+| `janela` | texto | `2024` ou `12 meses mais recentes` |
+| `inicio`, `fim` | data, dia 1 | Primeiro e último mês da janela |
+| `mercado` | chave | Chave de `dim_mercado` |
+| `passageiros` | passageiros | Pagos de voo regular, somados na janela |
+| `participacao_azul`, `participacao_gol` | fração, de 0 a 1 | A fatia de cada grupo nos passageiros da janela inteira, e não a média dos meses |
+| `concorrentes_antes`, `concorrentes_depois` | grupos | Com pelo menos 5% dos passageiros, com os grupos de hoje e com Azul e GOL juntas |
+| `hhi_antes`, `hhi_depois` | pontos, até 10.000 | HHI com o `grupo` e com o `grupo_simulado` de `dim_grupo` |
+| `delta_hhi` | pontos | `hhi_depois` menos `hhi_antes`: 2 × 10.000 × `participacao_azul` × `participacao_gol` |
+| `leitura` | texto | A faixa do guia do CADE de 2016, seção 2.4.2: `variação pequena`, `mercado não concentrado`, `potencial preocupação`, `presunção de poder de mercado` ou `sem leitura no guia` |
+
+**O que não se soma:** o mesmo mercado aparece nas duas janelas, então
+qualquer conta começa filtrando a `janela`. Dentro dela, só `passageiros` se
+soma entre mercados; o resto é medida do mercado na janela. Com coleta nova,
+os `12 meses mais recentes` andam junto.
+
+## Dimensões
+
+**`dim_calendario`**: um registro por mês, 92, de jan/2019 a ago/2026, sem
+buraco: fev e mar/2020 estão nela, mesmo sem voo no VRA, pra o gráfico
+mostrar o buraco em vez de pular o mês. Colunas: `mes` (a chave, dia 1),
+`ano`, `trimestre`, `numero_mes` (1 a 12), `nome_mes` (`janeiro`),
+`mes_abreviado` (`jan`) e `rotulo` (`jan/2019`).
+
+**`dim_grupo`**: um registro por grupo econômico, 21. Colunas: `grupo` (a
+chave, como em `dados/referencia/grupos.csv`), `nome_grupo` e
+`grupo_simulado`, que é `AZUL+GOL` pra Azul e pra GOL e repete o `grupo` nos
+demais.
+
+**`dim_empresa`**: um registro por empresa, 24. Colunas: `empresa` (código
+OACI), `nome_empresa` (o nome curto do `grupos.csv`) e `nome_anac` (o da base
+estatística; nulo pra OWT e DSM, que não aparecem nela). Não tem o grupo,
+porque o grupo muda no tempo (a TwoFlex é da Azul desde jun/2020; a MAP, da
+VoePass desde set/2019): a ligação mês a mês fica no `grupos.csv`, e os marts
+por grupo já trazem o grupo do mês. Pra juntar o `validacao.parquet` por
+grupo, é o `grupos.csv` que diz de quem era cada empresa em cada mês.
+
+**`dim_aeroporto`**: um registro por código OACI que aparece em alguma das
+três bases, 306. Colunas: `icao` (a chave), `nome` (o do aeródromo, nas
+listas da ANAC), `municipio`, `uf`, `latitude` e `longitude` (graus
+decimais), `cidade` (a cidade do mercado: `SAO`, `RIO`, `BHZ` ou o próprio
+código OACI), `nome_cidade` e `cadastro`, que diz de onde vieram os dados:
+`lista publica` (248), `lista de privados` (40), `base estatistica` (14,
+com município e UF em maiúsculas, sem nome nem coordenada) e `nenhum` (4, só
+o código). Os 18 fora das listas são os sem coordenada (ver "Aeroportos das
+outras bases que não estão na lista"). Não liga direto a nenhum mart: os
+marts são por mercado, e o mercado liga às duas cidades.
+
+**`dim_mercado`**: um registro por par de cidades, sem direção, que aparece
+em alguma das três bases: 8.983, bem mais que os 1.089 do
+`mercado_mes.parquet`, porque inclui os mercados só de conexão. Colunas:
+`mercado` (a chave, as duas cidades em ordem alfabética: `RIO-SAO`),
+`cidade_a`, `nome_cidade_a`, `cidade_b`, `nome_cidade_b`, `nome` (`Rio de
+Janeiro – São Paulo`), `distancia_km` (uma casa decimal: a média das
+distâncias dos pares de aeroportos do mercado, ponderada pelos assentos
+vendidos) e `distancia_fonte`: `coordenadas` (8.512), `base estatistica`
+(43, a distância voada dividida pelas decolagens) ou `nenhuma: sem
+coordenada nem voo direto` (428, com `distancia_km` nula).
 
 ---
 
