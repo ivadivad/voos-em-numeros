@@ -748,6 +748,49 @@ qualquer conta começa filtrando a `janela`. Dentro dela, só `passageiros` se
 soma entre mercados; o resto é medida do mercado na janela. Com coleta nova,
 os `12 meses mais recentes` andam junto.
 
+## `pontualidade_rota.parquet` e `pontualidade_horario.parquet`
+
+Os voos previstos do VRA, contados em dois recortes
+(`sql/70_mart_pontualidade.sql`, notebook `05-pontualidade`). Contagens
+conferidas nos arquivos em 20/10/2026:
+
+- **`pontualidade_rota`**: uma linha por mês, grupo, aeroporto de origem e
+  aeroporto de destino, com o mercado do par: 98.670 linhas. Serve ao
+  aeroporto de partida, ao de chegada e ao mercado.
+- **`pontualidade_horario`**: uma linha por mês, grupo, dia da semana e
+  hora da partida prevista: 57.972 linhas.
+
+Os dois somam o mesmo, 5.173.197 voos previstos. Voo previsto é o que tem
+partida prevista: as 13.749 etapas não planejadas, todas realizadas, ficam
+de fora, porque sem horário previsto não há atraso nem hora. O mês é o do
+arquivo do VRA, e o grupo, o de quem operou.
+
+| Coluna | Unidade | O que é |
+|---|---|---|
+| `mes` | data, dia 1 | Chave de `dim_calendario` |
+| `grupo` | chave | Grupo de quem operou, chave de `dim_grupo` |
+| `mercado` | chave | Só na rota: chave de `dim_mercado` |
+| `origem`, `destino` | código OACI | Só na rota: chaves de `dim_aeroporto` |
+| `dia_semana` | 1 a 7 | Só no horário: da partida prevista, de 1 (segunda) a 7 (domingo), o padrão ISO |
+| `hora` | 0 a 23 | Só no horário: da partida prevista, no horário de Brasília |
+| `voos_previstos` | voos | Todos os do registro: realizados, cancelados e não informados |
+| `voos_realizados` | voos | Situação `REALIZADO` |
+| `voos_cancelados` | voos | Situação `CANCELADO` |
+| `voos_nao_informados` | voos | Situação `NÃO INFORMADO`: 1.158, de ago/2020 a out/2023 |
+| `voos_medidos` | voos | Realizados com o atraso medido: todos menos os 8 com data trocada |
+| `voos_atraso_15`, `voos_atraso_30`, `voos_atraso_60` | voos | Chegaram mais de 15, 30 e 60 minutos depois do previsto: cada uma contém a seguinte |
+| `voos_adiantados_2h` | voos | Chegaram 2 h ou mais antes do previsto (1.817): contam como no horário |
+| `voos_atraso_23h` | voos | Chegaram 23 h ou mais depois (263): estão dentro de `voos_atraso_60` |
+
+Todas as contagens se somam entre linhas. O que não se faz é somar as que
+se contêm: os previstos são os realizados, os cancelados e os não
+informados, e os três cortes de atraso estão um dentro do outro. O
+percentual de atraso é `voos_atraso_15` dividido por `voos_medidos`; o de
+cancelamento, `voos_cancelados` dividido por `voos_realizados` mais
+`voos_cancelados`, como no notebook 05. As duas pontas (2 h antes, 23 h
+depois) são voos que os dados não separam de mudança de horário ou de dia
+(ver "Atraso: datas erradas e voos que mudaram de dia").
+
 ## Dimensões
 
 **`dim_calendario`**: um registro por mês, 92, de jan/2019 a ago/2026, sem
