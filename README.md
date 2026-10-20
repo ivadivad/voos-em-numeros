@@ -278,6 +278,23 @@ sensível a outros argumentos". E a simulação é estática: soma as duas
 companhias no mercado de cada janela, sem supor que alguém reaja, entre ou
 saia. O resultado está no notebook `04-fusao`.
 
+## Pontualidade
+
+A terceira pergunta usa o Voo Regular Ativo (VRA) da ANAC: cada voo
+doméstico regular de passageiros previsto, com os horários previstos e os
+realizados. **Atraso é na chegada, acima de 15 minutos**, sobre os voos
+realizados com os dois horários; acima de 30 e de 60 minutos entram como
+sensibilidade. O cancelamento é sobre os realizados mais os cancelados, e
+os 1.158 voos com situação `NÃO INFORMADO` (de ago/2020 a out/2023) ficam
+fora da conta principal. A hora é a da partida prevista, no horário de
+Brasília, que é o do VRA.
+
+**A ordem dos grupos muda com o corte.** Em quatro dos oito anos da base
+(2020, 2023, 2025 e 2026), quem atrasa mais ou menos depende de onde fica a
+linha: em 2025, a LATAM é a que mais atrasa acima de 15 minutos, e a Azul,
+acima de 30 e de 60. Por isso o projeto mostra os três cortes, e não um
+ranking só. O detalhe está no notebook `05-pontualidade`.
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
