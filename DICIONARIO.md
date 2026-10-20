@@ -240,6 +240,17 @@ tem os dois horários reais nulos, e todo voo realizado tem os dois preenchidos.
 | Fim de linha | `\r\n` |
 | Valor ausente | O texto `"null"`, não campo vazio |
 
+**Horário previsto fora do minuto cheio (etapa 9).** Quase todo horário vem
+no minuto cheio, mas, na coleta de 13/10/2026, 3.819 voos domésticos da
+staging têm a partida e a chegada previstas com segundos: 11 de
+27/04/2019, da MAP e da TwoFlex, com 57 segundos (`12:54:57`), e 3.808 com
+um décimo de segundo (`07:45:00.1`), de nov/2024 a ago/2026, de sete
+empresas (ABJ, AZU, CQB, PTB, PAM, ACN e SID). Nos horários reais, só 8
+dos 11 voos de 2019 têm os 57 segundos; os outros vêm no minuto cheio. A
+staging arredonda o atraso pro minuto mais próximo, e
+o teste `atraso_bate_com_os_horarios.sql` aceita meio minuto de diferença
+por isso.
+
 ## Fuso horário: Brasília, conferido nos dados
 
 Os metadados dizem que os quatro horários estão em horário de Brasília. A
