@@ -56,6 +56,19 @@ pelos [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-aberto
 excluindo aquelas adquiridas com descontos restritos a grupos específicos,
 programas de milhagem, entre outras condições".
 
+## Os notebooks
+
+Cada um abre no Colab sem instalar nada: os dados vêm dos marts deste
+repositório, pela URL do GitHub.
+
+| Notebook | O que faz | |
+|---|---|---|
+| [01 — Validação da base](notebooks/01-validacao.ipynb) | Confere a base contra os números que a ANAC publica: totais, tarifa média e yield | [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ivadivad/voos-em-numeros/blob/main/notebooks/01-validacao.ipynb) |
+| [02 — Concorrência e preço](notebooks/02-concorrencia-e-preco.ipynb) | A comparação crua, sem controle, entre o número de concorrentes e a tarifa por km | [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ivadivad/voos-em-numeros/blob/main/notebooks/02-concorrencia-e-preco.ipynb) |
+| [03 — Comparar o comparável](notebooks/03-comparar-o-comparavel.ipynb) | A mesma comparação entre mercados de distância parecida, por faixa e numa regressão (pergunta 1) | [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ivadivad/voos-em-numeros/blob/main/notebooks/03-comparar-o-comparavel.ipynb) |
+| [04 — A fusão que não aconteceu](notebooks/04-fusao.ipynb) | O HHI de cada mercado com Azul e GOL juntas, pela régua do CADE (pergunta 2) | [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ivadivad/voos-em-numeros/blob/main/notebooks/04-fusao.ipynb) |
+| [05 — Pontualidade](notebooks/05-pontualidade.ipynb) | Quem atrasa mais, onde e em que horário, e se a tarifa mais alta compra pontualidade (pergunta 3) | [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ivadivad/voos-em-numeros/blob/main/notebooks/05-pontualidade.ipynb) |
+
 ## Fontes
 
 Todas as bases são abertas e publicadas pela ANAC. O que cada uma traz, linha
