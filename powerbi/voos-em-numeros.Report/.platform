@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "voos-em-numeros"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9c43b406-eef7-5ee2-808c-5d5e16928571"
+  }
+}

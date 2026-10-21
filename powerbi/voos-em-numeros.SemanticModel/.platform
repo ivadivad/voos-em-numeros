@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "voos-em-numeros"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "0303bda2-6813-508a-a453-66b9f5392150"
+  }
+}
