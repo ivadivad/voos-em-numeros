@@ -42,6 +42,13 @@ transformações em SQL e um painel em Power BI.
    nenhum dos três maiores grupos e muda de sinal de um ano pro outro
    ([notebook 05](notebooks/05-pontualidade.ipynb)).
 
+![Tarifa por km em 2025 pelo número de concorrentes: com todas as distâncias juntas, as três classes ficam perto de 50 centavos; separando por faixa, um concorrente só cobra mais até 2.000 km](graficos/03-antes-e-depois.png)
+
+Com todas as distâncias juntas (à esquerda), um concorrente só cobra 6,9% a
+mais por km que três ou mais: os mercados de um concorrente são mais longos,
+e o quilômetro do mercado longo é mais barato. Separando por faixa, a
+diferença vai a 40,6% até 500 km e some acima de 2.000 km.
+
 O período de análise começa em janeiro de 2019 e vai até o último mês publicado
 pelas fontes. O projeto usa as tarifas domésticas registradas pela ANAC, que,
 pelos [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/tarifas-aereas-domesticas/46-tarifas-aereas-domesticas),
@@ -295,6 +302,8 @@ sensível a outros argumentos". E a simulação é estática: soma as duas
 companhias no mercado de cada janela, sem supor que alguém reaja, entre ou
 saia. O resultado está no notebook `04-fusao`.
 
+![HHI antes e depois de juntar Azul e GOL em 2024, nos 12 mercados com mais passageiros entre os que cruzariam a linha do CADE: todos saem da faixa de 3.413 a 4.402 pontos pra de 4.944 a 6.214](graficos/04-hhi-antes-e-depois.png)
+
 ## Pontualidade
 
 A terceira pergunta usa o Voo Regular Ativo (VRA) da ANAC: cada voo
@@ -311,6 +320,8 @@ Brasília, que é o do VRA.
 linha: em 2025, a LATAM é a que mais atrasa acima de 15 minutos, e a Azul,
 acima de 30 e de 60. Por isso o projeto mostra os três cortes, e não um
 ranking só. O detalhe está no notebook `05-pontualidade`.
+
+![Atraso na chegada por hora da partida prevista e dia da semana, de set/2025 a ago/2026: o atraso sobe ao longo do dia, de 7% nos voos das 4h a 23% nos das 23h](graficos/05-mapa-de-calor.png)
 
 ## O painel
 
@@ -332,7 +343,11 @@ como parâmetro; e o detalhe de um mercado, aberta pelo drill-through
 (botão direito num mercado). Quem não tem Power BI vê as capturas em
 [`graficos/painel/`](graficos/painel) ou num [PDF só](graficos/painel.pdf).
 
-![A página da fusão Azul + GOL no painel, em 2024](graficos/painel/03-fusao.png)
+![A página de concorrência e preço em 2024, com o botão da fusão desligado e ligado: os mercados maiores andam de cerca de 3.500 pra cerca de 5.000 pontos de HHI](graficos/painel/botao-da-fusao.gif)
+
+O botão da fusão na página de concorrência e preço, em 2024: desligado e
+ligado. Os dois quadros são o Power BI Desktop desenhando a página; o eixo
+do HHI fica fixo de 0 a 10.000, então o que anda são os mercados.
 
 Quatro decisões do modelo:
 
