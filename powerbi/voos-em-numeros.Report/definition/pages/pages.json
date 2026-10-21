@@ -1,7 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
   "pageOrder": [
-    "visao_geral"
+    "visao_geral",
+    "concorrencia_preco"
   ],
   "activePageName": "visao_geral"
 }

@@ -66,6 +66,39 @@ table dim_mercado
 
 		annotation SummarizationSetBy = Automatic
 
+	column 'faixa de distância' =
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(dim_mercado[distancia_km]), "sem distância",
+			    dim_mercado[distancia_km] <= 500, "até 500 km",
+			    dim_mercado[distancia_km] <= 1000, "500 a 1.000 km",
+			    dim_mercado[distancia_km] <= 2000, "1.000 a 2.000 km",
+			    "acima de 2.000 km"
+			)
+		dataType: string
+		lineageTag: 7676c712-2517-55d9-9f5a-83b31b95bb4e
+		summarizeBy: none
+		sortByColumn: 'ordem da faixa'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ordem da faixa' =
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(dim_mercado[distancia_km]), 5,
+			    dim_mercado[distancia_km] <= 500, 1,
+			    dim_mercado[distancia_km] <= 1000, 2,
+			    dim_mercado[distancia_km] <= 2000, 3,
+			    4
+			)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e8028aae-f571-532f-804c-2d45b11e4adf
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
 	partition dim_mercado = m
 		mode: import
 		source =

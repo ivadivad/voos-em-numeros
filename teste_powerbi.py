@@ -269,19 +269,35 @@ class TesteTema(unittest.TestCase):
         self.assertIn({"name": "tema.json", "path": "tema.json", "type": "CustomTheme"}, itens)
 
 
-def campos_citados(objeto):
-    """Todo campo (tabela, nome, tipo) citado num JSON do relatorio: colunas e medidas."""
+def apelidos(objeto, saida=None):
+    """Os apelidos de tabela dos filtros: "From": [{"Name": "m", "Entity": "Medidas"}]."""
+    saida = {} if saida is None else saida
+    if isinstance(objeto, dict):
+        for item in objeto.get("From", []) if isinstance(objeto.get("From"), list) else []:
+            saida[item["Name"]] = item["Entity"]
+        for valor in objeto.values():
+            apelidos(valor, saida)
+    elif isinstance(objeto, list):
+        for valor in objeto:
+            apelidos(valor, saida)
+    return saida
+
+
+def campos_citados(objeto, nomes=None):
+    """Todo campo (tabela, nome, tipo) citado num JSON do relatorio: colunas e
+    medidas, pelo nome da tabela ou pelo apelido que o filtro declara."""
+    nomes = apelidos(objeto) if nomes is None else nomes
     if isinstance(objeto, dict):
         for tipo in ("Column", "Measure"):
             alvo = objeto.get(tipo)
             if isinstance(alvo, dict) and "Property" in alvo:
                 fonte = alvo.get("Expression", {}).get("SourceRef", {})
-                yield fonte.get("Entity"), alvo["Property"], tipo
+                yield fonte.get("Entity") or nomes.get(fonte.get("Source")), alvo["Property"], tipo
         for valor in objeto.values():
-            yield from campos_citados(valor)
+            yield from campos_citados(valor, nomes)
     elif isinstance(objeto, list):
         for valor in objeto:
-            yield from campos_citados(valor)
+            yield from campos_citados(valor, nomes)
 
 
 class TesteRelatorio(unittest.TestCase):

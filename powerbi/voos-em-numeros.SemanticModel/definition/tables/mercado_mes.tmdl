@@ -103,6 +103,23 @@ table mercado_mes
 
 		annotation SummarizationSetBy = Automatic
 
+	column 'classe de concorrentes' = IF(mercado_mes[concorrentes] >= 3, "3 ou mais", FORMAT(mercado_mes[concorrentes], "0"))
+		dataType: string
+		lineageTag: 0ac23fb4-5cdc-52f0-bf4a-3d825e8eafc3
+		summarizeBy: none
+		sortByColumn: 'ordem da classe'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ordem da classe' = MIN(mercado_mes[concorrentes], 3)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0a32ae23-ca72-59a0-8534-2c5ada8979d6
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
 	partition mercado_mes = m
 		mode: import
 		source =

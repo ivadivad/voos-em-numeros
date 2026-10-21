@@ -1,0 +1,116 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "tarifa_por_concorrentes",
+  "position": {
+    "x": 740,
+    "y": 96,
+    "z": 4000,
+    "height": 604,
+    "width": 520,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_mercado"
+                    }
+                  },
+                  "Property": "faixa de distância"
+                }
+              },
+              "queryRef": "dim_mercado.faixa de distância",
+              "nativeQueryRef": "faixa de distância",
+              "displayName": "Faixa de distância"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "mercado_mes"
+                    }
+                  },
+                  "Property": "classe de concorrentes"
+                }
+              },
+              "queryRef": "mercado_mes.classe de concorrentes",
+              "nativeQueryRef": "classe de concorrentes",
+              "displayName": "Concorrentes"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Tarifa por km"
+                }
+              },
+              "queryRef": "Medidas.Tarifa por km",
+              "nativeQueryRef": "Tarifa por km"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_mercado"
+                  }
+                },
+                "Property": "faixa de distância"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Tarifa por km pelo número de concorrentes no mercado, por faixa de distância'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
