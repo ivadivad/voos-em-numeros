@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cartao_mercado",
+  "position": {
+    "x": 20,
+    "y": 16,
+    "z": 0,
+    "height": 80,
+    "width": 1240,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Mercado"
+                }
+              },
+              "queryRef": "Medidas.Mercado",
+              "nativeQueryRef": "Mercado",
+              "displayName": "mercado"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

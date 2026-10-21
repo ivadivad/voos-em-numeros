@@ -183,6 +183,23 @@ table Medidas
 		displayFolder: Pontualidade
 		lineageTag: 31414ffd-b01f-56b8-bb1e-9fd0bb14afd3
 
+	/// O nome do mercado aberto pelo drill-through; sem um mercado só, um aviso de como abrir.
+	measure Mercado = SELECTEDVALUE(dim_mercado[nome], "vários mercados: abra um pelo drill-through")
+		displayFolder: Mercado
+		lineageTag: 19b6d08e-7064-5613-929f-2bf7cb164206
+
+	/// A distância do mercado: a média das distâncias dos pares de aeroportos, ponderada pelos assentos vendidos (sql/23_dim_mercado.sql).
+	measure 'Distância (km)' = SELECTEDVALUE(dim_mercado[distancia_km])
+		formatString: #,0
+		displayFolder: Mercado
+		lineageTag: a7df1fd0-0fae-5e56-b84c-9e06c819cb12
+
+	/// A parte do grupo nos passageiros pagos de voo regular do recorte, contra todos os grupos.
+	measure Participação = DIVIDE([Passageiros], CALCULATE([Passageiros], REMOVEFILTERS(dim_grupo)))
+		formatString: 0.0%
+		displayFolder: Mercado
+		lineageTag: 9973e344-3b2d-58af-b3f4-b95cd553903e
+
 	column Coluna
 		dataType: string
 		isHidden

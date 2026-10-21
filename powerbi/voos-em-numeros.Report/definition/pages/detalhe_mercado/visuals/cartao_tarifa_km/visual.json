@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cartao_tarifa_km",
+  "position": {
+    "x": 520,
+    "y": 108,
+    "z": 3000,
+    "height": 100,
+    "width": 234,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Tarifa por km"
+                }
+              },
+              "queryRef": "Medidas.Tarifa por km",
+              "nativeQueryRef": "Tarifa por km",
+              "displayName": "tarifa por km"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

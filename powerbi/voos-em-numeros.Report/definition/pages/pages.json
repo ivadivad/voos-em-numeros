@@ -4,7 +4,8 @@
     "visao_geral",
     "concorrencia_preco",
     "fusao",
-    "pontualidade"
+    "pontualidade",
+    "detalhe_mercado"
   ],
   "activePageName": "visao_geral"
 }

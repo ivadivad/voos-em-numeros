@@ -1,0 +1,163 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "grupos_no_mercado",
+  "position": {
+    "x": 660,
+    "y": 228,
+    "z": 7000,
+    "height": 472,
+    "width": 600,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_grupo"
+                    }
+                  },
+                  "Property": "nome_grupo"
+                }
+              },
+              "queryRef": "dim_grupo.nome_grupo",
+              "nativeQueryRef": "nome_grupo",
+              "displayName": "Grupo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Passageiros"
+                }
+              },
+              "queryRef": "Medidas.Passageiros",
+              "nativeQueryRef": "Passageiros"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Participação"
+                }
+              },
+              "queryRef": "Medidas.Participação",
+              "nativeQueryRef": "Participação"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Tarifa média"
+                }
+              },
+              "queryRef": "Medidas.Tarifa média",
+              "nativeQueryRef": "Tarifa média"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Tarifa por km"
+                }
+              },
+              "queryRef": "Medidas.Tarifa por km",
+              "nativeQueryRef": "Tarifa por km"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% atraso"
+                }
+              },
+              "queryRef": "Medidas.% atraso",
+              "nativeQueryRef": "% atraso"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% cancelado"
+                }
+              },
+              "queryRef": "Medidas.% cancelado",
+              "nativeQueryRef": "% cancelado"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Medidas"
+                  }
+                },
+                "Property": "Passageiros"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Os grupos no mercado, no período todo'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

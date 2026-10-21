@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cartao_atraso",
+  "position": {
+    "x": 1020,
+    "y": 108,
+    "z": 5000,
+    "height": 100,
+    "width": 234,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% atraso"
+                }
+              },
+              "queryRef": "Medidas.% atraso",
+              "nativeQueryRef": "% atraso",
+              "displayName": "chegaram atrasados"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

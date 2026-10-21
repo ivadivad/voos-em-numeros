@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cartao_hhi",
+  "position": {
+    "x": 770,
+    "y": 108,
+    "z": 4000,
+    "height": 100,
+    "width": 234,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "HHI sem fusão"
+                }
+              },
+              "queryRef": "Medidas.HHI sem fusão",
+              "nativeQueryRef": "HHI sem fusão",
+              "displayName": "HHI"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
