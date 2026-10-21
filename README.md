@@ -5,8 +5,9 @@ Nacional de Aviação Civil (ANAC). O projeto investiga a relação entre
 concorrência, tarifas aéreas e pontualidade, com dados reproduzíveis,
 transformações em SQL e um painel em Power BI.
 
-> **Em desenvolvimento: as etapas 0 a 10 estão concluídas** (ver
-> [Etapas](#etapas)). As perguntas foram escritas antes de abrir os dados.
+> **Em desenvolvimento: as etapas 0 a 11 estão concluídas** (ver
+> [Etapas](#etapas)); falta a 12, opcional, a atualização automática. As
+> perguntas foram escritas antes de abrir os dados.
 
 O que tem aqui:
 
@@ -584,5 +585,5 @@ python teste_powerbi.py    # precisa de pyarrow; confere o modelo do painel cont
 - [x] Etapa 8 — A fusão que não aconteceu
 - [x] Etapa 9 — Pontualidade
 - [x] Etapa 10 — Power BI
-- [ ] Etapa 11 — Escrita final
+- [x] Etapa 11 — Escrita final
 - [ ] Etapa 12 — Deixar vivo (opcional)
