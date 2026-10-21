@@ -1,0 +1,38 @@
+table dim_empresa
+	lineageTag: 55d1b95d-986f-5dc2-abe0-35013eb422e6
+
+	column empresa
+		dataType: string
+		lineageTag: ddeb9740-d874-5388-bfdd-859192a8938a
+		summarizeBy: none
+		sourceColumn: empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_empresa
+		dataType: string
+		lineageTag: c05c30e5-7608-53b9-b8a1-ec058e7954f6
+		summarizeBy: none
+		sourceColumn: nome_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_anac
+		dataType: string
+		lineageTag: 71ea22c2-f107-562e-8789-f403f2a50a7c
+		summarizeBy: none
+		sourceColumn: nome_anac
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_empresa = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "dim_empresa.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"empresa", type text}, {"nome_empresa", type text}, {"nome_anac", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

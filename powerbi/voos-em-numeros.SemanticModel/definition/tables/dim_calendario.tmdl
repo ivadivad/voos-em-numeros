@@ -1,0 +1,79 @@
+table dim_calendario
+	lineageTag: 67a76e3a-3ebb-5f07-b90a-392c3f07d0be
+
+	column mes
+		dataType: dateTime
+		formatString: mmm/yyyy
+		lineageTag: f0064044-66ff-52a5-9585-8e63f0e693de
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 116c7262-c6e0-5158-a029-1e5eb22def60
+		summarizeBy: none
+		sourceColumn: ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column trimestre
+		dataType: int64
+		formatString: 0
+		lineageTag: 37f1ad53-9b16-5853-90e8-bd80a3390a12
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column numero_mes
+		dataType: int64
+		formatString: 0
+		lineageTag: 1a3fd82a-2c92-5627-8fef-8e2afb379f6e
+		summarizeBy: none
+		sourceColumn: numero_mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_mes
+		dataType: string
+		lineageTag: 2312f431-2f21-5620-8fd1-3c3314867ee2
+		summarizeBy: none
+		sourceColumn: nome_mes
+		sortByColumn: numero_mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column mes_abreviado
+		dataType: string
+		lineageTag: 0897b09c-75c2-5abb-96b8-1d2e30b4f834
+		summarizeBy: none
+		sourceColumn: mes_abreviado
+		sortByColumn: numero_mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column rotulo
+		dataType: string
+		lineageTag: 08d736fc-886c-5102-bf3d-998a32b7e2ee
+		summarizeBy: none
+		sourceColumn: rotulo
+		sortByColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_calendario = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "dim_calendario.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mes", type date}, {"ano", Int64.Type}, {"trimestre", Int64.Type}, {"numero_mes", Int64.Type}, {"nome_mes", type text}, {"mes_abreviado", type text}, {"rotulo", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

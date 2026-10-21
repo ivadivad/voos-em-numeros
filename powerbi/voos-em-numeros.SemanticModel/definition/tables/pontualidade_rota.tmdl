@@ -1,0 +1,152 @@
+table pontualidade_rota
+	lineageTag: 298582f6-9f95-573e-b34a-abc548608257
+
+	column mes
+		dataType: dateTime
+		isHidden
+		formatString: mmm/yyyy
+		lineageTag: 33cfbdb4-dc38-56e5-9e66-8b6293630ab9
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column grupo
+		dataType: string
+		isHidden
+		lineageTag: 75b04669-8f30-55ae-a93e-a8ef7501ad87
+		summarizeBy: none
+		sourceColumn: grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column mercado
+		dataType: string
+		isHidden
+		lineageTag: f7f134a0-1584-5558-bb52-3940919ac1f9
+		summarizeBy: none
+		sourceColumn: mercado
+
+		annotation SummarizationSetBy = Automatic
+
+	column origem
+		dataType: string
+		isHidden
+		lineageTag: e7724759-cf0a-5443-a98d-83d117488edd
+		summarizeBy: none
+		sourceColumn: origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column destino
+		dataType: string
+		isHidden
+		lineageTag: 1471afda-eec7-5229-aa46-9deeb2c808ce
+		summarizeBy: none
+		sourceColumn: destino
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_previstos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 1f11be48-179c-509a-bcc0-b3bb9a0a82d3
+		summarizeBy: sum
+		sourceColumn: voos_previstos
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_realizados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 039d0361-7a00-59b4-827c-eb41452ff4b8
+		summarizeBy: sum
+		sourceColumn: voos_realizados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_cancelados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3680ec72-161f-5710-aa82-4ebf7f9fc1e9
+		summarizeBy: sum
+		sourceColumn: voos_cancelados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_nao_informados
+		dataType: int64
+		formatString: #,0
+		lineageTag: db2f8634-e9ce-5c89-bf0a-d78ee49e65c5
+		summarizeBy: sum
+		sourceColumn: voos_nao_informados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_medidos
+		dataType: int64
+		formatString: #,0
+		lineageTag: d50f2420-c70a-5e3e-83ce-b63270bd6bb1
+		summarizeBy: sum
+		sourceColumn: voos_medidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_15
+		dataType: int64
+		formatString: #,0
+		lineageTag: 6dbd862d-05f3-5ef5-b454-4690b67bb5a5
+		summarizeBy: sum
+		sourceColumn: voos_atraso_15
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_30
+		dataType: int64
+		formatString: #,0
+		lineageTag: dfe2ab8f-f3c4-531d-b5fa-0db9e8df6dda
+		summarizeBy: sum
+		sourceColumn: voos_atraso_30
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_60
+		dataType: int64
+		formatString: #,0
+		lineageTag: e24fff23-219f-5c79-89ee-65cca40f11f5
+		summarizeBy: sum
+		sourceColumn: voos_atraso_60
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_adiantados_2h
+		dataType: int64
+		formatString: #,0
+		lineageTag: b1f37231-2cba-5cb5-ac0a-accf418bbdb9
+		summarizeBy: sum
+		sourceColumn: voos_adiantados_2h
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_23h
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3e55465c-ff71-580c-b88f-f994c319e34d
+		summarizeBy: sum
+		sourceColumn: voos_atraso_23h
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pontualidade_rota = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "pontualidade_rota.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mes", type date}, {"grupo", type text}, {"mercado", type text}, {"origem", type text}, {"destino", type text}, {"voos_previstos", Int64.Type}, {"voos_realizados", Int64.Type}, {"voos_cancelados", Int64.Type}, {"voos_nao_informados", Int64.Type}, {"voos_medidos", Int64.Type}, {"voos_atraso_15", Int64.Type}, {"voos_atraso_30", Int64.Type}, {"voos_atraso_60", Int64.Type}, {"voos_adiantados_2h", Int64.Type}, {"voos_atraso_23h", Int64.Type}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

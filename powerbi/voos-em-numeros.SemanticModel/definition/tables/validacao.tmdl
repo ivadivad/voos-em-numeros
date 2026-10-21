@@ -1,0 +1,197 @@
+table validacao
+	lineageTag: d90ba7be-51b6-5624-afe5-ed2dc182cc27
+
+	column mes
+		dataType: dateTime
+		isHidden
+		formatString: mmm/yyyy
+		lineageTag: 6d0e293d-c4d3-55d6-bb0b-6c4a236abc09
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column empresa
+		dataType: string
+		isHidden
+		lineageTag: 606b5990-d9e8-5599-9021-1660e3476f0d
+		summarizeBy: none
+		sourceColumn: empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_vendidos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 1b468bf2-a593-5bca-b28a-1ae1cf6e0858
+		summarizeBy: sum
+		sourceColumn: assentos_vendidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column receita_tarifas
+		dataType: double
+		formatString: #,0
+		lineageTag: 77a7efea-6736-5038-8b62-6b7128feb882
+		summarizeBy: sum
+		sourceColumn: receita_tarifas
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_ate_300
+		dataType: int64
+		formatString: #,0
+		lineageTag: c9b0af76-60c1-5748-9e6c-9e62342fd8ff
+		summarizeBy: sum
+		sourceColumn: assentos_ate_300
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_ate_500
+		dataType: int64
+		formatString: #,0
+		lineageTag: 12467023-f73d-5894-b566-67f855f38e5c
+		summarizeBy: sum
+		sourceColumn: assentos_ate_500
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_acima_1500
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4919a8b2-3a11-568b-9cce-8a694c0d93bd
+		summarizeBy: sum
+		sourceColumn: assentos_acima_1500
+
+		annotation SummarizationSetBy = Automatic
+
+	column receita_com_distancia
+		dataType: double
+		formatString: #,0
+		lineageTag: 6b42c6c6-6b7e-58d2-bfb7-f062eb75ae10
+		summarizeBy: sum
+		sourceColumn: receita_com_distancia
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_km
+		dataType: double
+		formatString: #,0
+		lineageTag: ff9ae5c6-c53b-5d4b-870a-223117963d83
+		summarizeBy: sum
+		sourceColumn: assentos_km
+
+		annotation SummarizationSetBy = Automatic
+
+	column passageiros_pagos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 103f38b2-bbbf-5c6e-949f-a03c3135b9df
+		summarizeBy: sum
+		sourceColumn: passageiros_pagos
+
+		annotation SummarizationSetBy = Automatic
+
+	column passageiros_pagos_regular
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3eb9d0f0-45a9-5743-9d28-79ea5a203286
+		summarizeBy: sum
+		sourceColumn: passageiros_pagos_regular
+
+		annotation SummarizationSetBy = Automatic
+
+	column decolagens
+		dataType: int64
+		formatString: #,0
+		lineageTag: c02147f1-b578-55b2-a791-eb0ecb6fe003
+		summarizeBy: sum
+		sourceColumn: decolagens
+
+		annotation SummarizationSetBy = Automatic
+
+	column rpk
+		dataType: int64
+		formatString: #,0
+		lineageTag: 1be9ba4d-4909-5024-8455-4848fce4fe73
+		summarizeBy: sum
+		sourceColumn: rpk
+
+		annotation SummarizationSetBy = Automatic
+
+	column ask
+		dataType: int64
+		formatString: #,0
+		lineageTag: be1353a5-e125-527b-96c3-61f33498cdc3
+		summarizeBy: sum
+		sourceColumn: ask
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 6cb064bc-fe68-5147-b424-799bee5be0e6
+		summarizeBy: sum
+		sourceColumn: voos
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_realizados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 9b8d906c-93e2-5e22-8616-df582f3caa91
+		summarizeBy: sum
+		sourceColumn: voos_realizados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_cancelados
+		dataType: int64
+		formatString: #,0
+		lineageTag: e7b4aea1-4a08-50f1-b24f-a8d42a869025
+		summarizeBy: sum
+		sourceColumn: voos_cancelados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_15
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8fcaa6d0-5c56-5e59-97de-132293a9e0be
+		summarizeBy: sum
+		sourceColumn: voos_atraso_15
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_30
+		dataType: int64
+		formatString: #,0
+		lineageTag: 0646863d-7d88-55cf-9451-e0cf418b711d
+		summarizeBy: sum
+		sourceColumn: voos_atraso_30
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_60
+		dataType: int64
+		formatString: #,0
+		lineageTag: 544f3c1e-727f-567a-b57d-ef7d7404595d
+		summarizeBy: sum
+		sourceColumn: voos_atraso_60
+
+		annotation SummarizationSetBy = Automatic
+
+	partition validacao = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "validacao.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mes", type date}, {"empresa", type text}, {"assentos_vendidos", Int64.Type}, {"receita_tarifas", type number}, {"assentos_ate_300", Int64.Type}, {"assentos_ate_500", Int64.Type}, {"assentos_acima_1500", Int64.Type}, {"receita_com_distancia", type number}, {"assentos_km", type number}, {"passageiros_pagos", Int64.Type}, {"passageiros_pagos_regular", Int64.Type}, {"decolagens", Int64.Type}, {"rpk", Int64.Type}, {"ask", Int64.Type}, {"voos", Int64.Type}, {"voos_realizados", Int64.Type}, {"voos_cancelados", Int64.Type}, {"voos_atraso_15", Int64.Type}, {"voos_atraso_30", Int64.Type}, {"voos_atraso_60", Int64.Type}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,79 @@
+table dim_mercado
+	lineageTag: 306af320-15d6-5e7d-80d4-c40fee1f2f25
+
+	column mercado
+		dataType: string
+		lineageTag: 5a753fcd-f568-5de9-ab5b-f1293d4fd28c
+		summarizeBy: none
+		sourceColumn: mercado
+
+		annotation SummarizationSetBy = Automatic
+
+	column cidade_a
+		dataType: string
+		lineageTag: f35d47b4-73ca-5b90-8083-b9d3bfe6acfe
+		summarizeBy: none
+		sourceColumn: cidade_a
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_cidade_a
+		dataType: string
+		lineageTag: 288dfeda-3b71-5b40-b987-fc42b5817e65
+		summarizeBy: none
+		sourceColumn: nome_cidade_a
+
+		annotation SummarizationSetBy = Automatic
+
+	column cidade_b
+		dataType: string
+		lineageTag: b828372a-7bb0-5293-b7ed-05e58f28ac77
+		summarizeBy: none
+		sourceColumn: cidade_b
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_cidade_b
+		dataType: string
+		lineageTag: eba57e04-c94d-5b57-97ee-e5677e486a07
+		summarizeBy: none
+		sourceColumn: nome_cidade_b
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome
+		dataType: string
+		lineageTag: c60de842-1f2a-5278-bfbe-2ed61045d53c
+		summarizeBy: none
+		sourceColumn: nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column distancia_km
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 5bba6b27-5ee8-5da8-ba1c-ac6435b5388b
+		summarizeBy: none
+		sourceColumn: distancia_km
+
+		annotation SummarizationSetBy = Automatic
+
+	column distancia_fonte
+		dataType: string
+		lineageTag: 30e13f71-c5d7-596d-9768-e615c6a923be
+		summarizeBy: none
+		sourceColumn: distancia_fonte
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_mercado = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "dim_mercado.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mercado", type text}, {"cidade_a", type text}, {"nome_cidade_a", type text}, {"cidade_b", type text}, {"nome_cidade_b", type text}, {"nome", type text}, {"distancia_km", type number}, {"distancia_fonte", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

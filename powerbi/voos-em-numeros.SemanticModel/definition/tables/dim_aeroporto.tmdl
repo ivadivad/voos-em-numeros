@@ -1,0 +1,92 @@
+table dim_aeroporto
+	lineageTag: d6dc6f2a-6b3c-590a-a49e-b464fbdb72b4
+
+	column icao
+		dataType: string
+		lineageTag: 6a6e5bc6-f248-5879-a490-05988d8a36b1
+		summarizeBy: none
+		sourceColumn: icao
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome
+		dataType: string
+		lineageTag: 80b87aba-3a11-5c39-8548-64d256bf8362
+		summarizeBy: none
+		sourceColumn: nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column municipio
+		dataType: string
+		lineageTag: 55454b38-d584-59bc-b457-676b7e8f98aa
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column uf
+		dataType: string
+		lineageTag: 72c78543-325f-5545-bdec-1426eb7135d3
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: uf
+
+		annotation SummarizationSetBy = Automatic
+
+	column latitude
+		dataType: double
+		formatString: 0.000000
+		lineageTag: 6bdb1577-38b9-550b-a5a9-4a5ffb8f8394
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = Automatic
+
+	column longitude
+		dataType: double
+		formatString: 0.000000
+		lineageTag: 96db43fa-7c7c-5a91-9ac1-d0821525a036
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = Automatic
+
+	column cidade
+		dataType: string
+		lineageTag: 6c99a829-9145-57ef-aff4-08014b10a1e1
+		summarizeBy: none
+		sourceColumn: cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_cidade
+		dataType: string
+		lineageTag: 32acac21-11a2-5155-85cb-8e069e8e5145
+		summarizeBy: none
+		sourceColumn: nome_cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column cadastro
+		dataType: string
+		lineageTag: 1c60ad25-aa83-5f97-adc1-c6cd77a3738f
+		summarizeBy: none
+		sourceColumn: cadastro
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_aeroporto = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "dim_aeroporto.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"icao", type text}, {"nome", type text}, {"municipio", type text}, {"uf", type text}, {"latitude", type number}, {"longitude", type number}, {"cidade", type text}, {"nome_cidade", type text}, {"cadastro", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

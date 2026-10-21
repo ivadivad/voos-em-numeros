@@ -1,0 +1,133 @@
+table fusao
+	lineageTag: 819c6c5b-b07b-5bef-95c1-1df552ee09e4
+
+	column janela
+		dataType: string
+		lineageTag: c6663dd8-5ca1-52a5-a1af-e5ee8cb0eda0
+		summarizeBy: none
+		sourceColumn: janela
+
+		annotation SummarizationSetBy = Automatic
+
+	column inicio
+		dataType: dateTime
+		formatString: mmm/yyyy
+		lineageTag: 3001ad1d-d564-5402-a23d-18c4f473bd9d
+		summarizeBy: none
+		sourceColumn: inicio
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column fim
+		dataType: dateTime
+		formatString: mmm/yyyy
+		lineageTag: bc93ee21-7be4-5de2-865c-793c1f5dfcd6
+		summarizeBy: none
+		sourceColumn: fim
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column mercado
+		dataType: string
+		isHidden
+		lineageTag: 1be8fd77-1095-5c0f-902d-cc63d9a1b704
+		summarizeBy: none
+		sourceColumn: mercado
+
+		annotation SummarizationSetBy = Automatic
+
+	column passageiros
+		dataType: int64
+		formatString: #,0
+		lineageTag: fe93688b-09bf-5721-b24e-c46afaed57cf
+		summarizeBy: sum
+		sourceColumn: passageiros
+
+		annotation SummarizationSetBy = Automatic
+
+	column participacao_azul
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 9cb13561-4a2b-59d3-a763-48777eff4ba4
+		summarizeBy: none
+		sourceColumn: participacao_azul
+
+		annotation SummarizationSetBy = Automatic
+
+	column participacao_gol
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 8fec866e-52c7-5c68-8020-71031f2a824c
+		summarizeBy: none
+		sourceColumn: participacao_gol
+
+		annotation SummarizationSetBy = Automatic
+
+	column concorrentes_antes
+		dataType: int64
+		formatString: 0
+		lineageTag: b8462abb-c331-58a4-a10b-703e7f09f097
+		summarizeBy: none
+		sourceColumn: concorrentes_antes
+
+		annotation SummarizationSetBy = Automatic
+
+	column concorrentes_depois
+		dataType: int64
+		formatString: 0
+		lineageTag: b3af0a49-0dbf-5289-9609-0708e41bbf4f
+		summarizeBy: none
+		sourceColumn: concorrentes_depois
+
+		annotation SummarizationSetBy = Automatic
+
+	column hhi_antes
+		dataType: double
+		formatString: #,0
+		lineageTag: f87bb09d-9298-5544-bafe-4c0a7dde80db
+		summarizeBy: none
+		sourceColumn: hhi_antes
+
+		annotation SummarizationSetBy = Automatic
+
+	column hhi_depois
+		dataType: double
+		formatString: #,0
+		lineageTag: 4a5583d3-d47d-5ee7-85b1-6e13914a90d0
+		summarizeBy: none
+		sourceColumn: hhi_depois
+
+		annotation SummarizationSetBy = Automatic
+
+	column delta_hhi
+		dataType: double
+		formatString: #,0
+		lineageTag: 60c4b5bd-cd7c-54aa-9320-4bc68d5403cf
+		summarizeBy: none
+		sourceColumn: delta_hhi
+
+		annotation SummarizationSetBy = Automatic
+
+	column leitura
+		dataType: string
+		lineageTag: 3c3136f6-8fcd-5d16-84ef-73fecf627b18
+		summarizeBy: none
+		sourceColumn: leitura
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fusao = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "fusao.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"janela", type text}, {"inicio", type date}, {"fim", type date}, {"mercado", type text}, {"passageiros", Int64.Type}, {"participacao_azul", type number}, {"participacao_gol", type number}, {"concorrentes_antes", Int64.Type}, {"concorrentes_depois", Int64.Type}, {"hhi_antes", type number}, {"hhi_depois", type number}, {"delta_hhi", type number}, {"leitura", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

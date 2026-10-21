@@ -9,3 +9,16 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
+annotation PBI_QueryOrder = ["dim_calendario", "dim_grupo", "dim_empresa", "dim_aeroporto", "dim_mercado", "mercado_mes", "validacao", "fusao", "pontualidade_rota", "pontualidade_horario"]
+
+ref table dim_aeroporto
+ref table dim_calendario
+ref table dim_empresa
+ref table dim_grupo
+ref table dim_mercado
+ref table fusao
+ref table mercado_mes
+ref table pontualidade_horario
+ref table pontualidade_rota
+ref table validacao
+

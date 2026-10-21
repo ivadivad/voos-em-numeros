@@ -1,0 +1,143 @@
+table pontualidade_horario
+	lineageTag: ddb4463f-59c1-505d-9bea-87e37977a5ec
+
+	column mes
+		dataType: dateTime
+		isHidden
+		formatString: mmm/yyyy
+		lineageTag: cb30fdef-5076-5427-98e1-c1510fe25201
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column grupo
+		dataType: string
+		isHidden
+		lineageTag: aa583891-8367-5176-87eb-b0766ec7abb9
+		summarizeBy: none
+		sourceColumn: grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column dia_semana
+		dataType: int64
+		formatString: 0
+		lineageTag: 49094471-c7e3-5a94-ac1a-c2e94dca9563
+		summarizeBy: none
+		sourceColumn: dia_semana
+
+		annotation SummarizationSetBy = Automatic
+
+	column hora
+		dataType: int64
+		formatString: 0
+		lineageTag: 693eb1ad-badf-509c-90e8-505e2553dbc6
+		summarizeBy: none
+		sourceColumn: hora
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_previstos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 23be8f30-b6ba-56dc-a41b-d05812627bf0
+		summarizeBy: sum
+		sourceColumn: voos_previstos
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_realizados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 92e64554-d12a-54f7-a8c2-84435ecd3aea
+		summarizeBy: sum
+		sourceColumn: voos_realizados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_cancelados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 717740b7-5c22-5ea5-89e5-298495086c92
+		summarizeBy: sum
+		sourceColumn: voos_cancelados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_nao_informados
+		dataType: int64
+		formatString: #,0
+		lineageTag: abe8b35b-7a38-52cc-bae3-64c5276ccf2b
+		summarizeBy: sum
+		sourceColumn: voos_nao_informados
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_medidos
+		dataType: int64
+		formatString: #,0
+		lineageTag: b32c9c92-201d-56b8-ab2f-4b6a85406a66
+		summarizeBy: sum
+		sourceColumn: voos_medidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_15
+		dataType: int64
+		formatString: #,0
+		lineageTag: 9becc8cc-aa97-5f87-9a3e-d9b0889eac72
+		summarizeBy: sum
+		sourceColumn: voos_atraso_15
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_30
+		dataType: int64
+		formatString: #,0
+		lineageTag: 74c76628-f118-5a87-8632-79df1158f56a
+		summarizeBy: sum
+		sourceColumn: voos_atraso_30
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_60
+		dataType: int64
+		formatString: #,0
+		lineageTag: 9cda0bf9-a97e-5c37-8b1d-63ff6d1d9983
+		summarizeBy: sum
+		sourceColumn: voos_atraso_60
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_adiantados_2h
+		dataType: int64
+		formatString: #,0
+		lineageTag: 95c92977-f229-5d76-ab57-fdbff6c97690
+		summarizeBy: sum
+		sourceColumn: voos_adiantados_2h
+
+		annotation SummarizationSetBy = Automatic
+
+	column voos_atraso_23h
+		dataType: int64
+		formatString: #,0
+		lineageTag: 2edec5d4-1d67-596a-8c36-41b1f7c9447e
+		summarizeBy: sum
+		sourceColumn: voos_atraso_23h
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pontualidade_horario = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "pontualidade_horario.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mes", type date}, {"grupo", type text}, {"dia_semana", Int64.Type}, {"hora", Int64.Type}, {"voos_previstos", Int64.Type}, {"voos_realizados", Int64.Type}, {"voos_cancelados", Int64.Type}, {"voos_nao_informados", Int64.Type}, {"voos_medidos", Int64.Type}, {"voos_atraso_15", Int64.Type}, {"voos_atraso_30", Int64.Type}, {"voos_atraso_60", Int64.Type}, {"voos_adiantados_2h", Int64.Type}, {"voos_atraso_23h", Int64.Type}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

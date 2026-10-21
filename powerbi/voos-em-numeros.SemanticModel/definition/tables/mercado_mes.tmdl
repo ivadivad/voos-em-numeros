@@ -1,0 +1,116 @@
+table mercado_mes
+	lineageTag: a7f152be-ffdf-562f-9b19-51b63339ebaa
+
+	column mes
+		dataType: dateTime
+		isHidden
+		formatString: mmm/yyyy
+		lineageTag: 421c5e21-2836-5653-80cc-cdc78ca45e74
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column mercado
+		dataType: string
+		isHidden
+		lineageTag: 380f2f27-be21-5578-9c2b-2910baf988e3
+		summarizeBy: none
+		sourceColumn: mercado
+
+		annotation SummarizationSetBy = Automatic
+
+	column grupo
+		dataType: string
+		isHidden
+		lineageTag: 41e19d84-f5ef-5537-a6d7-36c1394598e2
+		summarizeBy: none
+		sourceColumn: grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column passageiros_pagos
+		dataType: int64
+		formatString: #,0
+		lineageTag: f767438c-6130-5903-b1d0-a4e256ffaebb
+		summarizeBy: sum
+		sourceColumn: passageiros_pagos
+
+		annotation SummarizationSetBy = Automatic
+
+	column passageiros_nao_regular
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3357bb2b-6710-51b4-8d45-b8fefd9e10e0
+		summarizeBy: sum
+		sourceColumn: passageiros_nao_regular
+
+		annotation SummarizationSetBy = Automatic
+
+	column participacao
+		dataType: double
+		formatString: 0.0%
+		lineageTag: b73f639a-fdd3-50bb-bce6-e714786ccaee
+		summarizeBy: none
+		sourceColumn: participacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column concorrentes
+		dataType: int64
+		formatString: 0
+		lineageTag: bd479c16-0406-50b0-b2ce-06a51291e4b6
+		summarizeBy: none
+		sourceColumn: concorrentes
+
+		annotation SummarizationSetBy = Automatic
+
+	column hhi
+		dataType: double
+		formatString: #,0
+		lineageTag: bed97850-13f6-5e25-a6fa-11f3b1604377
+		summarizeBy: none
+		sourceColumn: hhi
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_vendidos
+		dataType: int64
+		formatString: #,0
+		lineageTag: 809b725b-8f40-5b23-9863-083903f3a958
+		summarizeBy: sum
+		sourceColumn: assentos_vendidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column receita
+		dataType: double
+		formatString: #,0
+		lineageTag: 437fe878-5373-52f3-b4fc-ee859f3b11e8
+		summarizeBy: sum
+		sourceColumn: receita
+
+		annotation SummarizationSetBy = Automatic
+
+	column assentos_km
+		dataType: double
+		formatString: #,0
+		lineageTag: 50254ee1-ac75-573b-89fd-375890a3a73c
+		summarizeBy: sum
+		sourceColumn: assentos_km
+
+		annotation SummarizationSetBy = Automatic
+
+	partition mercado_mes = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(Binary.Buffer(Web.Contents("https://raw.githubusercontent.com/ivadivad/voos-em-numeros/main/dados/marts/", [RelativePath = "mercado_mes.parquet"]))),
+				    Tipos = Table.TransformColumnTypes(Fonte, {{"mes", type date}, {"mercado", type text}, {"grupo", type text}, {"passageiros_pagos", Int64.Type}, {"passageiros_nao_regular", Int64.Type}, {"participacao", type number}, {"concorrentes", Int64.Type}, {"hhi", type number}, {"assentos_vendidos", Int64.Type}, {"receita", type number}, {"assentos_km", type number}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+
