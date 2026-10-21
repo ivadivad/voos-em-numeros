@@ -26,6 +26,22 @@ transformações em SQL e um painel em Power BI.
    limites de concentração do CADE, e quantas pessoas voariam neles?
 3. Pagar mais caro compra pontualidade?
 
+### As respostas
+
+1. **Sim, como associação.** Comparando mercados de distância parecida, a
+   tarifa por quilômetro é de 27,1% a 39,5% mais alta onde só um grupo voa
+   do que onde há três ou mais, e a diferença vem dos mercados de até
+   2.000 km ([notebook 03](notebooks/03-comparar-o-comparavel.ipynb)).
+2. **79 mercados em 2024**, de 503, passariam da linha do guia do CADE com a
+   fusão Azul + GOL, e neles voaram 74,8% dos passageiros de voo regular;
+   nos 12 meses mais recentes, seriam 66 de 467, com 71,0%
+   ([notebook 04](notebooks/04-fusao.ipynb)).
+3. **Não de forma consistente.** Nos 12 meses mais recentes, os grupos que
+   cobram mais por km num mercado atrasam um pouco menos (correlação de
+   Spearman de −0,090), mas a associação é fraca, não aparece dentro de
+   nenhum dos três maiores grupos e muda de sinal de um ano pro outro
+   ([notebook 05](notebooks/05-pontualidade.ipynb)).
+
 O período de análise começa em janeiro de 2019 e vai até o último mês publicado
 pelas fontes. O projeto usa as tarifas domésticas registradas pela ANAC, que,
 pelos [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/tarifas-aereas-domesticas/46-tarifas-aereas-domesticas),
