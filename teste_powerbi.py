@@ -124,6 +124,65 @@ class TesteModeloDoPainel(unittest.TestCase):
             self.assertIn("annotation __PBI_TimeIntelligenceEnabled = 0", f.read())
 
 
+def ler_relacionamentos():
+    """[{de: (tabela, coluna), para: (tabela, coluna), ativo: bool}]"""
+    caminho = os.path.join(MODELO, "relationships.tmdl")
+    with open(caminho, encoding="utf-8") as f:
+        blocos = re.split(r"^relationship ", f.read(), flags=re.M)[1:]
+    saida = []
+    for bloco in blocos:
+        de = re.search(r"^\tfromColumn: (.+?)\s*$", bloco, re.M).group(1)
+        para = re.search(r"^\ttoColumn: (.+?)\s*$", bloco, re.M).group(1)
+        saida.append({"de": tuple(nome_tmdl(p) for p in de.split(".", 1)),
+                      "para": tuple(nome_tmdl(p) for p in para.split(".", 1)),
+                      "ativo": not re.search(r"^\tisActive: false", bloco, re.M)})
+    return saida
+
+
+def valores(tabela, coluna):
+    """Os valores da coluna no parquet que a tabela le."""
+    mart = mart_lido(next(t for t in tabelas_do_modelo() if t["nome"] == tabela))
+    return pq.read_table(os.path.join(MARTS, f"{mart}.parquet"), columns=[coluna]).column(0).to_pylist()
+
+
+class TesteRelacionamentos(unittest.TestCase):
+    def test_colunas_existem(self):
+        colunas = {t["nome"]: t["colunas"] for t in tabelas_do_modelo()}
+        for r in ler_relacionamentos():
+            for tabela, coluna in (r["de"], r["para"]):
+                with self.subTest(coluna=f"{tabela}.{coluna}"):
+                    self.assertIn(coluna, colunas.get(tabela, {}))
+
+    def test_do_fato_pra_dimensao(self):
+        for r in ler_relacionamentos():
+            with self.subTest(relacionamento=r):
+                self.assertTrue(r["para"][0].startswith("dim_"))
+                self.assertFalse(r["de"][0].startswith("dim_"))
+
+    def test_lado_da_dimensao_sem_repeticao_nem_nulo(self):
+        # muitos pra um: chave repetida na dimensao e o Power BI recusa o relacionamento
+        for tabela, coluna in {r["para"] for r in ler_relacionamentos()}:
+            with self.subTest(chave=f"{tabela}.{coluna}"):
+                lista = valores(tabela, coluna)
+                self.assertNotIn(None, lista)
+                self.assertEqual(len(lista), len(set(lista)))
+
+    def test_toda_chave_do_fato_existe_na_dimensao(self):
+        # chave sem par vira a linha "(Em branco)" nos visuais, sem erro nenhum
+        for r in ler_relacionamentos():
+            with self.subTest(relacionamento=f"{'.'.join(r['de'])} -> {'.'.join(r['para'])}"):
+                orfas = set(valores(*r["de"])) - {None} - set(valores(*r["para"]))
+                self.assertEqual(orfas, set())
+
+    def test_um_caminho_ativo_entre_duas_tabelas(self):
+        ativos = [(r["de"][0], r["para"][0]) for r in ler_relacionamentos() if r["ativo"]]
+        self.assertEqual(len(ativos), len(set(ativos)))
+
+    def test_todo_fato_liga_em_alguma_dimensao(self):
+        fatos = {t["nome"] for t in tabelas_do_modelo() if mart_lido(t) and not t["nome"].startswith("dim_")}
+        self.assertEqual({r["de"][0] for r in ler_relacionamentos()}, fatos)
+
+
 class TesteLeitorDeTmdl(unittest.TestCase):
     def test_le_colunas_calculadas_e_nomes_com_aspas(self):
         texto = ("table 'Minha tabela'\n\tlineageTag: x\n\n\tcolumn a\n\t\tdataType: int64\n\n"

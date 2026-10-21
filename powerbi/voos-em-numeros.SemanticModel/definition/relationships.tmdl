@@ -1,0 +1,53 @@
+relationship 81e297bf-63f9-5288-80cb-46a889a433e2
+	fromColumn: mercado_mes.mes
+	toColumn: dim_calendario.mes
+
+relationship 64ef304f-d66b-57e3-9830-71ef5ba3d68a
+	fromColumn: mercado_mes.mercado
+	toColumn: dim_mercado.mercado
+
+relationship d78d9515-242e-571e-9ecf-3b5795e599e9
+	fromColumn: mercado_mes.grupo
+	toColumn: dim_grupo.grupo
+
+relationship ae5931fa-51f5-5f3a-ac34-ff2d838c0667
+	fromColumn: validacao.mes
+	toColumn: dim_calendario.mes
+
+relationship f54ceeaf-efbb-51bd-857a-87e3232ceea4
+	fromColumn: validacao.empresa
+	toColumn: dim_empresa.empresa
+
+relationship 4350a57d-cf11-5588-948a-9ff4950f4c91
+	fromColumn: fusao.mercado
+	toColumn: dim_mercado.mercado
+
+relationship 17e8b2d3-540d-5a4a-861c-2bd5b69ec060
+	fromColumn: pontualidade_rota.mes
+	toColumn: dim_calendario.mes
+
+relationship cb22bf3a-4d96-5036-b73d-672b4e4b0529
+	fromColumn: pontualidade_rota.grupo
+	toColumn: dim_grupo.grupo
+
+relationship 17d5f306-5acf-5841-af4f-e9deb5469fb3
+	fromColumn: pontualidade_rota.mercado
+	toColumn: dim_mercado.mercado
+
+relationship d5b87901-73b0-5059-82e7-640a98db31fd
+	fromColumn: pontualidade_rota.origem
+	toColumn: dim_aeroporto.icao
+
+relationship 020adbb4-7a16-53e2-94df-718f4f8119a9
+	isActive: false
+	fromColumn: pontualidade_rota.destino
+	toColumn: dim_aeroporto.icao
+
+relationship 2b154c0b-0cc8-5cf1-86e2-a2f28c8e02c0
+	fromColumn: pontualidade_horario.mes
+	toColumn: dim_calendario.mes
+
+relationship cb9e430a-41e9-5a3a-97f6-3003f7567165
+	fromColumn: pontualidade_horario.grupo
+	toColumn: dim_grupo.grupo
+
