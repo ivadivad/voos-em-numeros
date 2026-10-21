@@ -295,6 +295,44 @@ linha: em 2025, a LATAM é a que mais atrasa acima de 15 minutos, e a Azul,
 acima de 30 e de 60. Por isso o projeto mostra os três cortes, e não um
 ranking só. O detalhe está no notebook `05-pontualidade`.
 
+## O painel
+
+O painel do Power BI está em `powerbi/`, salvo como projeto (`.pbip`): o
+modelo em TMDL e o relatório em PBIR, texto que o git versiona e mostra
+linha a linha. Pra abrir:
+
+1. Instale o Power BI Desktop (a versão de junho de 2026 ou uma mais nova).
+2. Abra `powerbi/voos-em-numeros.pbip`.
+3. Clique em **Atualizar**. Na primeira vez, o Power BI pergunta como
+   acessar `raw.githubusercontent.com`: deixe **Anônimo** e clique em
+   **Conectar**. Os dados vêm dos marts deste repositório, pela URL do
+   GitHub; nada depende da sua máquina.
+
+São cinco páginas: a visão geral; concorrência e preço, com a dispersão
+entre o HHI e a tarifa por km; a fusão Azul + GOL, com o botão que liga a
+simulação; a pontualidade, com o corte de atraso (15, 30 ou 60 minutos)
+como parâmetro; e o detalhe de um mercado, aberta pelo drill-through
+(botão direito num mercado). Quem não tem Power BI vê as capturas em
+[`graficos/painel/`](graficos/painel) ou num [PDF só](graficos/painel.pdf).
+
+![A página da fusão Azul + GOL no painel, em 2024](graficos/painel/03-fusao.png)
+
+Quatro decisões do modelo:
+
+- **As mesmas tabelas dos notebooks.** As cinco dimensões e os cinco marts,
+  com as colunas e os tipos do parquet; o `teste_powerbi.py` confere isso e
+  que cada relacionamento vale nos dados.
+- **Média é razão entre somas.** A tarifa média e a tarifa por km saem das
+  somas, como nos notebooks, e o HHI é calculado no período filtrado: em
+  2024, a página da fusão mostra os mesmos 79 de 503 mercados do notebook
+  `04-fusao`.
+- **O calendário é mensal e não é marcado como tabela de datas.** O Power
+  BI exige datas contínuas pra marcar, e as medidas não usam as funções de
+  inteligência de tempo.
+- **Números em português.** O relatório tem idioma próprio (pt-BR), que
+  passa na frente do idioma do Windows e do navegador: R\$ 514,29, e não
+  R\$ 514.29.
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
