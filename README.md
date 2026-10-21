@@ -419,6 +419,32 @@ de onde vem.
   de fora, e os 1.158 voos com situação `NÃO INFORMADO` ficam fora da
   conta principal de atraso e cancelamento.
 
+## O que falta
+
+- **Atualização automática.** Os dados param na coleta de 13/10/2026, com
+  ago/2026 como último mês. A etapa 12, opcional, é um workflow mensal que
+  coleta, reconstrói os marts e commita; ainda não existe. Até lá, o mês
+  novo vem rodando `python coletar.py todas` e `python construir.py`.
+- **Efeito, e não só associação.** O passo seguinte pras perguntas 1 e 3 é
+  tratar a saída de uma companhia como experimento natural: o mesmo
+  mercado, antes e depois de um grupo sair dele.
+- **Outras definições de mercado.** O par de aeroportos em vez do par de
+  cidades, e Viracopos fora de São Paulo, como teste de sensibilidade. Já
+  testados, sem mudar o quadro: o limite de 10% no lugar dos 5% pra contar
+  como concorrente, e a conta com o fretamento junto (notebook 02).
+- **Concorrência nos mercados só de conexão.** Os 18,16% dos assentos
+  vendidos nesses mercados ficam fora da análise: medir quem disputa esse
+  passageiro pediria o caminho da conexão, que as tarifas não trazem.
+- **Fev e mar/2020 do VRA.** A versão descontinuada do histórico de voos
+  tem os dois meses legíveis, em outro formato; trazer de lá fecharia o
+  buraco.
+- **Coordenadas de 18 aeroportos** que não estão nas listas de aeródromos
+  da ANAC. Hoje vale a distância publicada pra voo direto, e 428 mercados,
+  com 0,06% dos assentos vendidos, ficam sem distância.
+- **No painel**, um mapa na página da fusão, que pediria coordenada pro
+  mercado (hoje só o aeroporto tem). E o PDF junta as capturas das páginas:
+  o Exportar para PDF do Desktop só se faz pela tela.
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
