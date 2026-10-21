@@ -408,4 +408,5 @@ byte, pra não aparecer mudança falsa no git.
 python teste_coletar.py    # só biblioteca padrão, sem rede
 python teste_construir.py  # precisa de duckdb; não precisa dos brutos
 python teste_visual.py     # precisa de matplotlib
+python teste_powerbi.py    # precisa de pyarrow; confere o modelo do painel contra os marts
 ```
