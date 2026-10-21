@@ -55,6 +55,70 @@ table Medidas
 		displayFolder: Pontualidade
 		lineageTag: a25b5826-d89b-57e7-a9f9-585bb0754722
 
+	/// Índice Herfindahl-Hirschman do mercado no período: 10.000 vezes a soma dos quadrados das participações dos grupos nos passageiros regulares. Vazio fora de um mercado só.
+	measure 'HHI sem fusão' =
+			VAR total = CALCULATE([Passageiros], REMOVEFILTERS(dim_grupo))
+			RETURN
+			    IF(
+			        HASONEVALUE(dim_mercado[mercado]) && total > 0,
+			        10000 * SUMX(
+			            ALL(dim_grupo[grupo]),
+			            VAR g = dim_grupo[grupo]
+			            RETURN DIVIDE(CALCULATE([Passageiros], REMOVEFILTERS(dim_grupo), dim_grupo[grupo] = g), total) ^ 2
+			        )
+			    )
+		formatString: #,0
+		displayFolder: Concentração
+		lineageTag: 2227aa4f-d23b-5df6-99ef-75974b0819e1
+
+	/// O mesmo HHI com Azul e GOL somadas num grupo só (o grupo_simulado): a fusão que não aconteceu, numa simulação estática, sem reação de ninguém.
+	measure 'HHI com fusão' =
+			VAR total = CALCULATE([Passageiros], REMOVEFILTERS(dim_grupo))
+			RETURN
+			    IF(
+			        HASONEVALUE(dim_mercado[mercado]) && total > 0,
+			        10000 * SUMX(
+			            ALL(dim_grupo[grupo_simulado]),
+			            VAR g = dim_grupo[grupo_simulado]
+			            RETURN DIVIDE(CALCULATE([Passageiros], REMOVEFILTERS(dim_grupo), dim_grupo[grupo_simulado] = g), total) ^ 2
+			        )
+			    )
+		formatString: #,0
+		displayFolder: Concentração
+		lineageTag: 53dff91c-9f25-56ba-8e61-174eebc8e1a7
+
+	/// O HHI sem ou com a fusão, conforme o botão Simular fusão (sem seleção, sem fusão).
+	measure HHI = IF(SELECTEDVALUE('Simular fusão'[Opção], "Não") = "Sim", [HHI com fusão], [HHI sem fusão])
+		formatString: #,0
+		displayFolder: Concentração
+		lineageTag: a3100658-2ea8-5908-9f23-d62622ac5d13
+
+	/// HHI com a fusão menos o HHI sem: 2 × 10.000 × a participação da Azul × a da GOL.
+	measure 'Variação do HHI' = IF(NOT ISBLANK([HHI sem fusão]), [HHI com fusão] - [HHI sem fusão])
+		formatString: #,0
+		displayFolder: Concentração
+		lineageTag: 22878327-272c-59fa-b4a7-f475724ed0ce
+
+	/// A faixa da seção 2.4.2 do guia de concentração horizontal do CADE (2016), pelo HHI com a fusão e pela variação, com as mesmas fronteiras do sql/60_mart_fusao.sql.
+	measure 'Leitura do guia do CADE' =
+			VAR depois = [HHI com fusão]
+			VAR delta = [Variação do HHI]
+			RETURN
+			    IF(
+			        NOT ISBLANK(depois),
+			        SWITCH(
+			            TRUE(),
+			            delta < 100, "variação pequena",
+			            depois < 1500, "mercado não concentrado",
+			            depois <= 2500 && delta > 100, "potencial preocupação",
+			            depois > 2500 && delta <= 200, "potencial preocupação",
+			            depois > 2500, "presunção de poder de mercado",
+			            "sem leitura no guia"
+			        )
+			    )
+		displayFolder: Concentração
+		lineageTag: 8d2274c5-d496-5ae4-b005-c03749f7a748
+
 	column Coluna
 		dataType: string
 		isHidden

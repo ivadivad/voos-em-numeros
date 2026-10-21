@@ -1,0 +1,31 @@
+table 'Simular fusão'
+	lineageTag: 53c47b64-9859-5bcd-a050-92c9fbc00f60
+
+	column Opção
+		dataType: string
+		lineageTag: 2c3d47d8-fbc2-5de3-b2ec-5901919e3e99
+		summarizeBy: none
+		sourceColumn: Opção
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		dataType: int64
+		formatString: 0
+		lineageTag: a599b2e1-c7d5-5f22-a835-adb46ea245a0
+		summarizeBy: none
+		sourceColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Simular fusão' = m
+		mode: import
+		source =
+				let
+				    Fonte = #table(type table [Opção = text, Ordem = Int64.Type], {{"Não", 1}, {"Sim", 2}})
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+
