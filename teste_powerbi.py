@@ -269,6 +269,55 @@ class TesteTema(unittest.TestCase):
         self.assertIn({"name": "tema.json", "path": "tema.json", "type": "CustomTheme"}, itens)
 
 
+def campos_citados(objeto):
+    """Todo campo (tabela, nome, tipo) citado num JSON do relatorio: colunas e medidas."""
+    if isinstance(objeto, dict):
+        for tipo in ("Column", "Measure"):
+            alvo = objeto.get(tipo)
+            if isinstance(alvo, dict) and "Property" in alvo:
+                fonte = alvo.get("Expression", {}).get("SourceRef", {})
+                yield fonte.get("Entity"), alvo["Property"], tipo
+        for valor in objeto.values():
+            yield from campos_citados(valor)
+    elif isinstance(objeto, list):
+        for valor in objeto:
+            yield from campos_citados(valor)
+
+
+class TesteRelatorio(unittest.TestCase):
+    def test_todo_campo_dos_visuais_existe_no_modelo(self):
+        import json
+        tabelas = tabelas_do_modelo()
+        colunas = {(t["nome"], c) for t in tabelas for c in list(t["colunas"]) + t["calculadas"]}
+        medidas = {(t["nome"], nome) for t in tabelas for nome, _ in t["medidas"]}
+        arquivos = glob.glob(os.path.join(RELATORIO, "definition", "pages", "**", "*.json"), recursive=True)
+        self.assertTrue(arquivos)
+        for arquivo in arquivos:
+            with open(arquivo, encoding="utf-8") as f:
+                documento = json.load(f)
+            for tabela, nome, tipo in campos_citados(documento):
+                with self.subTest(arquivo=os.path.relpath(arquivo, RELATORIO), campo=f"{tabela}[{nome}]"):
+                    self.assertIn((tabela, nome), colunas if tipo == "Column" else medidas)
+
+    def test_visual_na_pasta_com_o_proprio_nome(self):
+        # o Desktop ignora visual cuja pasta nao bate com o nome
+        import json
+        for arquivo in glob.glob(os.path.join(RELATORIO, "definition", "pages", "*", "visuals", "*", "visual.json")):
+            with open(arquivo, encoding="utf-8") as f:
+                nome = json.load(f)["name"]
+            with self.subTest(arquivo=arquivo):
+                self.assertEqual(os.path.basename(os.path.dirname(arquivo)), nome)
+                self.assertRegex(nome, r"^[\w-]+$")
+
+    def test_paginas_na_ordem_existem(self):
+        import json
+        with open(os.path.join(RELATORIO, "definition", "pages", "pages.json"), encoding="utf-8") as f:
+            ordem = json.load(f)["pageOrder"]
+        pastas = {os.path.basename(os.path.dirname(p)) for p in
+                  glob.glob(os.path.join(RELATORIO, "definition", "pages", "*", "page.json"))}
+        self.assertEqual(set(ordem), pastas)
+
+
 class TesteLeitorDeTmdl(unittest.TestCase):
     def test_le_colunas_calculadas_e_nomes_com_aspas(self):
         texto = ("table 'Minha tabela'\n\tlineageTag: x\n\n\tcolumn a\n\t\tdataType: int64\n\n"
