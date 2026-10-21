@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cartao_cruzam",
+  "position": {
+    "x": 520,
+    "y": 16,
+    "z": 2000,
+    "height": 100,
+    "width": 234,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Mercados que cruzariam a linha"
+                }
+              },
+              "queryRef": "Medidas.Mercados que cruzariam a linha",
+              "nativeQueryRef": "Mercados que cruzariam a linha",
+              "displayName": "mercados cruzariam a linha"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

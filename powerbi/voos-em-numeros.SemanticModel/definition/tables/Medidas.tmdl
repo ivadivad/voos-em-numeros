@@ -119,6 +119,34 @@ table Medidas
 		displayFolder: Concentração
 		lineageTag: 8d2274c5-d496-5ae4-b005-c03749f7a748
 
+	/// 1 quando a leitura do guia com a fusão é potencial preocupação ou presunção de poder de mercado, as duas leituras que o notebook 04 chama de cruzar a linha; vazio nos outros casos.
+	measure 'Cruza a linha do CADE' = IF([Leitura do guia do CADE] IN {"potencial preocupação", "presunção de poder de mercado"}, 1)
+		formatString: 0
+		displayFolder: Concentração
+		lineageTag: b86cbf79-168e-52dc-b0f2-abe09ce81427
+
+	/// Mercados com passageiro pago de voo regular no período: os que têm HHI.
+	measure 'Mercados com passageiro regular' = COUNTROWS(FILTER(VALUES(dim_mercado[mercado]), [Passageiros] > 0))
+		formatString: #,0
+		displayFolder: Concentração
+		lineageTag: 92fbe00e-b859-5427-b0d3-3307041e1907
+
+	/// Mercados em que a fusão Azul + GOL cairia numa das duas leituras do guia do CADE que pedem atenção, no período filtrado.
+	measure 'Mercados que cruzariam a linha' = COUNTROWS(FILTER(VALUES(dim_mercado[mercado]), [Cruza a linha do CADE] = 1))
+		formatString: #,0
+		displayFolder: Concentração
+		lineageTag: 6b46b2ef-3ef9-5c28-9c21-f6cfbf76e8f6
+
+	/// Passageiros pagos de voo regular dos mercados que cruzariam a linha, sobre os de todos os mercados do período.
+	measure '% dos passageiros nos que cruzariam' =
+			DIVIDE(
+			    SUMX(FILTER(VALUES(dim_mercado[mercado]), [Cruza a linha do CADE] = 1), [Passageiros]),
+			    CALCULATE([Passageiros], REMOVEFILTERS(dim_mercado))
+			)
+		formatString: 0.0%
+		displayFolder: Concentração
+		lineageTag: 4acfdc55-7ba9-5923-bf26-9a94602de384
+
 	column Coluna
 		dataType: string
 		isHidden

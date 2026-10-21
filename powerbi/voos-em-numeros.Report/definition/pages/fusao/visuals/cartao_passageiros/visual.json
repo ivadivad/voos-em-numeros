@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "cartao_passageiros",
+  "position": {
+    "x": 1020,
+    "y": 16,
+    "z": 4000,
+    "height": 100,
+    "width": 234,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% dos passageiros nos que cruzariam"
+                }
+              },
+              "queryRef": "Medidas.% dos passageiros nos que cruzariam",
+              "nativeQueryRef": "% dos passageiros nos que cruzariam",
+              "displayName": "dos passageiros, neles"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
