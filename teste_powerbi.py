@@ -227,6 +227,48 @@ class TesteMedidas(unittest.TestCase):
         self.assertEqual(medidas, ["Receita"])
 
 
+RELATORIO = os.path.join(RAIZ, "powerbi", "voos-em-numeros.Report")
+
+
+def cores_do_visual():
+    """As constantes de cor do visual.py, lidas do texto (sem matplotlib)."""
+    import ast
+    with open(os.path.join(RAIZ, "visual.py"), encoding="utf-8") as f:
+        arvore = ast.parse(f.read())
+    cores, listas = {}, {}
+    for no in arvore.body:
+        if isinstance(no, ast.Assign) and isinstance(no.targets[0], ast.Name):
+            if isinstance(no.value, ast.Constant) and isinstance(no.value.value, str):
+                cores[no.targets[0].id] = no.value.value
+            elif isinstance(no.value, ast.List):
+                listas[no.targets[0].id] = [cores[e.id] for e in no.value.elts if isinstance(e, ast.Name)]
+    return cores, listas
+
+
+class TesteTema(unittest.TestCase):
+    def setUp(self):
+        import json
+        with open(os.path.join(RELATORIO, "StaticResources", "RegisteredResources", "tema.json"), encoding="utf-8") as f:
+            self.tema = json.load(f)
+        with open(os.path.join(RELATORIO, "definition", "report.json"), encoding="utf-8") as f:
+            self.relatorio = json.load(f)
+
+    def test_paleta_comeca_pela_do_visual(self):
+        # notebook e painel parecem o mesmo projeto: as cores saem do mesmo lugar
+        _, listas = cores_do_visual()
+        self.assertEqual(self.tema["dataColors"][:len(listas["CATEGORICAS"])], listas["CATEGORICAS"])
+
+    def test_texto_com_as_cores_do_visual(self):
+        cores, _ = cores_do_visual()
+        self.assertEqual(self.tema["foreground"], cores["TEXTO"])
+        self.assertEqual(self.tema["textClasses"]["label"]["color"], cores["TEXTO_SECUNDARIO"])
+
+    def test_relatorio_usa_o_tema(self):
+        self.assertEqual(self.relatorio["themeCollection"]["customTheme"]["name"], "tema.json")
+        itens = [i for p in self.relatorio["resourcePackages"] for i in p["items"]]
+        self.assertIn({"name": "tema.json", "path": "tema.json", "type": "CustomTheme"}, itens)
+
+
 class TesteLeitorDeTmdl(unittest.TestCase):
     def test_le_colunas_calculadas_e_nomes_com_aspas(self):
         texto = ("table 'Minha tabela'\n\tlineageTag: x\n\n\tcolumn a\n\t\tdataType: int64\n\n"
