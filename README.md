@@ -5,15 +5,16 @@ Nacional de Aviação Civil (ANAC). O projeto investiga a relação entre
 concorrência, tarifas aéreas e pontualidade, com dados reproduzíveis,
 transformações em SQL e um painel em Power BI.
 
-> **Em desenvolvimento: as etapas 0 a 9 estão concluídas** (ver
+> **Em desenvolvimento: as etapas 0 a 10 estão concluídas** (ver
 > [Etapas](#etapas)). As perguntas foram escritas antes de abrir os dados.
 > Já há resultados nos notebooks: a [validação da
 > base](notebooks/01-validacao.ipynb), a [comparação crua entre concorrência
 > e preço](notebooks/02-concorrencia-e-preco.ipynb), a mesma comparação
 > [entre mercados de distância parecida](notebooks/03-comparar-o-comparavel.ipynb),
 > a [simulação da fusão Azul + GOL](notebooks/04-fusao.ipynb) e a
-> [pontualidade](notebooks/05-pontualidade.ipynb). O painel ainda não
-> começou, e as respostas às três perguntas entram aqui na etapa 11.
+> [pontualidade](notebooks/05-pontualidade.ipynb), e o [painel do Power
+> BI](#o-painel) está pronto. As respostas às três perguntas entram aqui na
+> etapa 11.
 
 ## A pergunta
 
@@ -371,7 +372,7 @@ Quatro decisões do modelo:
 - [x] Etapa 7 — Comparar o comparável
 - [x] Etapa 8 — A fusão que não aconteceu
 - [x] Etapa 9 — Pontualidade
-- [ ] Etapa 10 — Power BI
+- [x] Etapa 10 — Power BI
 - [ ] Etapa 11 — Escrita final
 - [ ] Etapa 12 — Deixar vivo (opcional)
 
