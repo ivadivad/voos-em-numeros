@@ -42,6 +42,8 @@ transformações em SQL e um painel em Power BI.
    nenhum dos três maiores grupos e muda de sinal de um ano pro outro
    ([notebook 05](notebooks/05-pontualidade.ipynb)).
 
+As ressalvas das três respostas estão em [Limitações](#limitações).
+
 ![Tarifa por km em 2025 pelo número de concorrentes: com todas as distâncias juntas, as três classes ficam perto de 50 centavos; separando por faixa, um concorrente só cobra mais até 2.000 km](graficos/03-antes-e-depois.png)
 
 Com todas as distâncias juntas (à esquerda), um concorrente só cobra 6,9% a
@@ -377,6 +379,45 @@ Quatro decisões do modelo:
 - **Números em português.** O relatório tem idioma próprio (pt-BR), que
   passa na frente do idioma do Windows e do navegador: R\$ 514,29, e não
   R\$ 514.29.
+
+## Limitações
+
+O que as respostas não dizem. Cada ponto está declarado também no notebook
+de onde vem.
+
+- **A tarifa registrada não é toda passagem vendida.** Pelos
+  [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/tarifas-aereas-domesticas/46-tarifas-aereas-domesticas),
+  ficam de fora as passagens com descontos restritos a grupos e as de
+  programas de milhagem, e os assentos registrados correspondem a "cerca de
+  50% do movimento de passageiros pagos transportados". Se o preço pago
+  fora do registro for diferente onde há menos concorrência, a diferença
+  medida aqui não é a do preço pago por todo mundo.
+- **Mercado é uma escolha de modelagem.** Par de cidades sem direção, com os
+  aeroportos agrupados pelos códigos da IATA ([O que é um
+  mercado](#o-que-é-um-mercado)). Outra definição, como o par de aeroportos
+  ou Viracopos fora de São Paulo, muda quem conta como concorrente em parte
+  dos mercados, e não foi testada. E a concorrência é medida pelo
+  passageiro de voo direto: os mercados que só se ligam por conexão, com
+  18,16% dos assentos vendidos, ficam fora dela.
+- **Associação não é efeito.** Uma companhia entra onde espera ganhar, e um
+  mercado pode ter um concorrente só porque não comporta dois. Comparar
+  mercados mostra que tarifa e concorrência andam juntas (notebook 03), e
+  que tarifa e atraso quase não andam (notebook 05), não que uma cause a
+  outra.
+- **A fusão é uma simulação estática.** Soma Azul e GOL no mercado de cada
+  janela, sem ninguém reagir, entrar ou sair. Não é uma previsão do que
+  teria acontecido.
+- **O HHI é triagem, não veredito.** O próprio guia do CADE chama a regra
+  do HHI de "suposição inicial, sensível a outros argumentos". Cruzar a
+  linha quer dizer que o caso pediria uma análise mais funda, não que a
+  fusão seria barrada.
+- **Passageiro por voo, tarifa por viagem.** A participação de cada grupo
+  vem do passageiro contado em cada voo, e o atraso, de quem operou o voo;
+  a tarifa é da viagem do passageiro, de quem vendeu, no mês da venda. O
+  codeshare põe a venda de um grupo no voo de outro.
+- **O VRA tem buracos.** Fev e mar/2020 vêm corrompidos da fonte e ficam
+  de fora, e os 1.158 voos com situação `NÃO INFORMADO` ficam fora da
+  conta principal de atraso e cancelamento.
 
 ## Estrutura
 
