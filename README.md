@@ -7,14 +7,19 @@ transformações em SQL e um painel em Power BI.
 
 > **Em desenvolvimento: as etapas 0 a 10 estão concluídas** (ver
 > [Etapas](#etapas)). As perguntas foram escritas antes de abrir os dados.
-> Já há resultados nos notebooks: a [validação da
-> base](notebooks/01-validacao.ipynb), a [comparação crua entre concorrência
-> e preço](notebooks/02-concorrencia-e-preco.ipynb), a mesma comparação
-> [entre mercados de distância parecida](notebooks/03-comparar-o-comparavel.ipynb),
-> a [simulação da fusão Azul + GOL](notebooks/04-fusao.ipynb) e a
-> [pontualidade](notebooks/05-pontualidade.ipynb), e o [painel do Power
-> BI](#o-painel) está pronto. As respostas às três perguntas entram aqui na
-> etapa 11.
+
+O que tem aqui:
+
+- **Um coletor em Python**, só com a biblioteca padrão, que baixa as quatro
+  bases e guarda o sha256 de cada arquivo, pra perceber quando a ANAC
+  revisa um mês já publicado.
+- **Um modelo estrela em SQL**, no DuckDB, com testes de qualidade que rodam
+  a cada construção, e os marts que os notebooks e o painel leem.
+- **[Cinco notebooks](#os-notebooks)**: a validação da base contra os
+  números que a ANAC publica, e quatro análises das três perguntas, cada
+  uma com o que ela não prova escrito junto.
+- **[Um painel do Power BI](#o-painel)** salvo como projeto em texto (TMDL e
+  PBIR), com um botão que simula a fusão Azul + GOL.
 
 ## A pergunta
 
@@ -26,6 +31,9 @@ transformações em SQL e um painel em Power BI.
    limites de concentração do CADE, e quantas pessoas voariam neles?
 3. Pagar mais caro compra pontualidade?
 
+O período começa em janeiro de 2019 e vai até o último mês publicado pelas
+fontes: nos marts deste repositório, ago/2026, da coleta de 13/10/2026.
+
 ### As respostas
 
 1. **Sim, como associação.** Comparando mercados de distância parecida, a
@@ -33,8 +41,9 @@ transformações em SQL e um painel em Power BI.
    do que onde há três ou mais, e a diferença vem dos mercados de até
    2.000 km ([notebook 03](notebooks/03-comparar-o-comparavel.ipynb)).
 2. **79 mercados em 2024**, de 503, passariam da linha do guia do CADE com a
-   fusão Azul + GOL, e neles voaram 74,8% dos passageiros de voo regular;
-   nos 12 meses mais recentes, seriam 66 de 467, com 71,0%
+   fusão Azul + GOL, e neles voaram 67,4 milhões de passageiros de voo
+   regular, contados a cada voo: 74,8% do total. Nos 12 meses mais
+   recentes, seriam 66 de 467, com 72,5 milhões, 71,0%
    ([notebook 04](notebooks/04-fusao.ipynb)).
 3. **Não de forma consistente.** Nos 12 meses mais recentes, os grupos que
    cobram mais por km num mercado atrasam um pouco menos (correlação de
@@ -50,13 +59,6 @@ Com todas as distâncias juntas (à esquerda), um concorrente só cobra 6,9% a
 mais por km que três ou mais: os mercados de um concorrente são mais longos,
 e o quilômetro do mercado longo é mais barato. Separando por faixa, a
 diferença vai a 40,6% até 500 km e some acima de 2.000 km.
-
-O período de análise começa em janeiro de 2019 e vai até o último mês publicado
-pelas fontes. O projeto usa as tarifas domésticas registradas pela ANAC, que,
-pelos [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/tarifas-aereas-domesticas/46-tarifas-aereas-domesticas),
-"abrangem todas as passagens vendidas ao “público adulto em geral”,
-excluindo aquelas adquiridas com descontos restritos a grupos específicos,
-programas de milhagem, entre outras condições".
 
 ## Os notebooks
 
@@ -150,7 +152,7 @@ As três bases viram um modelo estrela no DuckDB: um fato por base e as
 dimensões que os três compartilham. As dimensões também vão pra
 `dados/marts/dim_*.parquet`, pro painel usar as mesmas tabelas que o SQL.
 Os fatos ficam só no banco, grandes demais pro Git (o das tarifas tem 34
-milhões de linhas), e os marts das próximas etapas saem deles.
+milhões de linhas), e os marts das análises e do painel saem deles.
 
 ```mermaid
 erDiagram
@@ -315,7 +317,7 @@ e o projeto a usa como triagem, não como veredito: o próprio guia diz que
 "A 'regra do HHI', como indicativa de nexo causal é uma suposição inicial,
 sensível a outros argumentos". E a simulação é estática: soma as duas
 companhias no mercado de cada janela, sem supor que alguém reaja, entre ou
-saia. O resultado está no notebook `04-fusao`.
+saia. O resultado está no [notebook 04](notebooks/04-fusao.ipynb).
 
 ![HHI antes e depois de juntar Azul e GOL em 2024, nos 12 mercados com mais passageiros entre os que cruzariam a linha do CADE: todos saem da faixa de 3.413 a 4.402 pontos pra de 4.944 a 6.214](graficos/04-hhi-antes-e-depois.png)
 
@@ -334,7 +336,7 @@ Brasília, que é o do VRA.
 (2020, 2023, 2025 e 2026), quem atrasa mais ou menos depende de onde fica a
 linha: em 2025, a LATAM é a que mais atrasa acima de 15 minutos, e a Azul,
 acima de 30 e de 60. Por isso o projeto mostra os três cortes, e não um
-ranking só. O detalhe está no notebook `05-pontualidade`.
+ranking só. O detalhe está no [notebook 05](notebooks/05-pontualidade.ipynb).
 
 ![Atraso na chegada por hora da partida prevista e dia da semana, de set/2025 a ago/2026: o atraso sobe ao longo do dia, de 7% nos voos das 4h a 23% nos das 23h](graficos/05-mapa-de-calor.png)
 
@@ -349,7 +351,8 @@ linha a linha. Pra abrir:
 3. Clique em **Atualizar**. Na primeira vez, o Power BI pergunta como
    acessar `raw.githubusercontent.com`: deixe **Anônimo** e clique em
    **Conectar**. Os dados vêm dos marts deste repositório, pela URL do
-   GitHub; nada depende da sua máquina.
+   GitHub; nada depende da sua máquina. Antes de atualizar, as páginas
+   aparecem vazias: o projeto guarda a definição do painel, não os dados.
 
 São cinco páginas: a visão geral; concorrência e preço, com a dispersão
 entre o HHI e a tarifa por km; a fusão Azul + GOL, com o botão que liga a
@@ -382,8 +385,8 @@ Quatro decisões do modelo:
 
 ## Limitações
 
-O que as respostas não dizem. Cada ponto está declarado também no notebook
-de onde vem.
+O que as respostas não dizem. Cada ponto vem de um notebook, do
+[`DICIONARIO.md`](DICIONARIO.md) ou de uma seção acima, onde está o detalhe.
 
 - **A tarifa registrada não é toda passagem vendida.** Pelos
   [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/voos-e-operacoes-aereas/tarifas-aereas-domesticas/46-tarifas-aereas-domesticas),
@@ -445,57 +448,34 @@ de onde vem.
   mercado (hoje só o aeroporto tem). E o PDF junta as capturas das páginas:
   o Exportar para PDF do Desktop só se faz pela tela.
 
-## Estrutura
-
-- `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
-- `construir.py`: constrói o banco DuckDB rodando os `.sql` em ordem e depois
-  os testes, com os testes do executor em `teste_construir.py`.
-- `sql/`: as transformações, em SQL. `00_brutos.sql` lê os arquivos como
-  texto, os `1x_*.sql` padronizam cada base e definem a distância entre
-  aeródromos, os `2x_dim_*.sql` e `3x_fato_*.sql` montam o modelo estrela,
-  os `40_mart_*.sql` em diante gravam os marts, e `sql/testes/` tem os
-  testes de qualidade: cada um é uma consulta que devolve zero linhas quando
-  está tudo certo.
-- `dados/brutos/`: arquivos originais baixados; não são versionados.
-- `dados/manifesto.csv` e `dados/cobertura.csv`: o que cada coleta baixou e
-  encontrou.
-- `dados/referencia/`: tabelas auxiliares mantidas pelo projeto:
-  `mercados.csv` (os aeroportos de uma mesma cidade) e `grupos.csv` (o
-  grupo econômico de cada empresa, com a fonte).
-- `dados/marts/`: conjuntos analíticos derivados, versionados no Git.
-- `notebooks/`: validação e análises.
-- `graficos/`: gráficos e materiais visuais.
-- `powerbi/`: projeto do painel.
-- `fixtures/`: amostras locais utilizadas nos testes.
-- `visual.py`: padrão visual compartilhado pelos gráficos.
-- `DICIONARIO.md`: o que é cada base, conferido nos dados, e o que ainda não
-  se sabe sobre elas.
-
-## Etapas
-
-- [x] Etapa 0 — Fundação
-- [x] Etapa 1 — Conhecer as bases antes do código
-- [x] Etapa 2 — Coletor
-- [x] Etapa 3 — Do bruto ao staging, em SQL
-- [x] Etapa 4 — Validar a base
-- [x] Etapa 5 — Modelo estrela
-- [x] Etapa 6 — Concorrência e preço
-- [x] Etapa 7 — Comparar o comparável
-- [x] Etapa 8 — A fusão que não aconteceu
-- [x] Etapa 9 — Pontualidade
-- [x] Etapa 10 — Power BI
-- [ ] Etapa 11 — Escrita final
-- [ ] Etapa 12 — Deixar vivo (opcional)
-
 ## Como reproduzir
+
+Pra ver os resultados, não é preciso reproduzir nada: os notebooks abrem no
+Colab e o painel no Power BI Desktop, os dois lendo os marts deste
+repositório pela URL do GitHub. Pra refazer os marts a partir da ANAC, são
+três passos:
+
+```bash
+git clone https://github.com/ivadivad/voos-em-numeros.git
+cd voos-em-numeros
+pip install -r requirements.txt
+python coletar.py todas   # 1. baixa as quatro bases: 2,8 GB, uns 22 minutos
+python construir.py       # 2. monta o banco e os marts e roda os testes de SQL: uns 60 segundos
+git status dados/marts    # 3. mostra se algum mart mudou
+```
+
+Com os mesmos arquivos da ANAC, nenhum mart muda: a construção grava o
+mesmo arquivo, byte a byte. Se a ANAC revisou um mês, o
+`dados/manifesto.csv` registra o sha256 novo, e o mart pode mudar junto. Os
+notebooks e o painel continuam lendo os marts publicados no GitHub, então
+um mart reconstruído só aparece neles depois de publicado. O detalhe de
+cada passo vem a seguir.
 
 ### Coletar os dados
 
 Só biblioteca padrão do Python 3, sem instalar nada:
 
 ```bash
-git clone https://github.com/ivadivad/voos-em-numeros.git
-cd voos-em-numeros
 python coletar.py todas                   # as quatro bases, de jan/2019 até o último mês publicado
 python coletar.py tarifas --desde 202601  # uma base só, a partir de um mês
 python coletar.py --listar                # as bases e de onde vem cada uma
@@ -533,10 +513,11 @@ python construir.py
 
 O `construir.py` apaga o `voos.duckdb` e o constrói do zero a partir de
 `dados/brutos/`: roda os `.sql` de `sql/` em ordem alfabética, mostrando o
-tempo de cada um, e depois cada teste de `sql/testes/`. Em 16/10/2026, com
-o modelo estrela da etapa 5, levou uns 60 segundos com a máquina livre (58
-e 59 s em duas rodadas seguidas), e de 96 a 126 segundos com um programa
-pesado aberto, e gerou um banco de 919 MB, fora do git. O DuckDB fica limitado a 2 GB de memória, e o que não
+tempo de cada um, e depois cada teste de `sql/testes/`. Em 21/10/2026, com
+todos os marts, levou 55 segundos com a máquina livre, passou nos 53 testes
+e gerou um banco de 922 MB, fora do git. Com um programa pesado aberto,
+demora mais: de 96 a 126 segundos em 16/10, quando levava 58 e 59 com a
+máquina livre. O DuckDB fica limitado a 2 GB de memória, e o que não
 cabe vai pro disco, em `voos.duckdb.tmp/`: sem o limite, a agregação das
 tarifas falhava numa máquina com outros programas abertos. A construção
 inteira chegou a 2,4 GB de memória comprometida, e precisa desse tanto
@@ -560,3 +541,48 @@ python teste_construir.py  # precisa de duckdb; não precisa dos brutos
 python teste_visual.py     # precisa de matplotlib
 python teste_powerbi.py    # precisa de pyarrow; confere o modelo do painel contra os marts
 ```
+
+## Estrutura
+
+- `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
+- `construir.py`: constrói o banco DuckDB rodando os `.sql` em ordem e depois
+  os testes, com os testes do executor em `teste_construir.py`.
+- `sql/`: as transformações, em SQL. `00_brutos.sql` lê os arquivos como
+  texto, os `1x_*.sql` padronizam cada base e definem a distância entre
+  aeródromos, os `2x_dim_*.sql` e `3x_fato_*.sql` montam o modelo estrela,
+  os `40_mart_*.sql` em diante gravam os marts, e `sql/testes/` tem os
+  testes de qualidade: cada um é uma consulta que devolve zero linhas quando
+  está tudo certo.
+- `dados/brutos/`: arquivos originais baixados; não são versionados.
+- `dados/manifesto.csv` e `dados/cobertura.csv`: o que cada coleta baixou e
+  encontrou.
+- `dados/referencia/`: tabelas auxiliares mantidas pelo projeto:
+  `mercados.csv` (os aeroportos de uma mesma cidade) e `grupos.csv` (o
+  grupo econômico de cada empresa, com a fonte).
+- `dados/marts/`: conjuntos analíticos derivados, versionados no Git.
+- `notebooks/`: validação e análises.
+- `graficos/`: os gráficos dos notebooks e, em `graficos/painel/`, as
+  capturas do painel.
+- `powerbi/`: projeto do painel, com os testes do modelo em
+  `teste_powerbi.py`.
+- `fixtures/`: amostras locais utilizadas nos testes.
+- `visual.py`: padrão visual compartilhado pelos gráficos, com os testes em
+  `teste_visual.py`.
+- `DICIONARIO.md`: o que é cada base, conferido nos dados, e o que ainda não
+  se sabe sobre elas.
+
+## Etapas
+
+- [x] Etapa 0 — Fundação
+- [x] Etapa 1 — Conhecer as bases antes do código
+- [x] Etapa 2 — Coletor
+- [x] Etapa 3 — Do bruto ao staging, em SQL
+- [x] Etapa 4 — Validar a base
+- [x] Etapa 5 — Modelo estrela
+- [x] Etapa 6 — Concorrência e preço
+- [x] Etapa 7 — Comparar o comparável
+- [x] Etapa 8 — A fusão que não aconteceu
+- [x] Etapa 9 — Pontualidade
+- [x] Etapa 10 — Power BI
+- [ ] Etapa 11 — Escrita final
+- [ ] Etapa 12 — Deixar vivo (opcional)
