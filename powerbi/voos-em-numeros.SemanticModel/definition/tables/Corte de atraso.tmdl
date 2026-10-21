@@ -1,0 +1,31 @@
+table 'Corte de atraso'
+	lineageTag: 1f1224bf-2067-5bf5-939d-9872892af514
+
+	column Corte
+		dataType: string
+		lineageTag: 835584c7-a521-56db-a377-20fb5411a4f1
+		summarizeBy: none
+		sourceColumn: Corte
+		sortByColumn: Minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	column Minutos
+		dataType: int64
+		formatString: 0
+		lineageTag: 67893aa7-7877-5743-afd6-d28f4a50d52f
+		summarizeBy: none
+		sourceColumn: Minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Corte de atraso' = m
+		mode: import
+		source =
+				let
+				    Fonte = #table(type table [Corte = text, Minutos = Int64.Type], {{"acima de 15 minutos", 15}, {"acima de 30 minutos", 30}, {"acima de 60 minutos", 60}})
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+

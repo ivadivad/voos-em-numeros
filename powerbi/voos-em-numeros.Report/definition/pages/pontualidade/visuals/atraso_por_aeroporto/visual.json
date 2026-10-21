@@ -1,0 +1,154 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "atraso_por_aeroporto",
+  "position": {
+    "x": 660,
+    "y": 148,
+    "z": 4000,
+    "height": 300,
+    "width": 600,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_aeroporto"
+                    }
+                  },
+                  "Property": "icao"
+                }
+              },
+              "queryRef": "dim_aeroporto.icao",
+              "nativeQueryRef": "icao",
+              "displayName": "Aeroporto"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_aeroporto"
+                    }
+                  },
+                  "Property": "nome_cidade"
+                }
+              },
+              "queryRef": "dim_aeroporto.nome_cidade",
+              "nativeQueryRef": "nome_cidade",
+              "displayName": "Cidade"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "Voos previstos"
+                }
+              },
+              "queryRef": "Medidas.Voos previstos",
+              "nativeQueryRef": "Voos previstos",
+              "displayName": "Voos saindo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% atraso (corte)"
+                }
+              },
+              "queryRef": "Medidas.% atraso (corte)",
+              "nativeQueryRef": "% atraso (corte)",
+              "displayName": "Atraso saindo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% atraso chegando (corte)"
+                }
+              },
+              "queryRef": "Medidas.% atraso chegando (corte)",
+              "nativeQueryRef": "% atraso chegando (corte)",
+              "displayName": "Atraso chegando"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas"
+                    }
+                  },
+                  "Property": "% cancelado"
+                }
+              },
+              "queryRef": "Medidas.% cancelado",
+              "nativeQueryRef": "% cancelado",
+              "displayName": "Cancelados saindo"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Medidas"
+                  }
+                },
+                "Property": "Voos previstos"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Atraso por aeroporto: saindo dele e chegando nele'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

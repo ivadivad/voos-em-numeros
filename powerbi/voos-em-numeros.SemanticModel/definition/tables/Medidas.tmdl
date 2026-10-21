@@ -147,6 +147,42 @@ table Medidas
 		displayFolder: Concentração
 		lineageTag: 4acfdc55-7ba9-5923-bf26-9a94602de384
 
+	/// Voos que chegaram atrasados além do corte escolhido no filtro Corte de atraso (15, 30 ou 60 minutos; sem escolha, 15), sobre os voos com atraso medido. Por aeroporto, é o de partida.
+	measure '% atraso (corte)' =
+			VAR corte = SELECTEDVALUE('Corte de atraso'[Minutos], 15)
+			VAR atrasados =
+			    SWITCH(
+			        corte,
+			        30, SUM(pontualidade_rota[voos_atraso_30]),
+			        60, SUM(pontualidade_rota[voos_atraso_60]),
+			        SUM(pontualidade_rota[voos_atraso_15])
+			    )
+			RETURN DIVIDE(atrasados, SUM(pontualidade_rota[voos_medidos]))
+		formatString: 0.0%
+		displayFolder: Pontualidade
+		lineageTag: edafb85a-4dc3-5796-b4d6-91fd06a9d49b
+
+	/// O mesmo atraso pelo aeroporto de chegada: liga o relacionamento inativo do destino.
+	measure '% atraso chegando (corte)' = CALCULATE([% atraso (corte)], USERELATIONSHIP(pontualidade_rota[destino], dim_aeroporto[icao]))
+		formatString: 0.0%
+		displayFolder: Pontualidade
+		lineageTag: 5f1cd67f-2e09-5a86-a86a-33daa325d2cc
+
+	/// O atraso pelo corte escolhido, contado no mart por dia da semana e hora da partida prevista (horário de Brasília): o do mapa de calor.
+	measure '% atraso por horário (corte)' =
+			VAR corte = SELECTEDVALUE('Corte de atraso'[Minutos], 15)
+			VAR atrasados =
+			    SWITCH(
+			        corte,
+			        30, SUM(pontualidade_horario[voos_atraso_30]),
+			        60, SUM(pontualidade_horario[voos_atraso_60]),
+			        SUM(pontualidade_horario[voos_atraso_15])
+			    )
+			RETURN DIVIDE(atrasados, SUM(pontualidade_horario[voos_medidos]))
+		formatString: 0.0%
+		displayFolder: Pontualidade
+		lineageTag: 31414ffd-b01f-56b8-bb1e-9fd0bb14afd3
+
 	column Coluna
 		dataType: string
 		isHidden

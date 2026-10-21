@@ -9,8 +9,9 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["Medidas", "dim_calendario", "dim_grupo", "dim_empresa", "dim_aeroporto", "dim_mercado", "mercado_mes", "validacao", "fusao", "pontualidade_rota", "pontualidade_horario", "Simular fusão"]
+annotation PBI_QueryOrder = ["Medidas", "dim_calendario", "dim_grupo", "dim_empresa", "dim_aeroporto", "dim_mercado", "mercado_mes", "validacao", "fusao", "pontualidade_rota", "pontualidade_horario", "Simular fusão", "Corte de atraso"]
 
+ref table 'Corte de atraso'
 ref table dim_aeroporto
 ref table dim_calendario
 ref table dim_empresa

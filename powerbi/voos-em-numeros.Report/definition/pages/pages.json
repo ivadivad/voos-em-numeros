@@ -3,7 +3,8 @@
   "pageOrder": [
     "visao_geral",
     "concorrencia_preco",
-    "fusao"
+    "fusao",
+    "pontualidade"
   ],
   "activePageName": "visao_geral"
 }
