@@ -1,0 +1,76 @@
+table Medidas
+	lineageTag: f9d71573-7f02-5fd3-850b-5d87d2cf3758
+
+	/// Passageiros pagos de voo regular, do grupo que operou (base estatística da ANAC). O passageiro é o do voo: quem troca de avião conta uma vez em cada voo.
+	measure Passageiros = SUM(mercado_mes[passageiros_pagos])
+		formatString: #,0
+		displayFolder: Mercado
+		lineageTag: 9454a7b1-823b-5a94-8622-2e25c0d9abb6
+
+	/// Assentos vendidos nas tarifas registradas, pelo grupo que vendeu, no mês da venda.
+	measure 'Assentos vendidos' = SUM(mercado_mes[assentos_vendidos])
+		formatString: #,0
+		displayFolder: Mercado
+		lineageTag: 9b5dc302-fa26-59b8-8a0e-33a402ce7f9d
+
+	/// Soma de tarifa vezes assentos vendidos, em reais nominais.
+	measure Receita = SUM(mercado_mes[receita])
+		formatString: R$ #,0
+		displayFolder: Mercado
+		lineageTag: 577a4c6c-47ea-5e19-9c42-3ac0aa83fcc8
+
+	/// Receita dividida pelos assentos vendidos: a média ponderada pelos assentos, como a ANAC calcula.
+	measure 'Tarifa média' = DIVIDE([Receita], [Assentos vendidos])
+		formatString: R$ #,0.00
+		displayFolder: Mercado
+		lineageTag: fa784790-67fa-51c1-abfc-84f107e12ce9
+
+	/// Receita dividida pelos assentos-km, só nos mercados com distância: a receita de quem não tem distância fica fora do numerador e do denominador.
+	measure 'Tarifa por km' =
+			DIVIDE(
+			    CALCULATE([Receita], KEEPFILTERS(NOT ISBLANK(mercado_mes[assentos_km]))),
+			    SUM(mercado_mes[assentos_km])
+			)
+		formatString: R$ #,0.000
+		displayFolder: Mercado
+		lineageTag: 08d5a513-e992-594f-b32d-92f2d9c48214
+
+	/// Voos domésticos regulares de passageiros com partida prevista no VRA: realizados, cancelados e com situação NÃO INFORMADO.
+	measure 'Voos previstos' = SUM(pontualidade_rota[voos_previstos])
+		formatString: #,0
+		displayFolder: Pontualidade
+		lineageTag: c7a165d3-73e1-5da6-9abe-24df9460101b
+
+	/// Voos que chegaram mais de 15 minutos depois do previsto, sobre os voos realizados com o atraso medido.
+	measure '% atraso' = DIVIDE(SUM(pontualidade_rota[voos_atraso_15]), SUM(pontualidade_rota[voos_medidos]))
+		formatString: 0.0%
+		displayFolder: Pontualidade
+		lineageTag: 29219ec3-a04b-5c61-b343-083cbc21fda2
+
+	/// Voos cancelados sobre os realizados mais os cancelados. Os de situação NÃO INFORMADO ficam fora da conta.
+	measure '% cancelado' =
+			VAR cancelados = SUM(pontualidade_rota[voos_cancelados])
+			RETURN DIVIDE(cancelados, SUM(pontualidade_rota[voos_realizados]) + cancelados)
+		formatString: 0.0%
+		displayFolder: Pontualidade
+		lineageTag: a25b5826-d89b-57e7-a9f9-585bb0754722
+
+	column Coluna
+		dataType: string
+		isHidden
+		lineageTag: bc8e636b-4155-5fc5-8807-f1c4da368282
+		summarizeBy: none
+		sourceColumn: Coluna
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Medidas = m
+		mode: import
+		source =
+				let
+				    Fonte = #table(type table [Coluna = text], {})
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+

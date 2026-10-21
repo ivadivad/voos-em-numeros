@@ -33,9 +33,21 @@ def ler_tabela(caminho):
     """{nome, colunas: {coluna: tipo}, calculadas: [...], fontes: [texto M]}"""
     with open(caminho, encoding="utf-8") as f:
         linhas = f.read().splitlines()
-    tabela = {"nome": nome_tmdl(linhas[0][len("table "):].strip()), "colunas": {}, "calculadas": [], "fontes": []}
+    # medidas numa lista, e nao num dicionario: nome repetido nao pode sumir
+    tabela = {"nome": nome_tmdl(linhas[0][len("table "):].strip()), "colunas": {}, "calculadas": [], "fontes": [],
+              "medidas": []}
     coluna = None
     for i, linha in enumerate(linhas):
+        m = re.match(r"^\tmeasure ('(?:[^']|'')*'|[^\s=]+) =(.*)$", linha)
+        if m:
+            # a expressao vem na mesma linha ou nas seguintes, com recuo de tres tabs
+            corpo = [m.group(2).strip()] if m.group(2).strip() else []
+            for seguinte in linhas[i + 1:]:
+                if not seguinte.startswith("\t\t\t"):
+                    break
+                corpo.append(seguinte.strip())
+            tabela["medidas"].append((nome_tmdl(m.group(1)), "\n".join(corpo)))
+            continue
         m = re.match(r"^\tcolumn ('(?:[^']|'')*'|[^\s=]+)( =)?", linha)
         if m:
             coluna = nome_tmdl(m.group(1))
@@ -181,6 +193,38 @@ class TesteRelacionamentos(unittest.TestCase):
     def test_todo_fato_liga_em_alguma_dimensao(self):
         fatos = {t["nome"] for t in tabelas_do_modelo() if mart_lido(t) and not t["nome"].startswith("dim_")}
         self.assertEqual({r["de"][0] for r in ler_relacionamentos()}, fatos)
+
+
+def referencias(expressao):
+    """(colunas citadas como tabela[coluna], medidas citadas como [medida])"""
+    sem_texto = re.sub(r'"(?:[^"]|"")*"', '""', expressao)
+    colunas = [(nome_tmdl(t), c) for t, c in
+               re.findall(r"(?<![\w'\]])('(?:[^']|'')+'|[A-Za-z_]\w*)\[([^\]]+)\]", sem_texto)]
+    medidas = re.findall(r"(?<![\w'\]])\[([^\]]+)\]", sem_texto)
+    return colunas, medidas
+
+
+class TesteMedidas(unittest.TestCase):
+    def test_medida_cita_coluna_e_medida_que_existem(self):
+        tabelas = tabelas_do_modelo()
+        colunas = {(t["nome"], c) for t in tabelas for c in list(t["colunas"]) + t["calculadas"]}
+        medidas = {nome for t in tabelas for nome, _ in t["medidas"]}
+        for tabela in tabelas:
+            for nome, expressao in tabela["medidas"]:
+                citadas, chamadas = referencias(expressao)
+                with self.subTest(medida=nome):
+                    self.assertTrue(expressao)
+                    self.assertEqual([c for c in citadas if c not in colunas], [])
+                    self.assertEqual([m for m in chamadas if m not in medidas], [])
+
+    def test_nome_de_medida_unico(self):
+        nomes = [nome for t in tabelas_do_modelo() for nome, _ in t["medidas"]]
+        self.assertEqual(len(nomes), len(set(nomes)))
+
+    def test_leitor_de_referencias(self):
+        colunas, medidas = referencias("DIVIDE([Receita], SUM('Minha tabela'[a b])) + t[c] + \"[x]\"")
+        self.assertEqual(colunas, [("Minha tabela", "a b"), ("t", "c")])
+        self.assertEqual(medidas, ["Receita"])
 
 
 class TesteLeitorDeTmdl(unittest.TestCase):
