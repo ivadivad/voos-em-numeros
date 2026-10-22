@@ -1,7 +1,10 @@
 base,periodo,arquivo,bytes,sha256,coletado_em,url
 aerodromos,,AerodromosPrivados.csv,920965,c1baa1b26214be1116fdc81c6c29665375cc3c1f28f1cce5f36b40c604db7886,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aeródromos Privados/Lista de aeródromos privados/Aerodromos Privados/AerodromosPrivados.csv
+aerodromos,,AerodromosPrivados.csv,921431,e250310588607cf936ff8ce828ddc4d64144abad00a738cd8e19d431f9e6af5e,2026-10-22,https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aeródromos Privados/Lista de aeródromos privados/Aerodromos Privados/AerodromosPrivados.csv
 aerodromos,,AerodromosPublicos.csv,98564,e90459ca3c298b46452a07953a100a48d48b5c4c9230f58c870129ee07906a72,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aeródromos Públicos/Lista de aeródromos públicos/AerodromosPublicos.csv
+aerodromos,,AerodromosPublicos.csv,102022,a0f9f062e18048739ee53348f51b723a1f1de55ae2d71b805b04250aa53598b6,2026-10-22,https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aeródromos Públicos/Lista de aeródromos públicos/AerodromosPublicos.csv
 estatisticas,,Dados_Estatisticos.csv,359963089,298b74e7365c73330b6459d00dcb00c4a2ed572b49e813b4b203484d403fa105,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Dados Estatísticos do Transporte Aéreo/Dados_Estatisticos.csv
+estatisticas,,Dados_Estatisticos.csv,361057599,cdee43fc0940116f0a424c8218835bb41434960985edc05f536972eff0c179d7,2026-10-22,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Dados Estatísticos do Transporte Aéreo/Dados_Estatisticos.csv
 tarifas,201901,201901.csv,13075184,c01db65f2ec1aa0262af5d178a4cadbc25af69b242e9bbec48d29ffca8855224,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201901.csv
 tarifas,201902,201902.csv,11813492,e12717063df6f0aa717acfa1fbcc1daab55078da35265cb39347e40f0a441b53,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201902.csv
 tarifas,201903,201903.csv,11006701,531c8a1536ee8c9f825142aa2f07be63a8fd1ffbd47706b4a5718a785862f508,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2019/201903.csv
@@ -94,6 +97,7 @@ tarifas,202605,202605.csv,26929792,50dffd292f536059ad9c98f9cf0d5337bff7165b72b05
 tarifas,202606,202606.csv,27380920,e34ec4ab5f80b9820a647d9400b5d81112db9ce44eed65d5807b68accaefdd77,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202606.csv
 tarifas,202607,202607.csv,26781125,56159457d116b0486b4f1fbdb252d450435ed70f57338f326f204c79a2f3fe97,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202607.csv
 tarifas,202608,202608.csv,25419651,0ea3a0fbbfdcf9fdd9c6dee9fa7014bedce045ad55d90f3ffc37c02ff2fa6e6b,2026-10-13,https://sas.anac.gov.br/sas/tarifadomestica/2026/202608.csv
+tarifas,202609,202609.csv,27705269,030fa56727481e097a914a638b5f39eb601866bfdc8326ac2a13c7b9b0f42138,2026-10-22,https://sas.anac.gov.br/sas/tarifadomestica/2026/202609.csv
 vra,201901,201901.csv,12965208,fd7a1900fdad833c67f9b73e954e2a340d1ce8e05dfbe293f3db08aca37b6c96,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/01 - Janeiro/VRA_20191.csv
 vra,201902,201902.csv,11217924,8a64c589ea6168e31898c1dca2b7e1852c8a917b5af53bcdaf2bd61b6cd2a7ff,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/02 - Fevereiro/VRA_20192.csv
 vra,201903,201903.csv,11722804,216d924b03b018e23b4a54fa50a2304a2c8841821256a0f5ca19c6894ebb8f0b,2026-10-13,https://sistemas.anac.gov.br/dadosabertos/Voos e operações aéreas/Voo Regular Ativo (VRA)/2019/03 - Março/VRA_20193.csv
