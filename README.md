@@ -514,9 +514,12 @@ python construir.py
 
 O `construir.py` apaga o `voos.duckdb` e o constrói do zero a partir de
 `dados/brutos/`: roda os `.sql` de `sql/` em ordem alfabética, mostrando o
-tempo de cada um, e depois cada teste de `sql/testes/`. Em 21/10/2026, com
-todos os marts, levou 55 segundos com a máquina livre, passou nos 53 testes
-e gerou um banco de 922 MB, fora do git. Com um programa pesado aberto,
+tempo de cada um, e depois cada teste de `sql/testes/`. O modelo termina no
+último mês que as três bases mensais têm: numa coleta feita no meio do mês,
+o mês que só uma base já publicou fica pra construção seguinte. Com todos os
+marts, levou de 55 a 67 segundos com a máquina livre, em quatro rodadas de
+21 e 22/10/2026, passou nos 54 testes e gerou um banco de 920 MB, fora do
+git. Com um programa pesado aberto,
 demora mais: de 96 a 126 segundos em 16/10, quando levava 58 e 59 com a
 máquina livre. O DuckDB fica limitado a 2 GB de memória, e o que não
 cabe vai pro disco, em `voos.duckdb.tmp/`: sem o limite, a agregação das
@@ -549,8 +552,8 @@ python teste_powerbi.py    # precisa de pyarrow; confere o modelo do painel cont
 - `construir.py`: constrói o banco DuckDB rodando os `.sql` em ordem e depois
   os testes, com os testes do executor em `teste_construir.py`.
 - `sql/`: as transformações, em SQL. `00_brutos.sql` lê os arquivos como
-  texto, os `1x_*.sql` padronizam cada base e definem a distância entre
-  aeródromos, os `2x_dim_*.sql` e `3x_fato_*.sql` montam o modelo estrela,
+  texto, os `1x_*.sql` padronizam cada base, definem a distância entre
+  aeródromos e cortam o mês que só uma base já tem, os `2x_dim_*.sql` e `3x_fato_*.sql` montam o modelo estrela,
   os `40_mart_*.sql` em diante gravam os marts, e `sql/testes/` tem os
   testes de qualidade: cada um é uma consulta que devolve zero linhas quando
   está tudo certo.

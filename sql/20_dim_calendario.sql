@@ -1,5 +1,7 @@
 -- Calendario mensal: um registro por mes, do primeiro ao ultimo mes que
--- aparece nas tres bases, sem buraco. Os fatos sao mensais (o mes da venda
+-- aparece nas tres bases, sem buraco. O ultimo e o mesmo nas tres, porque
+-- 15_ultimo_mes_comum.sql corta antes o mes que so uma base ja tem. Os
+-- fatos sao mensais (o mes da venda
 -- nas tarifas, o do voo na base estatistica, o do arquivo no VRA), e o
 -- calendario e a dimensao que os tres compartilham.
 --
