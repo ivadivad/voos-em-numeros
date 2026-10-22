@@ -174,15 +174,18 @@ jobs:
             echo "nada novo neste mês"
             exit 0
           fi
+          # o que a ANAC revisou desde a última coleta, numa linha
+          REVISADOS=$(grep -h "revisado pela ANAC" "$RUNNER_TEMP"/coleta-*.log 2>/dev/null | sed 's/revisado pela ANAC: //' | paste -sd ',' - | sed 's/,/, /g')
           git commit -q -F - <<EOF
           data: atualização automática de $(date -u +%Y-%m-%d)
 
-          Rodado pelo workflow atualizar.yml no GitHub Actions: coleta das
-          quatro bases (aeródromos ${{ steps.aerodromos.outcome }}, estatística
-          ${{ steps.estatisticas.outcome }}, tarifas ${{ steps.tarifas.outcome }},
-          VRA ${{ steps.vra.outcome }}) e construção ${{ steps.construir.outcome }}.
-          Modelo até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }}: ${{ steps.mudou.outputs.BASES }}.
-          Marts mudados: ${{ steps.mudou.outputs.MARTS }}.
+          Rodado pelo workflow atualizar.yml no GitHub Actions.
+
+          - coleta: aeródromos ${{ steps.aerodromos.outcome }}, estatística ${{ steps.estatisticas.outcome }}, tarifas ${{ steps.tarifas.outcome }}, VRA ${{ steps.vra.outcome }}
+          - construção: ${{ steps.construir.outcome }}
+          - modelo até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }} (${{ steps.mudou.outputs.BASES }})
+          - marts mudados: ${{ steps.mudou.outputs.MARTS }}
+          - revisados pela ANAC: ${REVISADOS:-nenhum}
           EOF
           git pull -q --rebase origin main
           git push -q origin HEAD:main
