@@ -30,7 +30,9 @@ jobs:
     # fixado: ubuntu-latest vira Ubuntu 26 em 19/10/2026, e num sistema
     # recém-lançado o setup-python pode ainda não ter o Python pronto
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    # a primeira rodada (22/10/2026) levou 85 min, 82 deles baixando da ANAC,
+    # contra uns 22 numa máquina no Brasil: folga pra um dia mais lento
+    timeout-minutes: 240
     env:
       PUBLICAR: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.publicar) }}
     steps:
@@ -128,12 +130,17 @@ jobs:
             echo "Modelo até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }}: ${{ steps.mudou.outputs.BASES }}."
             echo "Marts mudados: ${{ steps.mudou.outputs.MARTS }}. Publicar: $PUBLICAR."
           } >> "$GITHUB_STEP_SUMMARY"
-          # anotações aparecem pela API pública, sem login, na rodada de teste
+          # anotações aparecem pela API pública, sem login, na rodada de teste.
+          # O GitHub guarda no máximo 10 por passo (a primeira rodada perdeu as
+          # que passaram disso): cada assunto vai numa linha só
           echo "::notice title=coleta::aeródromos ${{ steps.aerodromos.outcome }}, estatística ${{ steps.estatisticas.outcome }}, tarifas ${{ steps.tarifas.outcome }}, VRA ${{ steps.vra.outcome }}, construção ${{ steps.construir.outcome }}"
           echo "::notice title=modelo::até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }}; ${{ steps.mudou.outputs.BASES }}; marts mudados: ${{ steps.mudou.outputs.MARTS }}"
-          git diff --name-only dados/ | while read -r arquivo; do echo "::notice title=mudou::$arquivo"; done
-          # arquivo com sha256 novo num nome que já estava no manifesto: revisão da ANAC
-          grep -h "revisado pela ANAC" "$RUNNER_TEMP"/coleta-*.log 2>/dev/null | while read -r linha; do echo "::notice title=revisão::$linha"; done
+          echo "::notice title=mudou::$(git diff --name-only dados/ | paste -sd ' ' -)"
+          # o sha256 de cada mart, pra comparar byte a byte com a construção local
+          echo "::notice title=marts::$(cd dados/marts && sha256sum *.parquet | cut -c1-12,65- | tr -s ' ' | paste -sd ';' -)"
+          # sha256 novo no manifesto: arquivo novo, ou revisado pela ANAC se o nome já estava lá
+          echo "::notice title=brutos novos::$(git diff -U0 dados/manifesto.csv | grep '^+[^+]' | cut -d, -f1,3,5 | cut -c2- | paste -sd ';' -)"
+          echo "::notice title=revisões::$(grep -h 'revisado pela ANAC' "$RUNNER_TEMP"/coleta-*.log 2>/dev/null | paste -sd ';' -)"
 
       - name: Commit do que mudou
         if: env.PUBLICAR == 'true'
