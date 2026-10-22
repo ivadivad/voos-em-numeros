@@ -8,9 +8,8 @@ Nacional de Aviação Civil (ANAC). O projeto investiga a relação entre
 concorrência, tarifas aéreas e pontualidade, com dados reproduzíveis,
 transformações em SQL e um painel em Power BI.
 
-> **Concluído: as etapas 0 a 12 estão feitas** (ver [Etapas](#etapas)). As
-> perguntas foram escritas antes de abrir os dados, e o painel continua
-> recebendo os meses novos sozinho.
+> **Concluído** (ver [Etapas](#etapas)). As perguntas foram escritas antes
+> de abrir os dados, e o painel continua recebendo os meses novos sozinho.
 
 O que tem aqui:
 
@@ -642,4 +641,3 @@ atualização mensal.
 - [x] Etapa 9 — Pontualidade
 - [x] Etapa 10 — Power BI
 - [x] Etapa 11 — Escrita final
-- [x] Etapa 12 — Deixar vivo (opcional)
