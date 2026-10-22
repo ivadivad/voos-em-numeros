@@ -1,0 +1,170 @@
+name: atualizar os dados da ANAC
+
+on:
+  schedule:
+    # dia 3 de cada mês, 9h UTC (6h em Brasília). As três bases do mês
+    # retrasado já saíram: a estatística perto do dia 14, as tarifas de 15
+    # a 28 dias depois do fim do mês, o VRA perto do dia 28. O que sair
+    # antes das outras fica pra rodada seguinte (sql/15_ultimo_mes_comum.sql)
+    - cron: "0 9 3 * *"
+  workflow_dispatch:      # botão manual na aba Actions
+    inputs:
+      publicar:
+        description: "Commitar e publicar o que mudou (desmarcado: só coleta, constrói e mostra)"
+        type: boolean
+        default: true
+  push:
+    # mudar o workflow dispara uma rodada de teste, que não commita nada
+    branches: [main]
+    paths: [".github/workflows/atualizar.yml"]
+
+permissions:
+  contents: write  # sem isso o push do commit de dados falha
+
+concurrency:
+  group: atualizar
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    # fixado: ubuntu-latest vira Ubuntu 26 em 19/10/2026, e num sistema
+    # recém-lançado o setup-python pode ainda não ter o Python pronto
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PUBLICAR: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.publicar) }}
+    steps:
+      # v7 nas duas: rodam em Node 24
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"  # a do .venv local
+          cache: pip
+
+      - name: Dependências
+        run: pip install -r requirements.txt
+
+      - name: Testes de Python
+        run: |
+          for t in coletar construir visual powerbi; do
+            echo "== teste_$t.py"
+            python -X dev -W error teste_$t.py
+          done
+
+      # Sem actions/cache: o GitHub apaga o cache que fica 7 dias sem uso, e
+      # a rodada é mensal. Cada rodada baixa as bases inteiras (2,8 GB), e o
+      # manifesto registra só o arquivo com sha256 novo: o que a ANAC
+      # revisou desde a última coleta.
+      #
+      # continue-on-error: uma base falhando não impede as outras de serem
+      # coletadas. Sem as quatro, o modelo não é reconstruído, e o último
+      # passo deixa o job vermelho.
+      - name: Coletar aeródromos
+        id: aerodromos
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python coletar.py aerodromos 2>&1 | tee "$RUNNER_TEMP/coleta-aerodromos.log"
+
+      - name: Coletar a base estatística
+        id: estatisticas
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python coletar.py estatisticas 2>&1 | tee "$RUNNER_TEMP/coleta-estatisticas.log"
+
+      - name: Coletar as tarifas
+        id: tarifas
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python coletar.py tarifas 2>&1 | tee "$RUNNER_TEMP/coleta-tarifas.log"
+
+      - name: Coletar o VRA
+        id: vra
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python coletar.py vra 2>&1 | tee "$RUNNER_TEMP/coleta-vra.log"
+
+      - name: Construir o modelo e os marts
+        id: construir
+        if: >-
+          steps.aerodromos.outcome == 'success' && steps.estatisticas.outcome == 'success' &&
+          steps.tarifas.outcome == 'success' && steps.vra.outcome == 'success'
+        continue-on-error: true
+        run: python construir.py
+
+      # o construir.py grava os parquet antes de rodar os testes: se um
+      # teste falhou, os marts no disco não prestam e voltam ao do git
+      - name: Descartar os marts de uma construção que falhou
+        if: steps.construir.outcome != 'success'
+        run: git checkout -- dados/marts
+
+      - name: O que mudou
+        id: mudou
+        run: |
+          if [ -f voos.duckdb ] && [ "${{ steps.construir.outcome }}" = "success" ]; then
+            python -c "import duckdb; m = duckdb.connect('voos.duckdb', read_only=True).execute('SELECT * FROM ultimo_mes_comum').fetchone(); print(f'MODELO={m[0]:%m/%Y}'); print(f'BASES=tarifas até {m[1]:%m/%Y}, estatística até {m[2]:%m/%Y}, VRA até {m[3]:%m/%Y}')" >> "$GITHUB_OUTPUT"
+          fi
+          echo "MARTS=$(git status --porcelain dados/marts | wc -l)" >> "$GITHUB_OUTPUT"
+          git status --short dados/
+          git diff --stat dados/
+
+      - name: Resumo
+        run: |
+          {
+            echo "### Atualização dos dados da ANAC"
+            echo
+            echo "| Passo | Resultado |"
+            echo "|---|---|"
+            echo "| aeródromos | ${{ steps.aerodromos.outcome }} |"
+            echo "| base estatística | ${{ steps.estatisticas.outcome }} |"
+            echo "| tarifas | ${{ steps.tarifas.outcome }} |"
+            echo "| VRA | ${{ steps.vra.outcome }} |"
+            echo "| construção | ${{ steps.construir.outcome }} |"
+            echo
+            echo "Modelo até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }}: ${{ steps.mudou.outputs.BASES }}."
+            echo "Marts mudados: ${{ steps.mudou.outputs.MARTS }}. Publicar: $PUBLICAR."
+          } >> "$GITHUB_STEP_SUMMARY"
+          # anotações aparecem pela API pública, sem login, na rodada de teste
+          echo "::notice title=coleta::aeródromos ${{ steps.aerodromos.outcome }}, estatística ${{ steps.estatisticas.outcome }}, tarifas ${{ steps.tarifas.outcome }}, VRA ${{ steps.vra.outcome }}, construção ${{ steps.construir.outcome }}"
+          echo "::notice title=modelo::até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }}; ${{ steps.mudou.outputs.BASES }}; marts mudados: ${{ steps.mudou.outputs.MARTS }}"
+          git diff --name-only dados/ | while read -r arquivo; do echo "::notice title=mudou::$arquivo"; done
+          # arquivo com sha256 novo num nome que já estava no manifesto: revisão da ANAC
+          grep -h "revisado pela ANAC" "$RUNNER_TEMP"/coleta-*.log 2>/dev/null | while read -r linha; do echo "::notice title=revisão::$linha"; done
+
+      - name: Commit do que mudou
+        if: env.PUBLICAR == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dados/manifesto.csv dados/cobertura.csv dados/marts
+          if git diff --staged --quiet; then
+            echo "nada novo neste mês"
+            exit 0
+          fi
+          git commit -q -F - <<EOF
+          data: atualização automática de $(date -u +%Y-%m-%d)
+
+          Rodado pelo workflow atualizar.yml no GitHub Actions: coleta das
+          quatro bases (aeródromos ${{ steps.aerodromos.outcome }}, estatística
+          ${{ steps.estatisticas.outcome }}, tarifas ${{ steps.tarifas.outcome }},
+          VRA ${{ steps.vra.outcome }}) e construção ${{ steps.construir.outcome }}.
+          Modelo até ${{ steps.mudou.outputs.MODELO || '(sem construção)' }}: ${{ steps.mudou.outputs.BASES }}.
+          Marts mudados: ${{ steps.mudou.outputs.MARTS }}.
+          EOF
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
+
+      - name: Falhar se alguma coisa não deu certo
+        if: >-
+          steps.aerodromos.outcome != 'success' || steps.estatisticas.outcome != 'success' ||
+          steps.tarifas.outcome != 'success' || steps.vra.outcome != 'success' ||
+          steps.construir.outcome != 'success'
+        run: |
+          echo "aeródromos: ${{ steps.aerodromos.outcome }} | estatística: ${{ steps.estatisticas.outcome }}"
+          echo "tarifas: ${{ steps.tarifas.outcome }} | VRA: ${{ steps.vra.outcome }} | construção: ${{ steps.construir.outcome }}"
+          echo "O resumo de cada coleta está no passo dela, acima: erro_5xx é falha do lado da ANAC, falha_rede é conexão."
+          exit 1
