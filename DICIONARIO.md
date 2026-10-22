@@ -474,6 +474,13 @@ O acumulado é regerado com frequência: a data na primeira linha e a do
 arquivo na listagem eram as do próprio dia da conferência (13/10/2026). Um
 sha256 novo a cada coleta não quer dizer revisão de dado.
 
+**Mas às vezes quer.** Entre 13 e 22/10/2026, o acumulado mudou dois meses
+que já estavam publicados: jul/2026 ganhou 1.063 passageiros pagos (542 em
+voo regular), e ago/2026, 48.039 (41.036 em voo regular) e 42 decolagens.
+Conferido no mart de validação, entre a tag `coleta-2026-10-13` e a main
+depois da primeira rodada do workflow mensal. As tarifas e o VRA desses
+meses não mudaram.
+
 ## Empresas
 
 As empresas com passageiro doméstico regular de jan/2019 a ago/2026, por
@@ -516,7 +523,9 @@ O grupo de cada empresa, com o período e a fonte, está em
 e [metadados](https://www.gov.br/anac/pt-br/acesso-a-informacao/dados-abertos/areas-de-atuacao/aerodromos/aerodromos-publicos/lista-de-aerodromos-publicos/metadados-do-conjunto-de-dados-lista-de-aerodromos-publicos-v2).
 Um arquivo só, `AerodromosPublicos.csv`, na [listagem](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20P%C3%BAblicos/Lista%20de%20aer%C3%B3dromos%20p%C3%BAblicos/)
 do portal (99 KB, de 01/10/2026). Periodicidade, pelos metadados:
-"Aproximadamente a cada 40 dias".
+"Aproximadamente a cada 40 dias". Na prática, menos: a lista de
+01/10/2026 deu lugar à de 15/10/2026 (a data vem na primeira linha), e a
+de privados teve três versões em dez dias (ver "A lista de privados").
 
 ## O que é uma linha
 
@@ -597,7 +606,8 @@ distância.
 ## A lista de privados
 
 `AerodromosPrivados.csv`, na [listagem](https://sistemas.anac.gov.br/dadosabertos/Aerodromos/Aer%C3%B3dromos%20Privados/Lista%20de%20aer%C3%B3dromos%20privados/Aerodromos%20Privados/)
-do portal: 3.924 linhas, de 13/10/2026. Mesmo encoding (Latin-1), mesma
+do portal: 3.924 linhas, de 13/10/2026; depois, de 21/10 e de 22/10/2026,
+com uma linha a mais em cada. Mesmo encoding (Latin-1), mesma
 primeira linha (`Atualizado em`), mesmo separador e nenhuma aspa delimitando
 campo, como a lista pública. O resto muda:
 
@@ -630,11 +640,14 @@ Três defeitos que o leitor precisa tratar:
 # Marts e dimensões (`dados/marts/`)
 
 Os arquivos que a construção grava pra análise e pro painel, versionados no
-git e lidos pelos notebooks pela URL do GitHub. Cada um sai de um `.sql` em
+git e lidos pela URL do GitHub: pelo painel, na main, que o workflow mensal
+atualiza; pelos notebooks, na tag `coleta-2026-10-13`. Todos terminam no
+último mês que as três bases mensais têm (`sql/15_ultimo_mes_comum.sql`).
+Cada um sai de um `.sql` em
 `sql/`, que explica as decisões; aqui fica o que é preciso pra usar o arquivo
 sem abrir o SQL: o que é uma linha, as colunas, a unidade e o que não se
-soma. Contagens da coleta de 13/10/2026, conferidas nos arquivos em
-19/10/2026.
+soma. Contagens da coleta de 13/10/2026, as da tag, conferidas nos
+arquivos em 19/10/2026.
 
 Três regras valem pra todos:
 

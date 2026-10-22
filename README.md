@@ -111,7 +111,8 @@ usar as mesmas bases:
 
 | Comportamento | Detalhe |
 |---|---|
-| A ANAC substitui arquivos antigos | Meses de tarifas de 2023 e de 2024 têm data de mar/2026; quase todo o VRA, de 07/10/2026. É por isso que o coletor da etapa 2 registra o sha256 de cada arquivo baixado |
+| A ANAC substitui arquivos antigos | Meses de tarifas de 2023 e de 2024 têm data de mar/2026; quase todo o VRA, de 07/10/2026. É por isso que o coletor da etapa 2 registra o sha256 de cada arquivo baixado. Na base estatística, a troca muda dado: entre 13 e 22/10/2026, ago/2026 ganhou 48.039 passageiros pagos |
+| As listas de aeródromos mudam mais do que os metadados dizem | "Aproximadamente a cada 40 dias", pelos metadados; em out/2026, a de públicos foi trocada 14 dias depois da anterior, e a de privados teve três versões em dez dias |
 | O formato das tarifas muda de um mês para outro | Cinco versões de cabeçalho, vírgula ou ponto decimal, fim de linha do Windows ou do Linux. Só a ordem das sete colunas é constante |
 | Mai/2026 das tarifas tem outro nome | `202605.csv` dá 404; o arquivo publicado é `202605 (1).CSV` |
 | Fev e mar/2020 do VRA estão corrompidos | Todas as linhas trazem o texto `Microsoft.SqlServer.Dts.Pipeline.BlobColumn` no lugar dos horários. A versão descontinuada do histórico de voos tem os dois meses legíveis, em outro formato. O projeto deixa os dois meses de fora |
