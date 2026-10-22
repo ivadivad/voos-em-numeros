@@ -1,5 +1,8 @@
 # Voos em números
 
+[![testes](https://github.com/ivadivad/voos-em-numeros/actions/workflows/testes.yml/badge.svg)](https://github.com/ivadivad/voos-em-numeros/actions/workflows/testes.yml)
+[![atualização mensal dos dados](https://github.com/ivadivad/voos-em-numeros/actions/workflows/atualizar.yml/badge.svg)](https://github.com/ivadivad/voos-em-numeros/actions/workflows/atualizar.yml)
+
 Análise do mercado doméstico de aviação no Brasil com dados abertos da Agência
 Nacional de Aviação Civil (ANAC). O projeto investiga a relação entre
 concorrência, tarifas aéreas e pontualidade, com dados reproduzíveis,
@@ -546,7 +549,8 @@ da série conta.
 
 ### Construir as tabelas
 
-Precisa das dependências do `requirements.txt`, com as versões fixadas:
+Precisa do Python 3.14, o dos workflows, e das dependências do
+`requirements.txt`, com as versões fixadas:
 
 ```bash
 pip install -r requirements.txt
@@ -587,6 +591,11 @@ python teste_visual.py     # precisa de matplotlib
 python teste_powerbi.py    # precisa de pyarrow; confere o modelo do painel contra os marts
 ```
 
+Os quatro rodam também no GitHub Actions, a cada push
+([`testes.yml`](.github/workflows/testes.yml)), e os testes de SQL rodam
+dentro do `construir.py`, que precisa dos brutos: na sua máquina e na
+atualização mensal.
+
 ## Estrutura
 
 - `coletar.py`: coletor das bases da ANAC, com os testes em `teste_coletar.py`.
@@ -615,6 +624,8 @@ python teste_powerbi.py    # precisa de pyarrow; confere o modelo do painel cont
   `teste_visual.py`.
 - `DICIONARIO.md`: o que é cada base, conferido nos dados, e o que ainda não
   se sabe sobre elas.
+- `.github/workflows/`: a atualização mensal dos dados (`atualizar.yml`) e
+  os testes a cada push (`testes.yml`).
 
 ## Etapas
 

@@ -1,0 +1,34 @@
+name: testes
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    # o mesmo sistema e o mesmo Python do workflow mensal (atualizar.yml)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Dependências
+        run: pip install -r requirements.txt
+
+      # os quatro arquivos de teste, sem rede e sem os brutos: o coletor contra
+      # amostras locais, o executor do SQL, o padrão visual e o modelo do
+      # painel contra os marts. -W error: aviso também derruba o teste
+      - name: Testes de Python
+        run: |
+          for t in coletar construir visual powerbi; do
+            echo "== teste_$t.py"
+            python -X dev -W error teste_$t.py
+          done
