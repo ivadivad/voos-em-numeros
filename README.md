@@ -396,9 +396,10 @@ Todo dia 3, o workflow [`atualizar.yml`](.github/workflows/atualizar.yml)
 do GitHub Actions baixa as quatro bases de novo, roda os testes,
 reconstrói o modelo e commita na main o que mudou em `dados/`: o
 manifesto, a cobertura e os marts. O painel lê os marts da main e pega o
-mês novo ao clicar em **Atualizar**. A primeira rodada agendada é a de
-03/11/2026: até lá, os marts da main são os da coleta de 13/10, e as três
-rodadas de teste, em 22/10, coletaram e construíram sem commitar.
+mês novo ao clicar em **Atualizar**. A primeira rodada que publicou foi
+disparada à mão em 22/10/2026, depois de três rodadas de teste, e trouxe o
+que a ANAC tinha revisado desde 13/10: as listas de aeródromos e a base
+estatística. A primeira agendada é a de 03/11/2026.
 
 A análise não anda junto. Os notebooks leem os marts da tag
 `coleta-2026-10-13`, e os números deste README são dessa coleta. O painel,
