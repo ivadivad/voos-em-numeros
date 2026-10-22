@@ -21,6 +21,9 @@ O que tem aqui:
   uma com o que ela não prova escrito junto.
 - **[Um painel do Power BI](#o-painel)** salvo como projeto em texto (TMDL e
   PBIR), com um botão que simula a fusão Azul + GOL.
+- **[Uma atualização mensal](#atualização-automática)** no GitHub Actions,
+  que coleta, reconstrói e publica os marts novos pro painel, enquanto a
+  análise fica presa à coleta em que foi escrita.
 
 ## A pergunta
 
@@ -32,8 +35,9 @@ O que tem aqui:
    limites de concentração do CADE, e quantas pessoas voariam neles?
 3. Pagar mais caro compra pontualidade?
 
-O período começa em janeiro de 2019 e vai até o último mês publicado pelas
-fontes: nos marts deste repositório, ago/2026, da coleta de 13/10/2026.
+O período começa em janeiro de 2019. Os números deste README e dos
+notebooks vão até ago/2026, da coleta de 13/10/2026; o painel segue o
+último mês publicado pelas fontes.
 
 ### As respostas
 
@@ -63,8 +67,10 @@ diferença vai a 40,6% até 500 km e some acima de 2.000 km.
 
 ## Os notebooks
 
-Cada um abre no Colab sem instalar nada: os dados vêm dos marts deste
-repositório, pela URL do GitHub.
+Cada um abre no Colab sem instalar nada. Os dados vêm dos marts da coleta
+de 13/10/2026, pela tag
+[`coleta-2026-10-13`](https://github.com/ivadivad/voos-em-numeros/tree/coleta-2026-10-13)
+do GitHub: rodado de novo, o notebook dá as saídas que estão gravadas nele.
 
 | Notebook | O que faz | |
 |---|---|---|
@@ -375,14 +381,51 @@ Quatro decisões do modelo:
   que cada relacionamento vale nos dados.
 - **Média é razão entre somas.** A tarifa média e a tarifa por km saem das
   somas, como nos notebooks, e o HHI é calculado no período filtrado: em
-  2024, a página da fusão mostra os mesmos 79 de 503 mercados do notebook
-  `04-fusao`.
+  2024, com os dados de 13/10/2026, a página da fusão mostra os mesmos 79
+  de 503 mercados do notebook `04-fusao`.
 - **O calendário é mensal e não é marcado como tabela de datas.** O Power
   BI exige datas contínuas pra marcar, e as medidas não usam as funções de
   inteligência de tempo.
 - **Números em português.** O relatório tem idioma próprio (pt-BR), que
   passa na frente do idioma do Windows e do navegador: R\$ 514,29, e não
   R\$ 514.29.
+
+## Atualização automática
+
+Todo dia 3, o workflow [`atualizar.yml`](.github/workflows/atualizar.yml)
+do GitHub Actions baixa as quatro bases de novo, roda os testes,
+reconstrói o modelo e commita na main o que mudou em `dados/`: o
+manifesto, a cobertura e os marts. O painel lê os marts da main e pega o
+mês novo ao clicar em **Atualizar**. A primeira rodada agendada é a de
+03/11/2026: até lá, os marts da main são os da coleta de 13/10, e as três
+rodadas de teste, em 22/10, coletaram e construíram sem commitar.
+
+A análise não anda junto. Os notebooks leem os marts da tag
+`coleta-2026-10-13`, e os números deste README são dessa coleta. O painel,
+com dado mais novo, pode mostrar outro número: em 22/10/2026, a ANAC já
+tinha revisado a base estatística, e Rio–São Paulo, em ago/2026, passou de
+619.821 para 621.304 passageiros.
+
+Como o workflow se protege:
+
+- **O modelo só avança quando as três bases mensais têm o mês.** Em
+  22/10/2026, as tarifas e a base estatística já iam até set/2026, e o VRA
+  não: o modelo ficou em ago/2026, e set/2026 entra numa rodada seguinte.
+- **Sem cache.** O GitHub apaga o cache que fica 7 dias sem uso, e a rodada
+  é mensal: cada uma baixa as bases inteiras, de 72 a 85 minutos nas
+  rodadas de teste, quase todos de download. O manifesto ganha linha só
+  pro arquivo com sha256 novo, o que a ANAC revisou.
+- **Os mesmos bytes no Linux.** Com os mesmos arquivos da ANAC, a
+  construção do GitHub, em Linux, e a de uma máquina Windows deram os dez
+  marts iguais, byte a byte, em 22/10/2026: mart que muda no commit do
+  workflow é dado novo, não diferença de sistema.
+- **Falhou, não publica.** Cada coleta tenta até três vezes, com 5 minutos
+  entre elas. Se ainda assim uma coleta ou a construção falhar, nenhum
+  mart muda, e o job fica vermelho na aba Actions. Mudar o workflow
+  dispara uma rodada de teste, que coleta e constrói sem commitar.
+- **Agendamento parado.** Num repositório público, o GitHub desliga o
+  agendamento depois de 60 dias sem atividade; aí ele é religado na aba
+  Actions.
 
 ## Limitações
 
@@ -425,10 +468,6 @@ O que as respostas não dizem. Cada ponto vem de um notebook, do
 
 ## O que falta
 
-- **Atualização automática.** Os dados param na coleta de 13/10/2026, com
-  ago/2026 como último mês. A etapa 12, opcional, é um workflow mensal que
-  coleta, reconstrói os marts e commita; ainda não existe. Até lá, o mês
-  novo vem rodando `python coletar.py todas` e `python construir.py`.
 - **Efeito, e não só associação.** O passo seguinte pras perguntas 1 e 3 é
   tratar a saída de uma companhia como experimento natural: o mesmo
   mercado, antes e depois de um grupo sair dele.
@@ -452,9 +491,9 @@ O que as respostas não dizem. Cada ponto vem de um notebook, do
 ## Como reproduzir
 
 Pra ver os resultados, não é preciso reproduzir nada: os notebooks abrem no
-Colab e o painel no Power BI Desktop, os dois lendo os marts deste
-repositório pela URL do GitHub. Pra refazer os marts a partir da ANAC, são
-três passos:
+Colab e o painel no Power BI Desktop, os dois lendo os marts pela URL do
+GitHub (os notebooks, os da coleta de 13/10/2026; o painel, os da main).
+Pra refazer os marts a partir da ANAC, são três passos:
 
 ```bash
 git clone https://github.com/ivadivad/voos-em-numeros.git
@@ -467,9 +506,9 @@ git status dados/marts    # 3. mostra se algum mart mudou
 
 Com os mesmos arquivos da ANAC, nenhum mart muda: a construção grava o
 mesmo arquivo, byte a byte. Se a ANAC revisou um mês, o
-`dados/manifesto.csv` registra o sha256 novo, e o mart pode mudar junto. Os
-notebooks e o painel continuam lendo os marts publicados no GitHub, então
-um mart reconstruído só aparece neles depois de publicado. O detalhe de
+`dados/manifesto.csv` registra o sha256 novo, e o mart pode mudar junto. O
+painel lê os marts publicados na main, e os notebooks, os da tag: um mart
+reconstruído na sua máquina não aparece em nenhum dos dois. O detalhe de
 cada passo vem a seguir.
 
 ### Coletar os dados
