@@ -62,33 +62,54 @@ jobs:
       # continue-on-error: uma base falhando não impede as outras de serem
       # coletadas. Sem as quatro, o modelo não é reconstruído, e o último
       # passo deixa o job vermelho.
+      #
+      # Até 3 tentativas, 5 min entre elas: o coletor já reentrega em
+      # segundos, mas na segunda rodada de teste (22/10/2026) um mês do VRA
+      # falhou assim mesmo e derrubou a construção. A tentativa seguinte só
+      # baixa o que faltou: mês que já está no disco é pulado.
       - name: Coletar aeródromos
         id: aerodromos
         continue-on-error: true
         run: |
           set -o pipefail
-          python coletar.py aerodromos 2>&1 | tee "$RUNNER_TEMP/coleta-aerodromos.log"
+          for tentativa in 1 2 3; do
+            python coletar.py aerodromos 2>&1 | tee -a "$RUNNER_TEMP/coleta-aerodromos.log" && exit 0
+            [ $tentativa -lt 3 ] && echo "tentativa $tentativa falhou; de novo em 5 min" && sleep 300
+          done
+          exit 1
 
       - name: Coletar a base estatística
         id: estatisticas
         continue-on-error: true
         run: |
           set -o pipefail
-          python coletar.py estatisticas 2>&1 | tee "$RUNNER_TEMP/coleta-estatisticas.log"
+          for tentativa in 1 2 3; do
+            python coletar.py estatisticas 2>&1 | tee -a "$RUNNER_TEMP/coleta-estatisticas.log" && exit 0
+            [ $tentativa -lt 3 ] && echo "tentativa $tentativa falhou; de novo em 5 min" && sleep 300
+          done
+          exit 1
 
       - name: Coletar as tarifas
         id: tarifas
         continue-on-error: true
         run: |
           set -o pipefail
-          python coletar.py tarifas 2>&1 | tee "$RUNNER_TEMP/coleta-tarifas.log"
+          for tentativa in 1 2 3; do
+            python coletar.py tarifas 2>&1 | tee -a "$RUNNER_TEMP/coleta-tarifas.log" && exit 0
+            [ $tentativa -lt 3 ] && echo "tentativa $tentativa falhou; de novo em 5 min" && sleep 300
+          done
+          exit 1
 
       - name: Coletar o VRA
         id: vra
         continue-on-error: true
         run: |
           set -o pipefail
-          python coletar.py vra 2>&1 | tee "$RUNNER_TEMP/coleta-vra.log"
+          for tentativa in 1 2 3; do
+            python coletar.py vra 2>&1 | tee -a "$RUNNER_TEMP/coleta-vra.log" && exit 0
+            [ $tentativa -lt 3 ] && echo "tentativa $tentativa falhou; de novo em 5 min" && sleep 300
+          done
+          exit 1
 
       - name: Construir o modelo e os marts
         id: construir
@@ -141,6 +162,7 @@ jobs:
           # sha256 novo no manifesto: arquivo novo, ou revisado pela ANAC se o nome já estava lá
           echo "::notice title=brutos novos::$(git diff -U0 dados/manifesto.csv | grep '^+[^+]' | cut -d, -f1,3,5 | cut -c2- | paste -sd ';' -)"
           echo "::notice title=revisões::$(grep -h 'revisado pela ANAC' "$RUNNER_TEMP"/coleta-*.log 2>/dev/null | paste -sd ';' -)"
+          echo "::notice title=erros da coleta::$(grep -h '^ERRO' "$RUNNER_TEMP"/coleta-*.log 2>/dev/null | sort -u | paste -sd ';' -)"
 
       - name: Commit do que mudou
         if: env.PUBLICAR == 'true'
