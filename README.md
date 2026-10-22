@@ -319,7 +319,8 @@ Azul e GOL são um só, e o `sql/60_mart_fusao.sql` recalcula a
 concentração de cada mercado com ele, em duas janelas de 12 meses: 2024, o
 mercado que a fusão encontraria, e os 12 meses mais recentes. A leitura é a
 da seção 2.4.2 do [guia de concentração horizontal do
-CADE](https://cdn.cade.gov.br/Portal/centrais-de-conteudo/publicacoes/guias-do-CADE/guia-para-analise-de-atos-de-concentracao-horizontal.pdf),
+CADE](https://cdn.cade.gov.br/Portal/centrais-de-conteudo/publicacoes/guias-do-CADE/guia-para-analise-de-atos-de-concentracao-horizontal.pdf)
+([cópia no Internet Archive](https://web.archive.org/web/20260829025632/https://cdn.cade.gov.br/Portal/centrais-de-conteudo/publicacoes/guias-do-CADE/guia-para-analise-de-atos-de-concentracao-horizontal.pdf), de 29/08/2026),
 e o projeto a usa como triagem, não como veredito: o próprio guia diz que
 "A 'regra do HHI', como indicativa de nexo causal é uma suposição inicial,
 sensível a outros argumentos". E a simulação é estática: soma as duas
